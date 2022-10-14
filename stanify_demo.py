@@ -128,7 +128,7 @@ fig, ax = plt.subplots(figsize=(15, 8))
 ax.plot(pd.DataFrame(prior_pred_obs[0].draws_xr('prey_obs').mean(["chain", "draw"]).prey_obs), label = "production_start_rate_stocked_obs")
 ax.plot(pd.DataFrame(prior_pred_obs[0].draws_xr('predator_obs').mean(["chain", "draw"]).predator_obs), label = "production_rate_stocked_obs")
 ax.legend()
-plt.savefig("prey_predator_prior_pred_wpn.png")
+plt.savefig(f"{setting_assumption.get('model_name')}_prior_pred.png")
 
 pd.DataFrame(posterior.alpha.sel(chain = 1).values).hist()
 plt.savefig("prey_predator_posterior_alpha_chain1_wpn.png")

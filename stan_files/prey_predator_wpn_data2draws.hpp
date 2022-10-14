@@ -10,160 +10,160 @@ using namespace stan::math;
 stan::math::profile_map profiles__;
 static constexpr std::array<const char*, 155> locations_array__ = 
 {" (found before start of program)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 18, column 4 to column 24)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 19, column 4 to column 23)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 20, column 4 to column 24)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 21, column 4 to column 24)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 22, column 4 to column 32)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 27, column 4 to column 25)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 28, column 4 to column 28)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 29, column 4 to column 114)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 31, column 4 to column 30)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 36, column 4 to column 130)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 37, column 4 to column 51)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 38, column 4 to column 55)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 39, column 4 to column 60)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 32, column 4 to column 36)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 33, column 4 to column 40)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 34, column 4 to column 45)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 43, column 4 to column 30)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 44, column 4 to column 31)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 45, column 4 to column 32)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 46, column 4 to column 30)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 47, column 4 to column 38)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 48, column 4 to column 43)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 49, column 4 to column 51)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 6, column 4 to column 12)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 7, column 4 to column 43)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 8, column 4 to column 24)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 9, column 4 to column 28)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 13, column 4 to column 28)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 14, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 14, column 4 to column 100)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 36, column 32 to column 35)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 37, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 38, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 39, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 4, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 5, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 98, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 99, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 100, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 97, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 97, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 93, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 94, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 95, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 92, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 92, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 88, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 89, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 90, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 87, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 87, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 83, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 84, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 85, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 82, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 82, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 78, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 79, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 80, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 77, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 77, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 73, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 74, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 75, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 72, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 72, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 68, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 69, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 70, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 67, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 67, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 63, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 64, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 65, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 62, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 62, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 58, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 59, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 60, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 57, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 57, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 53, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 54, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 55, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 52, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 52, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 48, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 49, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 50, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 47, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 47, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 43, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 44, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 45, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 42, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 42, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 38, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 39, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 40, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 37, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 37, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 33, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 34, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 35, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 32, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 32, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 28, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 29, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 30, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 27, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 27, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 23, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 24, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 25, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 22, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 22, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 18, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 19, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 20, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 17, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 17, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 13, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 14, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 15, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 12, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 12, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 8, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 9, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 10, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 7, column 17, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 7, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 102, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 2, column 53, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 106, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 109, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 110, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 111, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 113, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 114, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 115, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 116, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 117, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 118, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 119, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 120, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 121, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 122, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 123, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 124, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 126, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 127, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 128, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 130, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_functions.stan', line 105, column 96, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)"};
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 18, column 4 to column 24)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 19, column 4 to column 23)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 20, column 4 to column 24)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 21, column 4 to column 24)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 22, column 4 to column 32)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 27, column 4 to column 25)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 28, column 4 to column 114)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 29, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 31, column 4 to column 30)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 36, column 4 to column 130)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 37, column 4 to column 51)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 38, column 4 to column 60)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 39, column 4 to column 55)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 32, column 4 to column 36)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 33, column 4 to column 45)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 34, column 4 to column 40)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 43, column 4 to column 30)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 44, column 4 to column 31)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 45, column 4 to column 32)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 46, column 4 to column 30)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 47, column 4 to column 38)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 48, column 4 to column 43)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 49, column 4 to column 51)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 6, column 4 to column 12)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 7, column 4 to column 43)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 8, column 4 to column 24)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 9, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 13, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 14, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 14, column 4 to column 100)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 36, column 32 to column 35)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 37, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 38, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 39, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 4, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 5, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 98, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 99, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 100, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 97, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 97, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 93, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 94, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 95, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 92, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 92, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 88, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 89, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 90, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 87, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 87, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 83, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 84, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 85, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 82, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 82, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 78, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 79, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 80, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 77, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 77, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 73, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 74, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 75, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 72, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 72, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 68, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 69, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 70, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 67, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 67, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 63, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 64, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 65, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 62, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 62, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 58, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 59, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 60, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 57, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 57, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 53, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 54, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 55, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 52, column 23, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 52, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 48, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 49, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 50, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 47, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 47, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 43, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 44, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 45, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 42, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 42, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 38, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 39, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 40, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 37, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 37, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 33, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 34, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 35, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 32, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 32, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 28, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 29, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 30, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 27, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 27, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 23, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 24, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 25, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 22, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 22, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 18, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 19, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 20, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 17, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 17, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 13, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 14, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 15, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 12, column 22, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 12, column 9, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 8, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 9, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 10, column 8, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 7, column 17, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 7, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 102, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 2, column 53, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 106, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 109, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 110, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 111, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 113, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 114, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 115, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 116, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 117, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 118, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 119, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 120, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 121, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 122, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 123, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 124, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 126, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 127, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 128, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 130, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_functions.stan', line 105, column 96, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_data2draws.stan', line 2, column 4)"};
 
 struct dataFunc__process_noise_std_norm_data_functor__ {
   template <typename T0__,
@@ -184,7 +184,7 @@ struct vensim_ode_func_functor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, const T2__& alpha,
-             const T3__& beta, const T4__& gamma, const T5__& delta,
+             const T3__& beta, const T4__& delta, const T5__& gamma,
              std::ostream* pstream__) const;
 };
 struct vensim_ode_func_odefunctor__ {
@@ -200,8 +200,8 @@ struct vensim_ode_func_odefunctor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, std::ostream* pstream__,
-             const T2__& alpha, const T3__& beta, const T4__& gamma,
-             const T5__& delta) const;
+             const T2__& alpha, const T3__& beta, const T4__& delta,
+             const T5__& gamma) const;
 };
 
 template <typename T0__,
@@ -221,205 +221,208 @@ template <typename T0__,
       current_statement__ = 131;
       if (stan::math::logical_lte(time, 1)) {
         current_statement__ = 127;
-        intercept = 0.5004430723501462;
+        intercept = -0.48619070682138205;
         current_statement__ = 128;
-        slope = (0.3419751621836212 - 0.5004430723501462);
+        slope = (-0.4778976936620191 - -0.48619070682138205);
         current_statement__ = 129;
-        return (intercept + (slope * (time - 0.5004430723501462)));
+        return (intercept + (slope * (time - -0.48619070682138205)));
       } else {
         current_statement__ = 126;
         if (stan::math::logical_lte(time, 2)) {
           current_statement__ = 122;
-          intercept = 0.3419751621836212;
+          intercept = -0.4778976936620191;
           current_statement__ = 123;
-          slope = (0.3921118448378294 - 0.3419751621836212);
+          slope = (-0.3219799628729971 - -0.4778976936620191);
           current_statement__ = 124;
-          return (intercept + (slope * (time - 0.3419751621836212)));
+          return (intercept + (slope * (time - -0.4778976936620191)));
         } else {
           current_statement__ = 121;
           if (stan::math::logical_lte(time, 3)) {
             current_statement__ = 117;
-            intercept = 0.3921118448378294;
+            intercept = -0.3219799628729971;
             current_statement__ = 118;
-            slope = (-0.7139758003200025 - 0.3921118448378294);
+            slope = (-1.3079993067868714 - -0.3219799628729971);
             current_statement__ = 119;
-            return (intercept + (slope * (time - 0.3921118448378294)));
+            return (intercept + (slope * (time - -0.3219799628729971)));
           } else {
             current_statement__ = 116;
             if (stan::math::logical_lte(time, 4)) {
               current_statement__ = 112;
-              intercept = -0.7139758003200025;
+              intercept = -1.3079993067868714;
               current_statement__ = 113;
-              slope = (-0.5521772135377693 - -0.7139758003200025);
+              slope = (0.6955802465655189 - -1.3079993067868714);
               current_statement__ = 114;
-              return (intercept + (slope * (time - -0.7139758003200025)));
+              return (intercept + (slope * (time - -1.3079993067868714)));
             } else {
               current_statement__ = 111;
               if (stan::math::logical_lte(time, 5)) {
                 current_statement__ = 107;
-                intercept = -0.5521772135377693;
+                intercept = 0.6955802465655189;
                 current_statement__ = 108;
-                slope = (0.2631666264895795 - -0.5521772135377693);
+                slope = (0.022755936241160353 - 0.6955802465655189);
                 current_statement__ = 109;
-                return (intercept + (slope * (time - -0.5521772135377693)));
+                return (intercept + (slope * (time - 0.6955802465655189)));
               } else {
                 current_statement__ = 106;
                 if (stan::math::logical_lte(time, 6)) {
                   current_statement__ = 102;
-                  intercept = 0.2631666264895795;
+                  intercept = 0.022755936241160353;
                   current_statement__ = 103;
-                  slope = (0.337262567542741 - 0.2631666264895795);
+                  slope = (-0.17294710647998812 - 0.022755936241160353);
                   current_statement__ = 104;
-                  return (intercept + (slope * (time - 0.2631666264895795)));
+                  return (intercept +
+                           (slope * (time - 0.022755936241160353)));
                 } else {
                   current_statement__ = 101;
                   if (stan::math::logical_lte(time, 7)) {
                     current_statement__ = 97;
-                    intercept = 0.337262567542741;
+                    intercept = -0.17294710647998812;
                     current_statement__ = 98;
-                    slope = (-0.3621237506086674 - 0.337262567542741);
+                    slope = (0.9860242539996403 - -0.17294710647998812);
                     current_statement__ = 99;
-                    return (intercept + (slope * (time - 0.337262567542741)));
+                    return (intercept +
+                             (slope * (time - -0.17294710647998812)));
                   } else {
                     current_statement__ = 96;
                     if (stan::math::logical_lte(time, 8)) {
                       current_statement__ = 92;
-                      intercept = -0.3621237506086674;
+                      intercept = 0.9860242539996403;
                       current_statement__ = 93;
-                      slope = (0.4249320861119576 - -0.3621237506086674);
+                      slope = (1.3746418668623144 - 0.9860242539996403);
                       current_statement__ = 94;
                       return (intercept +
-                               (slope * (time - -0.3621237506086674)));
+                               (slope * (time - 0.9860242539996403)));
                     } else {
                       current_statement__ = 91;
                       if (stan::math::logical_lte(time, 9)) {
                         current_statement__ = 87;
-                        intercept = 0.4249320861119576;
+                        intercept = 1.3746418668623144;
                         current_statement__ = 88;
-                        slope = (0.04365201628326766 - 0.4249320861119576);
+                        slope = (-0.024227398995708634 - 1.3746418668623144);
                         current_statement__ = 89;
                         return (intercept +
-                                 (slope * (time - 0.4249320861119576)));
+                                 (slope * (time - 1.3746418668623144)));
                       } else {
                         current_statement__ = 86;
                         if (stan::math::logical_lte(time, 10)) {
                           current_statement__ = 82;
-                          intercept = 0.04365201628326766;
+                          intercept = -0.024227398995708634;
                           current_statement__ = 83;
-                          slope = (0.42815213638268174 - 0.04365201628326766);
+                          slope = (-0.5958176704633286 -
+                                    -0.024227398995708634);
                           current_statement__ = 84;
                           return (intercept +
-                                   (slope * (time - 0.04365201628326766)));
+                                   (slope * (time - -0.024227398995708634)));
                         } else {
                           current_statement__ = 81;
                           if (stan::math::logical_lte(time, 11)) {
                             current_statement__ = 77;
-                            intercept = 0.42815213638268174;
+                            intercept = -0.5958176704633286;
                             current_statement__ = 78;
-                            slope = (0.8644148994092482 -
-                                      0.42815213638268174);
+                            slope = (-0.942115976792156 -
+                                      -0.5958176704633286);
                             current_statement__ = 79;
                             return (intercept +
-                                     (slope * (time - 0.42815213638268174)));
+                                     (slope * (time - -0.5958176704633286)));
                           } else {
                             current_statement__ = 76;
                             if (stan::math::logical_lte(time, 12)) {
                               current_statement__ = 72;
-                              intercept = 0.8644148994092482;
+                              intercept = -0.942115976792156;
                               current_statement__ = 73;
-                              slope = (1.131492234885419 -
-                                        0.8644148994092482);
+                              slope = (-1.758781232617312 -
+                                        -0.942115976792156);
                               current_statement__ = 74;
                               return (intercept +
-                                       (slope * (time - 0.8644148994092482)));
+                                       (slope * (time - -0.942115976792156)));
                             } else {
                               current_statement__ = 71;
                               if (stan::math::logical_lte(time, 13)) {
                                 current_statement__ = 67;
-                                intercept = 1.131492234885419;
+                                intercept = -1.758781232617312;
                                 current_statement__ = 68;
-                                slope = (0.5498011129323827 -
-                                          1.131492234885419);
+                                slope = (-0.07735330008373553 -
+                                          -1.758781232617312);
                                 current_statement__ = 69;
                                 return (intercept +
-                                         (slope * (time - 1.131492234885419)));
+                                         (slope *
+                                           (time - -1.758781232617312)));
                               } else {
                                 current_statement__ = 66;
                                 if (stan::math::logical_lte(time, 14)) {
                                   current_statement__ = 62;
-                                  intercept = 0.5498011129323827;
+                                  intercept = -0.07735330008373553;
                                   current_statement__ = 63;
-                                  slope = (2.063071019186786 -
-                                            0.5498011129323827);
+                                  slope = (1.4197800455593017 -
+                                            -0.07735330008373553);
                                   current_statement__ = 64;
                                   return (intercept +
                                            (slope *
-                                             (time - 0.5498011129323827)));
+                                             (time - -0.07735330008373553)));
                                 } else {
                                   current_statement__ = 61;
                                   if (stan::math::logical_lte(time, 15)) {
                                     current_statement__ = 57;
-                                    intercept = 2.063071019186786;
+                                    intercept = 1.4197800455593017;
                                     current_statement__ = 58;
-                                    slope = (0.022185889497313142 -
-                                              2.063071019186786);
+                                    slope = (0.1692906791655775 -
+                                              1.4197800455593017);
                                     current_statement__ = 59;
                                     return (intercept +
                                              (slope *
-                                               (time - 2.063071019186786)));
+                                               (time - 1.4197800455593017)));
                                   } else {
                                     current_statement__ = 56;
                                     if (stan::math::logical_lte(time, 16)) {
                                       current_statement__ = 52;
-                                      intercept = 0.022185889497313142;
+                                      intercept = 0.1692906791655775;
                                       current_statement__ = 53;
-                                      slope = (-0.16785986945173217 -
-                                                0.022185889497313142);
+                                      slope = (0.3426947118460419 -
+                                                0.1692906791655775);
                                       current_statement__ = 54;
                                       return (intercept +
                                                (slope *
-                                                 (time -
-                                                   0.022185889497313142)));
+                                                 (time - 0.1692906791655775)));
                                     } else {
                                       current_statement__ = 51;
                                       if (stan::math::logical_lte(time, 17)) {
                                         current_statement__ = 47;
-                                        intercept = -0.16785986945173217;
+                                        intercept = 0.3426947118460419;
                                         current_statement__ = 48;
-                                        slope = (-0.9645683033558955 -
-                                                  -0.16785986945173217);
+                                        slope = (-1.269926838065689 -
+                                                  0.3426947118460419);
                                         current_statement__ = 49;
                                         return (intercept +
                                                  (slope *
                                                    (time -
-                                                     -0.16785986945173217)));
+                                                     0.3426947118460419)));
                                       } else {
                                         current_statement__ = 46;
                                         if (stan::math::logical_lte(time, 18)) {
                                           current_statement__ = 42;
-                                          intercept = -0.9645683033558955;
+                                          intercept = -1.269926838065689;
                                           current_statement__ = 43;
-                                          slope = (-0.5242532944696807 -
-                                                    -0.9645683033558955);
+                                          slope = (1.5746135383466489 -
+                                                    -1.269926838065689);
                                           current_statement__ = 44;
                                           return (intercept +
                                                    (slope *
                                                      (time -
-                                                       -0.9645683033558955)));
+                                                       -1.269926838065689)));
                                         } else {
                                           current_statement__ = 41;
                                           if (stan::math::logical_lte(time,
                                                 19)) {
                                             current_statement__ = 37;
-                                            intercept = -0.5242532944696807;
+                                            intercept = 1.5746135383466489;
                                             current_statement__ = 38;
-                                            slope = (0.5443305706084388 -
-                                                      -0.5242532944696807);
+                                            slope = (1.741117608886478 -
+                                                      1.5746135383466489);
                                             current_statement__ = 39;
                                             return (intercept +
                                                      (slope *
                                                        (time -
-                                                         -0.5242532944696807)));
+                                                         1.5746135383466489)));
                                           } 
                                         }
                                       }
@@ -440,7 +443,7 @@ template <typename T0__,
         }
       }
       current_statement__ = 132;
-      return 0.5443305706084388;
+      return 1.741117608886478;
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -457,8 +460,8 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                      stan::promote_args_t<T5__>>, -1, 1>
   vensim_ode_func(const T0__& time, const T1__& outcome_arg__,
-                  const T2__& alpha, const T3__& beta, const T4__& gamma,
-                  const T5__& delta, std::ostream* pstream__) {
+                  const T2__& alpha, const T3__& beta, const T4__& delta,
+                  const T5__& gamma, std::ostream* pstream__) {
     using local_scalar_t__ =
             stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__,
                                  T4__, stan::promote_args_t<T5__>>;
@@ -475,64 +478,64 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
       current_statement__ = 135;
       prey = stan::model::rvalue(outcome, "outcome",
                stan::model::index_uni(1));
-      local_scalar_t__ predator = DUMMY_VAR__;
-      current_statement__ = 136;
-      predator = stan::model::rvalue(outcome, "outcome",
-                   stan::model::index_uni(2));
       local_scalar_t__ process_noise = DUMMY_VAR__;
-      current_statement__ = 137;
+      current_statement__ = 136;
       process_noise = stan::model::rvalue(outcome, "outcome",
-                        stan::model::index_uni(3));
-      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
+                        stan::model::index_uni(2));
+      local_scalar_t__ predator = DUMMY_VAR__;
+      current_statement__ = 137;
+      predator = stan::model::rvalue(outcome, "outcome",
+                   stan::model::index_uni(3));
+      local_scalar_t__ prey_birth_rate = DUMMY_VAR__;
       current_statement__ = 138;
-      predator_birth_rate = ((((delta * prey) * predator) * 1) +
-                              process_noise);
-      local_scalar_t__ time_step = DUMMY_VAR__;
+      prey_birth_rate = (alpha * prey);
+      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
       current_statement__ = 139;
+      predator_death_rate = (gamma * predator);
+      local_scalar_t__ time_step = DUMMY_VAR__;
+      current_statement__ = 140;
       time_step = 0.03125;
       local_scalar_t__ process_noise_scale = DUMMY_VAR__;
-      current_statement__ = 140;
+      current_statement__ = 141;
       process_noise_scale = 1;
       local_scalar_t__ process_noise_corr_time = DUMMY_VAR__;
-      current_statement__ = 141;
+      current_statement__ = 142;
       process_noise_corr_time = 3;
       local_scalar_t__ white_noise = DUMMY_VAR__;
-      current_statement__ = 142;
+      current_statement__ = 143;
       white_noise = (2 -
                       (((((time_step / process_noise_corr_time) / time_step)
                           / stan::math::pow(process_noise_corr_time, 0.5)) *
                          dataFunc__process_noise_std_norm_data(
                            time, pstream__)) * process_noise_scale));
       local_scalar_t__ process_noise_chg_rate = DUMMY_VAR__;
-      current_statement__ = 143;
+      current_statement__ = 144;
       process_noise_chg_rate = (white_noise -
                                  (process_noise / process_noise_corr_time));
-      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
-      current_statement__ = 144;
-      predator_death_rate = (gamma * predator);
-      local_scalar_t__ prey_birth_rate = DUMMY_VAR__;
-      current_statement__ = 145;
-      prey_birth_rate = (alpha * prey);
       local_scalar_t__ prey_death_rate = DUMMY_VAR__;
-      current_statement__ = 146;
+      current_statement__ = 145;
       prey_death_rate = ((beta * predator) * prey);
-      local_scalar_t__ prey_dydt = DUMMY_VAR__;
+      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
+      current_statement__ = 146;
+      predator_birth_rate = ((((delta * prey) * predator) * 1) +
+                              process_noise);
+      local_scalar_t__ predator_dydt = DUMMY_VAR__;
       current_statement__ = 147;
+      predator_dydt = (predator_birth_rate - predator_death_rate);
+      local_scalar_t__ prey_dydt = DUMMY_VAR__;
+      current_statement__ = 148;
       prey_dydt = (prey_birth_rate - prey_death_rate);
       local_scalar_t__ process_noise_dydt = DUMMY_VAR__;
-      current_statement__ = 148;
-      process_noise_dydt = process_noise_chg_rate;
-      local_scalar_t__ predator_dydt = DUMMY_VAR__;
       current_statement__ = 149;
-      predator_dydt = (predator_birth_rate - predator_death_rate);
+      process_noise_dydt = process_noise_chg_rate;
       current_statement__ = 150;
       stan::model::assign(dydt, prey_dydt,
         "assigning variable dydt", stan::model::index_uni(1));
       current_statement__ = 151;
-      stan::model::assign(dydt, predator_dydt,
+      stan::model::assign(dydt, process_noise_dydt,
         "assigning variable dydt", stan::model::index_uni(2));
       current_statement__ = 152;
-      stan::model::assign(dydt, process_noise_dydt,
+      stan::model::assign(dydt, predator_dydt,
         "assigning variable dydt", stan::model::index_uni(3));
       current_statement__ = 153;
       return dydt;
@@ -562,10 +565,10 @@ Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4
                      stan::promote_args_t<T5__>>, -1, 1>
 vensim_ode_func_functor__::operator()(const T0__& time, const T1__& outcome,
                                       const T2__& alpha, const T3__& beta,
-                                      const T4__& gamma, const T5__& delta,
+                                      const T4__& delta, const T5__& gamma,
                                       std::ostream* pstream__)  const
 {
-  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, delta, gamma, pstream__);
 }
 
 template <typename T0__, typename T1__, typename T2__, typename T3__,
@@ -583,10 +586,10 @@ vensim_ode_func_odefunctor__::operator()(const T0__& time,
                                          const T1__& outcome,
                                          std::ostream* pstream__,
                                          const T2__& alpha, const T3__& beta,
-                                         const T4__& gamma, const T5__& delta) 
+                                         const T4__& delta, const T5__& gamma) 
 const
 {
-  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, delta, gamma, pstream__);
 }
 
 
@@ -609,7 +612,7 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
   inline std::string model_name() const final { return "prey_predator_wpn_data2draws_model"; }
 
   inline std::vector<std::string> model_compile_info() const noexcept {
-    return std::vector<std::string>{"stanc_version = stanc3 v2.30.1", "stancflags = --include-paths=/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files"};
+    return std::vector<std::string>{"stanc_version = stanc3 v2.30.1", "stancflags = --include-paths=/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files"};
   }
   
   
@@ -732,9 +735,9 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       current_statement__ = 32;
       stan::math::validate_non_negative_index("prey", "n_t", n_t);
       current_statement__ = 33;
-      stan::math::validate_non_negative_index("predator", "n_t", n_t);
-      current_statement__ = 34;
       stan::math::validate_non_negative_index("process_noise", "n_t", n_t);
+      current_statement__ = 34;
+      stan::math::validate_non_negative_index("predator", "n_t", n_t);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -783,26 +786,26 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       local_scalar_t__ prey__init = DUMMY_VAR__;
       current_statement__ = 6;
       prey__init = 30;
-      local_scalar_t__ predator__init = DUMMY_VAR__;
-      current_statement__ = 7;
-      predator__init = 4;
       local_scalar_t__ process_noise__init = DUMMY_VAR__;
-      current_statement__ = 8;
+      current_statement__ = 7;
       process_noise__init = (2 -
                               (((((0.03125 / 3) / 0.03125) /
                                   stan::math::pow(3, 0.5)) *
                                  dataFunc__process_noise_std_norm_data(
                                    0, pstream__)) * 1));
+      local_scalar_t__ predator__init = DUMMY_VAR__;
+      current_statement__ = 8;
+      predator__init = 4;
       Eigen::Matrix<local_scalar_t__, -1, 1> initial_outcome =
          Eigen::Matrix<local_scalar_t__, -1, 1>::Constant(3, DUMMY_VAR__);
       current_statement__ = 14;
       stan::model::assign(initial_outcome, prey__init,
         "assigning variable initial_outcome", stan::model::index_uni(1));
       current_statement__ = 15;
-      stan::model::assign(initial_outcome, predator__init,
+      stan::model::assign(initial_outcome, process_noise__init,
         "assigning variable initial_outcome", stan::model::index_uni(2));
       current_statement__ = 16;
-      stan::model::assign(initial_outcome, process_noise__init,
+      stan::model::assign(initial_outcome, predator__init,
         "assigning variable initial_outcome", stan::model::index_uni(3));
       std::vector<Eigen::Matrix<local_scalar_t__, -1, 1>> integrated_result =
          std::vector<Eigen::Matrix<local_scalar_t__, -1, 1>>(n_t, 
@@ -810,7 +813,7 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       current_statement__ = 10;
       stan::model::assign(integrated_result,
         stan::math::ode_rk45(vensim_ode_func_odefunctor__(), initial_outcome,
-          initial_time, times, pstream__, alpha, beta, gamma, delta),
+          initial_time, times, pstream__, alpha, beta, delta, gamma),
         "assigning variable integrated_result");
       std::vector<local_scalar_t__> prey =
          std::vector<local_scalar_t__>(n_t, DUMMY_VAR__);
@@ -819,20 +822,20 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
         stan::model::rvalue(integrated_result, "integrated_result",
           stan::model::index_omni(), stan::model::index_uni(1)),
         "assigning variable prey");
-      std::vector<local_scalar_t__> predator =
-         std::vector<local_scalar_t__>(n_t, DUMMY_VAR__);
-      current_statement__ = 12;
-      stan::model::assign(predator,
-        stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(2)),
-        "assigning variable predator");
       std::vector<local_scalar_t__> process_noise =
          std::vector<local_scalar_t__>(n_t, DUMMY_VAR__);
-      current_statement__ = 13;
+      current_statement__ = 12;
       stan::model::assign(process_noise,
         stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(3)),
+          stan::model::index_omni(), stan::model::index_uni(2)),
         "assigning variable process_noise");
+      std::vector<local_scalar_t__> predator =
+         std::vector<local_scalar_t__>(n_t, DUMMY_VAR__);
+      current_statement__ = 13;
+      stan::model::assign(predator,
+        stan::model::rvalue(integrated_result, "integrated_result",
+          stan::model::index_omni(), stan::model::index_uni(3)),
+        "assigning variable predator");
       {
         current_statement__ = 17;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(alpha, 0.8, 0.08));
@@ -906,8 +909,8 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       m_noise_scale = in__.template read_constrain_lb<local_scalar_t__, 
                         jacobian__>(0, lp__);
       double prey__init = std::numeric_limits<double>::quiet_NaN();
-      double predator__init = std::numeric_limits<double>::quiet_NaN();
       double process_noise__init = std::numeric_limits<double>::quiet_NaN();
+      double predator__init = std::numeric_limits<double>::quiet_NaN();
       Eigen::Matrix<double, -1, 1> initial_outcome =
          Eigen::Matrix<double, -1, 1>::Constant(3,
            std::numeric_limits<double>::quiet_NaN());
@@ -917,9 +920,9 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
              std::numeric_limits<double>::quiet_NaN()));
       std::vector<double> prey =
          std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      std::vector<double> predator =
-         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
       std::vector<double> process_noise =
+         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
+      std::vector<double> predator =
          std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
       out__.write(alpha);
       out__.write(beta);
@@ -934,26 +937,26 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       current_statement__ = 6;
       prey__init = 30;
       current_statement__ = 7;
-      predator__init = 4;
-      current_statement__ = 8;
       process_noise__init = (2 -
                               (((((0.03125 / 3) / 0.03125) /
                                   stan::math::pow(3, 0.5)) *
                                  dataFunc__process_noise_std_norm_data(
                                    0, pstream__)) * 1));
+      current_statement__ = 8;
+      predator__init = 4;
       current_statement__ = 14;
       stan::model::assign(initial_outcome, prey__init,
         "assigning variable initial_outcome", stan::model::index_uni(1));
       current_statement__ = 15;
-      stan::model::assign(initial_outcome, predator__init,
+      stan::model::assign(initial_outcome, process_noise__init,
         "assigning variable initial_outcome", stan::model::index_uni(2));
       current_statement__ = 16;
-      stan::model::assign(initial_outcome, process_noise__init,
+      stan::model::assign(initial_outcome, predator__init,
         "assigning variable initial_outcome", stan::model::index_uni(3));
       current_statement__ = 10;
       stan::model::assign(integrated_result,
         stan::math::ode_rk45(vensim_ode_func_odefunctor__(), initial_outcome,
-          initial_time, times, pstream__, alpha, beta, gamma, delta),
+          initial_time, times, pstream__, alpha, beta, delta, gamma),
         "assigning variable integrated_result");
       current_statement__ = 11;
       stan::model::assign(prey,
@@ -961,19 +964,19 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
           stan::model::index_omni(), stan::model::index_uni(1)),
         "assigning variable prey");
       current_statement__ = 12;
-      stan::model::assign(predator,
-        stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(2)),
-        "assigning variable predator");
-      current_statement__ = 13;
       stan::model::assign(process_noise,
         stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(3)),
+          stan::model::index_omni(), stan::model::index_uni(2)),
         "assigning variable process_noise");
+      current_statement__ = 13;
+      stan::model::assign(predator,
+        stan::model::rvalue(integrated_result, "integrated_result",
+          stan::model::index_omni(), stan::model::index_uni(3)),
+        "assigning variable predator");
       if (emit_transformed_parameters__) {
         out__.write(prey__init);
-        out__.write(predator__init);
         out__.write(process_noise__init);
+        out__.write(predator__init);
         out__.write(initial_outcome);
         for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
           for (int sym2__ = 1; sym2__ <= n_t; ++sym2__) {
@@ -981,8 +984,8 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
           }
         }
         out__.write(prey);
-        out__.write(predator);
         out__.write(process_noise);
+        out__.write(predator);
       } 
       if (stan::math::logical_negation(emit_generated_quantities__)) {
         return ;
@@ -1030,9 +1033,9 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
   inline void get_param_names(std::vector<std::string>& names__) const {
     
     names__ = std::vector<std::string>{"alpha", "beta", "delta", "gamma",
-      "m_noise_scale", "prey__init", "predator__init", "process_noise__init",
-      "initial_outcome", "integrated_result", "prey", "predator",
-      "process_noise"};
+      "m_noise_scale", "prey__init", "process_noise__init", "predator__init",
+      "initial_outcome", "integrated_result", "prey", "process_noise",
+      "predator"};
     
     } // get_param_names() 
     
@@ -1062,8 +1065,8 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
     param_names__.emplace_back(std::string() + "m_noise_scale");
     if (emit_transformed_parameters__) {
       param_names__.emplace_back(std::string() + "prey__init");
-      param_names__.emplace_back(std::string() + "predator__init");
       param_names__.emplace_back(std::string() + "process_noise__init");
+      param_names__.emplace_back(std::string() + "predator__init");
       for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -1085,12 +1088,12 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
         } 
       }
     }
@@ -1114,8 +1117,8 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
     param_names__.emplace_back(std::string() + "m_noise_scale");
     if (emit_transformed_parameters__) {
       param_names__.emplace_back(std::string() + "prey__init");
-      param_names__.emplace_back(std::string() + "predator__init");
       param_names__.emplace_back(std::string() + "process_noise__init");
+      param_names__.emplace_back(std::string() + "predator__init");
       for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -1137,12 +1140,12 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
         } 
       }
     }
@@ -1155,13 +1158,13 @@ class prey_predator_wpn_data2draws_model final : public model_base_crtp<prey_pre
     
   inline std::string get_constrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"transformed_parameters\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"transformed_parameters\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"transformed_parameters\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"transformed_parameters\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"}]");
     
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"transformed_parameters\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"transformed_parameters\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"transformed_parameters\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"transformed_parameters\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"transformed_parameters\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"}]");
     
     } // get_unconstrained_sizedtypes() 
     
