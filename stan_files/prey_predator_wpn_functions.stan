@@ -5,127 +5,127 @@ real dataFunc__process_noise_std_norm_data(real time){
     real intercept;
 
     if(time <= 1){
-        intercept = -0.48619070682138205;
-        slope = -0.4778976936620191 - -0.48619070682138205;
-        return intercept + slope * (time - -0.48619070682138205);
+        intercept = -0.8351194299138454;
+        slope = -0.06933900073229143 - -0.8351194299138454;
+        return intercept + slope * (time - -0.8351194299138454);
     }
     else if(time <= 2){
-        intercept = -0.4778976936620191;
-        slope = -0.3219799628729971 - -0.4778976936620191;
-        return intercept + slope * (time - -0.4778976936620191);
+        intercept = -0.06933900073229143;
+        slope = 0.85304413184019 - -0.06933900073229143;
+        return intercept + slope * (time - -0.06933900073229143);
     }
     else if(time <= 3){
-        intercept = -0.3219799628729971;
-        slope = -1.3079993067868714 - -0.3219799628729971;
-        return intercept + slope * (time - -0.3219799628729971);
+        intercept = 0.85304413184019;
+        slope = -2.1365280804676536 - 0.85304413184019;
+        return intercept + slope * (time - 0.85304413184019);
     }
     else if(time <= 4){
-        intercept = -1.3079993067868714;
-        slope = 0.6955802465655189 - -1.3079993067868714;
-        return intercept + slope * (time - -1.3079993067868714);
+        intercept = -2.1365280804676536;
+        slope = 0.08703367272550465 - -2.1365280804676536;
+        return intercept + slope * (time - -2.1365280804676536);
     }
     else if(time <= 5){
-        intercept = 0.6955802465655189;
-        slope = 0.022755936241160353 - 0.6955802465655189;
-        return intercept + slope * (time - 0.6955802465655189);
+        intercept = 0.08703367272550465;
+        slope = -0.8668968347141824 - 0.08703367272550465;
+        return intercept + slope * (time - 0.08703367272550465);
     }
     else if(time <= 6){
-        intercept = 0.022755936241160353;
-        slope = -0.17294710647998812 - 0.022755936241160353;
-        return intercept + slope * (time - 0.022755936241160353);
+        intercept = -0.8668968347141824;
+        slope = 0.14113219488791795 - -0.8668968347141824;
+        return intercept + slope * (time - -0.8668968347141824);
     }
     else if(time <= 7){
-        intercept = -0.17294710647998812;
-        slope = 0.9860242539996403 - -0.17294710647998812;
-        return intercept + slope * (time - -0.17294710647998812);
+        intercept = 0.14113219488791795;
+        slope = -0.24205721163510738 - 0.14113219488791795;
+        return intercept + slope * (time - 0.14113219488791795);
     }
     else if(time <= 8){
-        intercept = 0.9860242539996403;
-        slope = 1.3746418668623144 - 0.9860242539996403;
-        return intercept + slope * (time - 0.9860242539996403);
+        intercept = -0.24205721163510738;
+        slope = 0.4887401658295967 - -0.24205721163510738;
+        return intercept + slope * (time - -0.24205721163510738);
     }
     else if(time <= 9){
-        intercept = 1.3746418668623144;
-        slope = -0.024227398995708634 - 1.3746418668623144;
-        return intercept + slope * (time - 1.3746418668623144);
+        intercept = 0.4887401658295967;
+        slope = 1.4358319018990493 - 0.4887401658295967;
+        return intercept + slope * (time - 0.4887401658295967);
     }
     else if(time <= 10){
-        intercept = -0.024227398995708634;
-        slope = -0.5958176704633286 - -0.024227398995708634;
-        return intercept + slope * (time - -0.024227398995708634);
+        intercept = 1.4358319018990493;
+        slope = -0.5655877999873765 - 1.4358319018990493;
+        return intercept + slope * (time - 1.4358319018990493);
     }
     else if(time <= 11){
-        intercept = -0.5958176704633286;
-        slope = -0.942115976792156 - -0.5958176704633286;
-        return intercept + slope * (time - -0.5958176704633286);
+        intercept = -0.5655877999873765;
+        slope = 0.6748915210253332 - -0.5655877999873765;
+        return intercept + slope * (time - -0.5655877999873765);
     }
     else if(time <= 12){
-        intercept = -0.942115976792156;
-        slope = -1.758781232617312 - -0.942115976792156;
-        return intercept + slope * (time - -0.942115976792156);
+        intercept = 0.6748915210253332;
+        slope = 0.6569478718673701 - 0.6748915210253332;
+        return intercept + slope * (time - 0.6748915210253332);
     }
     else if(time <= 13){
-        intercept = -1.758781232617312;
-        slope = -0.07735330008373553 - -1.758781232617312;
-        return intercept + slope * (time - -1.758781232617312);
+        intercept = 0.6569478718673701;
+        slope = -0.13239103388980972 - 0.6569478718673701;
+        return intercept + slope * (time - 0.6569478718673701);
     }
     else if(time <= 14){
-        intercept = -0.07735330008373553;
-        slope = 1.4197800455593017 - -0.07735330008373553;
-        return intercept + slope * (time - -0.07735330008373553);
+        intercept = -0.13239103388980972;
+        slope = -0.11348537909192365 - -0.13239103388980972;
+        return intercept + slope * (time - -0.13239103388980972);
     }
     else if(time <= 15){
-        intercept = 1.4197800455593017;
-        slope = 0.1692906791655775 - 1.4197800455593017;
-        return intercept + slope * (time - 1.4197800455593017);
+        intercept = -0.11348537909192365;
+        slope = 0.7382009200554097 - -0.11348537909192365;
+        return intercept + slope * (time - -0.11348537909192365);
     }
     else if(time <= 16){
-        intercept = 0.1692906791655775;
-        slope = 0.3426947118460419 - 0.1692906791655775;
-        return intercept + slope * (time - 0.1692906791655775);
+        intercept = 0.7382009200554097;
+        slope = -0.5604006590711437 - 0.7382009200554097;
+        return intercept + slope * (time - 0.7382009200554097);
     }
     else if(time <= 17){
-        intercept = 0.3426947118460419;
-        slope = -1.269926838065689 - 0.3426947118460419;
-        return intercept + slope * (time - 0.3426947118460419);
+        intercept = -0.5604006590711437;
+        slope = 0.8769018611716383 - -0.5604006590711437;
+        return intercept + slope * (time - -0.5604006590711437);
     }
     else if(time <= 18){
-        intercept = -1.269926838065689;
-        slope = 1.5746135383466489 - -1.269926838065689;
-        return intercept + slope * (time - -1.269926838065689);
+        intercept = 0.8769018611716383;
+        slope = 0.6010357904233786 - 0.8769018611716383;
+        return intercept + slope * (time - 0.8769018611716383);
     }
     else if(time <= 19){
-        intercept = 1.5746135383466489;
-        slope = 1.741117608886478 - 1.5746135383466489;
-        return intercept + slope * (time - 1.5746135383466489);
+        intercept = 0.6010357904233786;
+        slope = 1.0383677463919383 - 0.6010357904233786;
+        return intercept + slope * (time - 0.6010357904233786);
     }
-    return 1.741117608886478;
+    return 1.0383677463919383;
 }
 
-vector vensim_ode_func(real time, vector outcome, real alpha, real beta, real delta, real gamma){
+vector vensim_ode_func(real time, vector outcome, real gamma, real alpha, real delta, real beta){
     vector[3] dydt;  // Return vector of the ODE function
 
     // State variables
-    real prey = outcome[1];
-    real process_noise = outcome[2];
-    real predator = outcome[3];
+    real process_noise = outcome[1];
+    real predator = outcome[2];
+    real prey = outcome[3];
 
-    real prey_birth_rate = alpha * prey;
-    real predator_death_rate = gamma * predator;
     real time_step = 0.03125;
-    real process_noise_scale = 1;
     real process_noise_corr_time = 3;
+    real process_noise_scale = 1;
     real white_noise = 2 - time_step / process_noise_corr_time / time_step / process_noise_corr_time ^ 0.5 * dataFunc__process_noise_std_norm_data(time) * process_noise_scale;
+    real predator_death_rate = gamma * predator;
     real process_noise_chg_rate = white_noise - process_noise / process_noise_corr_time;
-    real prey_death_rate = beta * predator * prey;
     real predator_birth_rate = delta * prey * predator * 1 + process_noise;
+    real prey_birth_rate = alpha * prey;
+    real process_noise_dydt = process_noise_chg_rate;
+    real prey_death_rate = beta * predator * prey;
     real predator_dydt = predator_birth_rate - predator_death_rate;
     real prey_dydt = prey_birth_rate - prey_death_rate;
-    real process_noise_dydt = process_noise_chg_rate;
 
-    dydt[1] = prey_dydt;
-    dydt[2] = process_noise_dydt;
-    dydt[3] = predator_dydt;
+    dydt[1] = process_noise_dydt;
+    dydt[2] = predator_dydt;
+    dydt[3] = prey_dydt;
 
     return dydt;
 }

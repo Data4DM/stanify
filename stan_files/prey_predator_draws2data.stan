@@ -12,7 +12,7 @@ transformed data{
 
 
 generated quantities{
-    real alpha = normal_rng(0.8, 0.08);
+    real alpha = 0.8 //normal_rng(0.8, 0.08);
     real beta = normal_rng(0.05, 0.005);
     real delta = normal_rng(0.05, 0.005);
     real gamma = normal_rng(0.8, 0.08);
@@ -30,6 +30,6 @@ generated quantities{
     array[n_t] real prey = integrated_result[:, 1];
     array[n_t] real predator = integrated_result[:, 2];
 
-    vector[20] prey_obs = to_vector(normal_rng(prey, m_noise_scale));
-    vector[20] predator_obs = to_vector(normal_rng(predator, m_noise_scale));
+    vector[n_t] prey_obs = to_vector(normal_rng(prey, m_noise_scale));
+    vector[n_t] predator_obs = to_vector(normal_rng(predator, m_noise_scale));
 }
