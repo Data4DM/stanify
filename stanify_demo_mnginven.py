@@ -17,14 +17,15 @@ vf.parse()
 structural_assumption = vf.get_abstract_model()
 
 n_t = 20
-name = "mngInven"
+
 setting_assumption = {
     "est_param_scalar" : ("inventory_adjustment_time", "minimum_order_processing_time"),
     "ass_param_scalar" : ("inventory_coverage", "manufacturing_cycle_time", "safety_stock_coverage", "time_to_average_order_rate", "wip_adjustment_time"),
     "target_simulated_vector" : ("production_rate_stocked", "production_start_rate_stocked"),
     "driving_data_vector" : ("customer_order_rate", "process_noise_std_norm_data", "production_start_rate_m_noise_trun_norm_data", "production_rate_m_noise_trun_norm_data"),
     "integration_times": list(range(1, n_t + 1)),
-    "initial_time": 0.0
+    "initial_time": 0.0,
+    "model_name" : "mngInven"
 }
 
 ## numeric data (using values in vensim; cannot specify)
@@ -39,7 +40,7 @@ numeric_assumption = {
 for key in setting_assumption.get('target_simulated_vector'):
     numeric_assumption[f"{key}_obs"] = list(range(1, n_t + 1))
 
-model = StanVensimModel(name, structural_assumption)
+model = StanVensimModel(structural_assumption)
 model.set_setting(**setting_assumption)
 model.set_numeric(numeric_assumption)
 

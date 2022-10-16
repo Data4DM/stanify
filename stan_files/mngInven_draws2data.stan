@@ -1,15 +1,12 @@
 functions{
-    #include mngInven_functions.stan
+#include mngInven_functions.stan
 }
-
 data{
     int n_t;
     vector[20] customer_order_rate;
     vector[20] process_noise_std_norm_data;
     vector[20] production_start_rate_m_noise_trun_norm_data;
     vector[20] production_rate_m_noise_trun_norm_data;
-    vector[20] production_rate_stocked_obs;
-    vector[20] production_start_rate_stocked_obs;
 }
 
 transformed data{
@@ -17,13 +14,12 @@ transformed data{
     array[n_t] real times = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 }
 
-parameters{
-    real<lower=0> inventory_adjustment_time;
-    real<lower=0> minimum_order_processing_time;
-    real<lower=0> m_noise_scale;
-}
 
-transformed parameters {
+generated quantities{
+    real inventory_adjustment_time = normal_rng(7.01, 0.7);
+    real minimum_order_processing_time = normal_rng(0.5, 0.05);
+    real m_noise_scale = normal_rng(0.01, 0.0005);
+
     // Initial ODE values
     real production_start_rate_stocked__init = (fmax(0, ((fmax(0, ((10.01)) + ((((0.5) + (2.01)) * ((10.01))) - ((((0.5) + (2.01)) * ((10.01)))) / (7.01)))) + (((6.01) * (fmax(0, ((10.01)) + ((((0.5) + (2.01)) * ((10.01))) - ((((0.5) + (2.01)) * ((10.01)))) / (7.01))))) - (((6.01) * (fmax(0, ((10.01)) + ((((0.5) + (2.01)) * ((10.01))) - ((((0.5) + (2.01)) * ((10.01)))) / (7.01)))))) / (3.01)))));
     real inventory__init = (((0.5) + (2.01)) * ((10.01)));
@@ -50,13 +46,7 @@ transformed parameters {
     array[n_t] real production_rate_stocked = integrated_result[:, 5];
     array[n_t] real work_in_process_inventory = integrated_result[:, 6];
     array[n_t] real expected_order_rate = integrated_result[:, 7];
-}
 
-model{
-    inventory_adjustment_time ~ normal(7.01, 0.7);
-    minimum_order_processing_time ~ normal(0.5, 0.05);
-    m_noise_scale ~ normal(0.01, 0.0005);
-    production_rate_stocked_obs ~ normal(production_rate_stocked, m_noise_scale);
-    production_start_rate_stocked_obs ~ normal(production_start_rate_stocked, m_noise_scale);
+    vector[20] production_rate_stocked_obs = to_vector(normal_rng(production_rate_stocked, m_noise_scale));
+    vector[20] production_start_rate_stocked_obs = to_vector(normal_rng(production_start_rate_stocked, m_noise_scale));
 }
-
