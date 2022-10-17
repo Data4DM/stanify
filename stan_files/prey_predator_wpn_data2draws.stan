@@ -33,7 +33,7 @@ transformed parameters {
     initial_outcome[2] = predator__init;
     initial_outcome[3] = prey__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, gamma, alpha, delta, beta);
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, alpha, beta, gamma, delta);
     array[n_t] real process_noise = integrated_result[:, 1];
     array[n_t] real predator = integrated_result[:, 2];
     array[n_t] real prey = integrated_result[:, 3];
@@ -49,3 +49,11 @@ model{
     predator_obs ~ normal(predator, m_noise_scale);
 }
 
+generated quantities{
+    vector[20] prey_obs_posterior = to_vector(normal_rng(prey, m_noise_scale));
+    vector[20] predator_obs_posterior = to_vector(normal_rng(predator, m_noise_scale));
+
+    real loglik;
+    loglik += normal_lpdf(prey_obs|prey, m_noise_scale);
+    loglik += normal_lpdf(predator_obs|predator, m_noise_scale);
+}

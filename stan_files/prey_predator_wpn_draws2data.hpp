@@ -15,17 +15,17 @@ static constexpr std::array<const char*, 148> locations_array__ =
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 18, column 4 to column 41)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 19, column 4 to column 39)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 20, column 4 to column 47)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 23, column 4 to column 25)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 24, column 4 to column 114)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 25, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 23, column 4 to column 126)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 24, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 25, column 4 to column 25)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 27, column 4 to column 30)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 28, column 4 to column 36)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 29, column 4 to column 45)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 30, column 4 to column 40)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 28, column 4 to column 45)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 29, column 4 to column 40)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 30, column 4 to column 36)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 32, column 4 to column 130)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 33, column 4 to column 51)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 34, column 4 to column 60)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 35, column 4 to column 55)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 33, column 4 to column 60)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 34, column 4 to column 55)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 35, column 4 to column 51)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 37, column 4 to column 69)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 38, column 4 to column 77)",
  " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_wpn_draws2data.stan', line 5, column 4 to column 12)",
@@ -177,7 +177,7 @@ struct vensim_ode_func_functor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, const T2__& alpha,
-             const T3__& beta, const T4__& delta, const T5__& gamma,
+             const T3__& beta, const T4__& gamma, const T5__& delta,
              std::ostream* pstream__) const;
 };
 struct vensim_ode_func_odefunctor__ {
@@ -193,8 +193,8 @@ struct vensim_ode_func_odefunctor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, std::ostream* pstream__,
-             const T2__& alpha, const T3__& beta, const T4__& delta,
-             const T5__& gamma) const;
+             const T2__& alpha, const T3__& beta, const T4__& gamma,
+             const T5__& delta) const;
 };
 
 template <typename T0__,
@@ -214,208 +214,205 @@ template <typename T0__,
       current_statement__ = 124;
       if (stan::math::logical_lte(time, 1)) {
         current_statement__ = 120;
-        intercept = -0.48619070682138205;
+        intercept = 0.5333908347058779;
         current_statement__ = 121;
-        slope = (-0.4778976936620191 - -0.48619070682138205);
+        slope = (0.572927029831711 - 0.5333908347058779);
         current_statement__ = 122;
-        return (intercept + (slope * (time - -0.48619070682138205)));
+        return (intercept + (slope * (time - 0.5333908347058779)));
       } else {
         current_statement__ = 119;
         if (stan::math::logical_lte(time, 2)) {
           current_statement__ = 115;
-          intercept = -0.4778976936620191;
+          intercept = 0.572927029831711;
           current_statement__ = 116;
-          slope = (-0.3219799628729971 - -0.4778976936620191);
+          slope = (-0.391296865450849 - 0.572927029831711);
           current_statement__ = 117;
-          return (intercept + (slope * (time - -0.4778976936620191)));
+          return (intercept + (slope * (time - 0.572927029831711)));
         } else {
           current_statement__ = 114;
           if (stan::math::logical_lte(time, 3)) {
             current_statement__ = 110;
-            intercept = -0.3219799628729971;
+            intercept = -0.391296865450849;
             current_statement__ = 111;
-            slope = (-1.3079993067868714 - -0.3219799628729971);
+            slope = (1.8449984433684843 - -0.391296865450849);
             current_statement__ = 112;
-            return (intercept + (slope * (time - -0.3219799628729971)));
+            return (intercept + (slope * (time - -0.391296865450849)));
           } else {
             current_statement__ = 109;
             if (stan::math::logical_lte(time, 4)) {
               current_statement__ = 105;
-              intercept = -1.3079993067868714;
+              intercept = 1.8449984433684843;
               current_statement__ = 106;
-              slope = (0.6955802465655189 - -1.3079993067868714);
+              slope = (1.7650970734621283 - 1.8449984433684843);
               current_statement__ = 107;
-              return (intercept + (slope * (time - -1.3079993067868714)));
+              return (intercept + (slope * (time - 1.8449984433684843)));
             } else {
               current_statement__ = 104;
               if (stan::math::logical_lte(time, 5)) {
                 current_statement__ = 100;
-                intercept = 0.6955802465655189;
+                intercept = 1.7650970734621283;
                 current_statement__ = 101;
-                slope = (0.022755936241160353 - 0.6955802465655189);
+                slope = (-0.4626506731939376 - 1.7650970734621283);
                 current_statement__ = 102;
-                return (intercept + (slope * (time - 0.6955802465655189)));
+                return (intercept + (slope * (time - 1.7650970734621283)));
               } else {
                 current_statement__ = 99;
                 if (stan::math::logical_lte(time, 6)) {
                   current_statement__ = 95;
-                  intercept = 0.022755936241160353;
+                  intercept = -0.4626506731939376;
                   current_statement__ = 96;
-                  slope = (-0.17294710647998812 - 0.022755936241160353);
+                  slope = (1.2450106244762815 - -0.4626506731939376);
                   current_statement__ = 97;
-                  return (intercept +
-                           (slope * (time - 0.022755936241160353)));
+                  return (intercept + (slope * (time - -0.4626506731939376)));
                 } else {
                   current_statement__ = 94;
                   if (stan::math::logical_lte(time, 7)) {
                     current_statement__ = 90;
-                    intercept = -0.17294710647998812;
+                    intercept = 1.2450106244762815;
                     current_statement__ = 91;
-                    slope = (0.9860242539996403 - -0.17294710647998812);
+                    slope = (-0.5578546130848573 - 1.2450106244762815);
                     current_statement__ = 92;
                     return (intercept +
-                             (slope * (time - -0.17294710647998812)));
+                             (slope * (time - 1.2450106244762815)));
                   } else {
                     current_statement__ = 89;
                     if (stan::math::logical_lte(time, 8)) {
                       current_statement__ = 85;
-                      intercept = 0.9860242539996403;
+                      intercept = -0.5578546130848573;
                       current_statement__ = 86;
-                      slope = (1.3746418668623144 - 0.9860242539996403);
+                      slope = (-0.2458574300512492 - -0.5578546130848573);
                       current_statement__ = 87;
                       return (intercept +
-                               (slope * (time - 0.9860242539996403)));
+                               (slope * (time - -0.5578546130848573)));
                     } else {
                       current_statement__ = 84;
                       if (stan::math::logical_lte(time, 9)) {
                         current_statement__ = 80;
-                        intercept = 1.3746418668623144;
+                        intercept = -0.2458574300512492;
                         current_statement__ = 81;
-                        slope = (-0.024227398995708634 - 1.3746418668623144);
+                        slope = (0.920950246361226 - -0.2458574300512492);
                         current_statement__ = 82;
                         return (intercept +
-                                 (slope * (time - 1.3746418668623144)));
+                                 (slope * (time - -0.2458574300512492)));
                       } else {
                         current_statement__ = 79;
                         if (stan::math::logical_lte(time, 10)) {
                           current_statement__ = 75;
-                          intercept = -0.024227398995708634;
+                          intercept = 0.920950246361226;
                           current_statement__ = 76;
-                          slope = (-0.5958176704633286 -
-                                    -0.024227398995708634);
+                          slope = (2.234403833686627 - 0.920950246361226);
                           current_statement__ = 77;
                           return (intercept +
-                                   (slope * (time - -0.024227398995708634)));
+                                   (slope * (time - 0.920950246361226)));
                         } else {
                           current_statement__ = 74;
                           if (stan::math::logical_lte(time, 11)) {
                             current_statement__ = 70;
-                            intercept = -0.5958176704633286;
+                            intercept = 2.234403833686627;
                             current_statement__ = 71;
-                            slope = (-0.942115976792156 -
-                                      -0.5958176704633286);
+                            slope = (-1.6213730280215826 - 2.234403833686627);
                             current_statement__ = 72;
                             return (intercept +
-                                     (slope * (time - -0.5958176704633286)));
+                                     (slope * (time - 2.234403833686627)));
                           } else {
                             current_statement__ = 69;
                             if (stan::math::logical_lte(time, 12)) {
                               current_statement__ = 65;
-                              intercept = -0.942115976792156;
+                              intercept = -1.6213730280215826;
                               current_statement__ = 66;
-                              slope = (-1.758781232617312 -
-                                        -0.942115976792156);
+                              slope = (0.27822127006258235 -
+                                        -1.6213730280215826);
                               current_statement__ = 67;
                               return (intercept +
-                                       (slope * (time - -0.942115976792156)));
+                                       (slope * (time - -1.6213730280215826)));
                             } else {
                               current_statement__ = 64;
                               if (stan::math::logical_lte(time, 13)) {
                                 current_statement__ = 60;
-                                intercept = -1.758781232617312;
+                                intercept = 0.27822127006258235;
                                 current_statement__ = 61;
-                                slope = (-0.07735330008373553 -
-                                          -1.758781232617312);
+                                slope = (1.1963631661945504 -
+                                          0.27822127006258235);
                                 current_statement__ = 62;
                                 return (intercept +
                                          (slope *
-                                           (time - -1.758781232617312)));
+                                           (time - 0.27822127006258235)));
                               } else {
                                 current_statement__ = 59;
                                 if (stan::math::logical_lte(time, 14)) {
                                   current_statement__ = 55;
-                                  intercept = -0.07735330008373553;
+                                  intercept = 1.1963631661945504;
                                   current_statement__ = 56;
-                                  slope = (1.4197800455593017 -
-                                            -0.07735330008373553);
+                                  slope = (-0.3116912626944851 -
+                                            1.1963631661945504);
                                   current_statement__ = 57;
                                   return (intercept +
                                            (slope *
-                                             (time - -0.07735330008373553)));
+                                             (time - 1.1963631661945504)));
                                 } else {
                                   current_statement__ = 54;
                                   if (stan::math::logical_lte(time, 15)) {
                                     current_statement__ = 50;
-                                    intercept = 1.4197800455593017;
+                                    intercept = -0.3116912626944851;
                                     current_statement__ = 51;
-                                    slope = (0.1692906791655775 -
-                                              1.4197800455593017);
+                                    slope = (-0.2195486911692219 -
+                                              -0.3116912626944851);
                                     current_statement__ = 52;
                                     return (intercept +
                                              (slope *
-                                               (time - 1.4197800455593017)));
+                                               (time - -0.3116912626944851)));
                                   } else {
                                     current_statement__ = 49;
                                     if (stan::math::logical_lte(time, 16)) {
                                       current_statement__ = 45;
-                                      intercept = 0.1692906791655775;
+                                      intercept = -0.2195486911692219;
                                       current_statement__ = 46;
-                                      slope = (0.3426947118460419 -
-                                                0.1692906791655775);
+                                      slope = (0.7830252482833828 -
+                                                -0.2195486911692219);
                                       current_statement__ = 47;
                                       return (intercept +
                                                (slope *
-                                                 (time - 0.1692906791655775)));
+                                                 (time - -0.2195486911692219)));
                                     } else {
                                       current_statement__ = 44;
                                       if (stan::math::logical_lte(time, 17)) {
                                         current_statement__ = 40;
-                                        intercept = 0.3426947118460419;
+                                        intercept = 0.7830252482833828;
                                         current_statement__ = 41;
-                                        slope = (-1.269926838065689 -
-                                                  0.3426947118460419);
+                                        slope = (0.597139464122431 -
+                                                  0.7830252482833828);
                                         current_statement__ = 42;
                                         return (intercept +
                                                  (slope *
                                                    (time -
-                                                     0.3426947118460419)));
+                                                     0.7830252482833828)));
                                       } else {
                                         current_statement__ = 39;
                                         if (stan::math::logical_lte(time, 18)) {
                                           current_statement__ = 35;
-                                          intercept = -1.269926838065689;
+                                          intercept = 0.597139464122431;
                                           current_statement__ = 36;
-                                          slope = (1.5746135383466489 -
-                                                    -1.269926838065689);
+                                          slope = (-0.508787627003684 -
+                                                    0.597139464122431);
                                           current_statement__ = 37;
                                           return (intercept +
                                                    (slope *
                                                      (time -
-                                                       -1.269926838065689)));
+                                                       0.597139464122431)));
                                         } else {
                                           current_statement__ = 34;
                                           if (stan::math::logical_lte(time,
                                                 19)) {
                                             current_statement__ = 30;
-                                            intercept = 1.5746135383466489;
+                                            intercept = -0.508787627003684;
                                             current_statement__ = 31;
-                                            slope = (1.741117608886478 -
-                                                      1.5746135383466489);
+                                            slope = (-0.570197917222723 -
+                                                      -0.508787627003684);
                                             current_statement__ = 32;
                                             return (intercept +
                                                      (slope *
                                                        (time -
-                                                         1.5746135383466489)));
+                                                         -0.508787627003684)));
                                           } 
                                         }
                                       }
@@ -436,7 +433,7 @@ template <typename T0__,
         }
       }
       current_statement__ = 125;
-      return 1.741117608886478;
+      return -0.570197917222723;
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -453,8 +450,8 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                      stan::promote_args_t<T5__>>, -1, 1>
   vensim_ode_func(const T0__& time, const T1__& outcome_arg__,
-                  const T2__& alpha, const T3__& beta, const T4__& delta,
-                  const T5__& gamma, std::ostream* pstream__) {
+                  const T2__& alpha, const T3__& beta, const T4__& gamma,
+                  const T5__& delta, std::ostream* pstream__) {
     using local_scalar_t__ =
             stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__,
                                  T4__, stan::promote_args_t<T5__>>;
@@ -467,68 +464,68 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
     try {
       Eigen::Matrix<local_scalar_t__, -1, 1> dydt =
          Eigen::Matrix<local_scalar_t__, -1, 1>::Constant(3, DUMMY_VAR__);
-      local_scalar_t__ prey = DUMMY_VAR__;
-      current_statement__ = 128;
-      prey = stan::model::rvalue(outcome, "outcome",
-               stan::model::index_uni(1));
       local_scalar_t__ process_noise = DUMMY_VAR__;
-      current_statement__ = 129;
+      current_statement__ = 128;
       process_noise = stan::model::rvalue(outcome, "outcome",
-                        stan::model::index_uni(2));
+                        stan::model::index_uni(1));
       local_scalar_t__ predator = DUMMY_VAR__;
-      current_statement__ = 130;
+      current_statement__ = 129;
       predator = stan::model::rvalue(outcome, "outcome",
-                   stan::model::index_uni(3));
+                   stan::model::index_uni(2));
+      local_scalar_t__ prey = DUMMY_VAR__;
+      current_statement__ = 130;
+      prey = stan::model::rvalue(outcome, "outcome",
+               stan::model::index_uni(3));
       local_scalar_t__ prey_birth_rate = DUMMY_VAR__;
       current_statement__ = 131;
       prey_birth_rate = (alpha * prey);
-      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
-      current_statement__ = 132;
-      predator_death_rate = (gamma * predator);
-      local_scalar_t__ time_step = DUMMY_VAR__;
-      current_statement__ = 133;
-      time_step = 0.03125;
       local_scalar_t__ process_noise_scale = DUMMY_VAR__;
-      current_statement__ = 134;
+      current_statement__ = 132;
       process_noise_scale = 1;
-      local_scalar_t__ process_noise_corr_time = DUMMY_VAR__;
+      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
+      current_statement__ = 133;
+      predator_death_rate = (gamma * predator);
+      local_scalar_t__ prey_death_rate = DUMMY_VAR__;
+      current_statement__ = 134;
+      prey_death_rate = ((beta * predator) * prey);
+      local_scalar_t__ prey_dydt = DUMMY_VAR__;
       current_statement__ = 135;
-      process_noise_corr_time = 3;
-      local_scalar_t__ white_noise = DUMMY_VAR__;
+      prey_dydt = (prey_birth_rate - prey_death_rate);
+      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
       current_statement__ = 136;
+      predator_birth_rate = ((((delta * prey) * predator) * 1) +
+                              process_noise);
+      local_scalar_t__ process_noise_corr_time = DUMMY_VAR__;
+      current_statement__ = 137;
+      process_noise_corr_time = 3;
+      local_scalar_t__ time_step = DUMMY_VAR__;
+      current_statement__ = 138;
+      time_step = 0.03125;
+      local_scalar_t__ white_noise = DUMMY_VAR__;
+      current_statement__ = 139;
       white_noise = (2 -
                       (((((time_step / process_noise_corr_time) / time_step)
                           / stan::math::pow(process_noise_corr_time, 0.5)) *
                          dataFunc__process_noise_std_norm_data(
                            time, pstream__)) * process_noise_scale));
       local_scalar_t__ process_noise_chg_rate = DUMMY_VAR__;
-      current_statement__ = 137;
+      current_statement__ = 140;
       process_noise_chg_rate = (white_noise -
                                  (process_noise / process_noise_corr_time));
-      local_scalar_t__ prey_death_rate = DUMMY_VAR__;
-      current_statement__ = 138;
-      prey_death_rate = ((beta * predator) * prey);
-      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
-      current_statement__ = 139;
-      predator_birth_rate = ((((delta * prey) * predator) * 1) +
-                              process_noise);
-      local_scalar_t__ predator_dydt = DUMMY_VAR__;
-      current_statement__ = 140;
-      predator_dydt = (predator_birth_rate - predator_death_rate);
-      local_scalar_t__ prey_dydt = DUMMY_VAR__;
-      current_statement__ = 141;
-      prey_dydt = (prey_birth_rate - prey_death_rate);
       local_scalar_t__ process_noise_dydt = DUMMY_VAR__;
-      current_statement__ = 142;
+      current_statement__ = 141;
       process_noise_dydt = process_noise_chg_rate;
+      local_scalar_t__ predator_dydt = DUMMY_VAR__;
+      current_statement__ = 142;
+      predator_dydt = (predator_birth_rate - predator_death_rate);
       current_statement__ = 143;
-      stan::model::assign(dydt, prey_dydt,
+      stan::model::assign(dydt, process_noise_dydt,
         "assigning variable dydt", stan::model::index_uni(1));
       current_statement__ = 144;
-      stan::model::assign(dydt, process_noise_dydt,
+      stan::model::assign(dydt, predator_dydt,
         "assigning variable dydt", stan::model::index_uni(2));
       current_statement__ = 145;
-      stan::model::assign(dydt, predator_dydt,
+      stan::model::assign(dydt, prey_dydt,
         "assigning variable dydt", stan::model::index_uni(3));
       current_statement__ = 146;
       return dydt;
@@ -558,10 +555,10 @@ Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4
                      stan::promote_args_t<T5__>>, -1, 1>
 vensim_ode_func_functor__::operator()(const T0__& time, const T1__& outcome,
                                       const T2__& alpha, const T3__& beta,
-                                      const T4__& delta, const T5__& gamma,
+                                      const T4__& gamma, const T5__& delta,
                                       std::ostream* pstream__)  const
 {
-  return vensim_ode_func(time, outcome, alpha, beta, delta, gamma, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
 }
 
 template <typename T0__, typename T1__, typename T2__, typename T3__,
@@ -579,10 +576,10 @@ vensim_ode_func_odefunctor__::operator()(const T0__& time,
                                          const T1__& outcome,
                                          std::ostream* pstream__,
                                          const T2__& alpha, const T3__& beta,
-                                         const T4__& delta, const T5__& gamma) 
+                                         const T4__& gamma, const T5__& delta) 
 const
 {
-  return vensim_ode_func(time, outcome, alpha, beta, delta, gamma, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
 }
 
 
@@ -674,11 +671,11 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       current_statement__ = 24;
       stan::math::validate_non_negative_index("integrated_result", "n_t", n_t);
       current_statement__ = 25;
-      stan::math::validate_non_negative_index("prey", "n_t", n_t);
-      current_statement__ = 26;
       stan::math::validate_non_negative_index("process_noise", "n_t", n_t);
-      current_statement__ = 27;
+      current_statement__ = 26;
       stan::math::validate_non_negative_index("predator", "n_t", n_t);
+      current_statement__ = 27;
+      stan::math::validate_non_negative_index("prey", "n_t", n_t);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -760,30 +757,30 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       double m_noise_scale = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 5;
       m_noise_scale = stan::math::normal_rng(0.5, 0.05, base_rng__);
-      double prey__init = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 6;
-      prey__init = 30;
       double process_noise__init = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 7;
+      current_statement__ = 6;
       process_noise__init = (2 -
                               (((((0.03125 / 3) / 0.03125) /
                                   stan::math::pow(3, 0.5)) *
                                  dataFunc__process_noise_std_norm_data(
                                    0, pstream__)) * 1));
       double predator__init = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 8;
+      current_statement__ = 7;
       predator__init = 4;
+      double prey__init = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 8;
+      prey__init = 30;
       Eigen::Matrix<double, -1, 1> initial_outcome =
          Eigen::Matrix<double, -1, 1>::Constant(3,
            std::numeric_limits<double>::quiet_NaN());
       current_statement__ = 10;
-      stan::model::assign(initial_outcome, prey__init,
+      stan::model::assign(initial_outcome, process_noise__init,
         "assigning variable initial_outcome", stan::model::index_uni(1));
       current_statement__ = 11;
-      stan::model::assign(initial_outcome, process_noise__init,
+      stan::model::assign(initial_outcome, predator__init,
         "assigning variable initial_outcome", stan::model::index_uni(2));
       current_statement__ = 12;
-      stan::model::assign(initial_outcome, predator__init,
+      stan::model::assign(initial_outcome, prey__init,
         "assigning variable initial_outcome", stan::model::index_uni(3));
       std::vector<Eigen::Matrix<double, -1, 1>> integrated_result =
          std::vector<Eigen::Matrix<double, -1, 1>>(n_t, 
@@ -792,29 +789,29 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       current_statement__ = 13;
       stan::model::assign(integrated_result,
         stan::math::ode_rk45(vensim_ode_func_odefunctor__(), initial_outcome,
-          initial_time, times, pstream__, alpha, beta, delta, gamma),
+          initial_time, times, pstream__, alpha, beta, gamma, delta),
         "assigning variable integrated_result");
-      std::vector<double> prey =
-         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 14;
-      stan::model::assign(prey,
-        stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(1)),
-        "assigning variable prey");
       std::vector<double> process_noise =
          std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 15;
+      current_statement__ = 14;
       stan::model::assign(process_noise,
         stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(2)),
+          stan::model::index_omni(), stan::model::index_uni(1)),
         "assigning variable process_noise");
       std::vector<double> predator =
          std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 16;
+      current_statement__ = 15;
       stan::model::assign(predator,
         stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(3)),
+          stan::model::index_omni(), stan::model::index_uni(2)),
         "assigning variable predator");
+      std::vector<double> prey =
+         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
+      current_statement__ = 16;
+      stan::model::assign(prey,
+        stan::model::rvalue(integrated_result, "integrated_result",
+          stan::model::index_omni(), stan::model::index_uni(3)),
+        "assigning variable prey");
       Eigen::Matrix<double, -1, 1> prey_obs =
          Eigen::Matrix<double, -1, 1>::Constant(20,
            std::numeric_limits<double>::quiet_NaN());
@@ -836,18 +833,18 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       out__.write(delta);
       out__.write(gamma);
       out__.write(m_noise_scale);
-      out__.write(prey__init);
       out__.write(process_noise__init);
       out__.write(predator__init);
+      out__.write(prey__init);
       out__.write(initial_outcome);
       for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
         for (int sym2__ = 1; sym2__ <= n_t; ++sym2__) {
           out__.write(integrated_result[(sym2__ - 1)][(sym1__ - 1)]);
         }
       }
-      out__.write(prey);
       out__.write(process_noise);
       out__.write(predator);
+      out__.write(prey);
       out__.write(prey_obs);
       out__.write(predator_obs);
     } catch (const std::exception& e) {
@@ -878,9 +875,9 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
   inline void get_param_names(std::vector<std::string>& names__) const {
     
     names__ = std::vector<std::string>{"alpha", "beta", "delta", "gamma",
-      "m_noise_scale", "prey__init", "process_noise__init", "predator__init",
-      "initial_outcome", "integrated_result", "prey", "process_noise",
-      "predator", "prey_obs", "predator_obs"};
+      "m_noise_scale", "process_noise__init", "predator__init", "prey__init",
+      "initial_outcome", "integrated_result", "process_noise", "predator",
+      "prey", "prey_obs", "predator_obs"};
     
     } // get_param_names() 
     
@@ -916,9 +913,9 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       param_names__.emplace_back(std::string() + "delta");
       param_names__.emplace_back(std::string() + "gamma");
       param_names__.emplace_back(std::string() + "m_noise_scale");
-      param_names__.emplace_back(std::string() + "prey__init");
       param_names__.emplace_back(std::string() + "process_noise__init");
       param_names__.emplace_back(std::string() + "predator__init");
+      param_names__.emplace_back(std::string() + "prey__init");
       for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -935,17 +932,17 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
-        } 
-      }
-      for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
-        {
           param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+        } 
+      }
+      for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
@@ -979,9 +976,9 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       param_names__.emplace_back(std::string() + "delta");
       param_names__.emplace_back(std::string() + "gamma");
       param_names__.emplace_back(std::string() + "m_noise_scale");
-      param_names__.emplace_back(std::string() + "prey__init");
       param_names__.emplace_back(std::string() + "process_noise__init");
       param_names__.emplace_back(std::string() + "predator__init");
+      param_names__.emplace_back(std::string() + "prey__init");
       for (int sym1__ = 1; sym1__ <= 3; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -998,17 +995,17 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
-        } 
-      }
-      for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
-        {
           param_names__.emplace_back(std::string() + "process_noise" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+        } 
+      }
+      for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
@@ -1027,13 +1024,13 @@ class prey_predator_wpn_draws2data_model final : public model_base_crtp<prey_pre
     
   inline std::string get_constrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"generated_quantities\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
     
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"process_noise__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(3) + "}},\"block\":\"generated_quantities\"},{\"name\":\"process_noise\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
     
     } // get_unconstrained_sizedtypes() 
     

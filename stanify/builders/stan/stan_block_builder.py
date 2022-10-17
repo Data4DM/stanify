@@ -223,7 +223,6 @@ class Draws2DataStanGQBuilder:
             if statement.lhs_variable in self.stan_model_context.stan_data:
                 param_name = statement.lhs_expr
                 stan_type = self.stan_model_context.stan_data[param_name].stan_type
-                print(statement.lhs_variable, stan_type)
                 if stan_type.startswith("vector"):
                     self.code += f"{stan_type} {param_name} = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
                 else:
@@ -258,6 +257,49 @@ class Draws2DataStanGQBuilder:
                     self.code += f"real {param_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
 
                     processed_statements.add(statement)
+
+class Data2DrawsStanGQBuilder:
+    def __init__(self, stan_model_context: "StanModelContext", vensim_model_context: "VensimModelContext", function_name: str):
+        self.stan_model_context = stan_model_context
+        self.vensim_model_context = vensim_model_context
+        self.function_name = function_name
+
+
+    def build_block(self):
+        self.code = IndentedString()
+        self.code += "generated quantities{\n"
+        self.code.indent_level += 1
+        self.build_rng_functions()
+        self.code += "\n"
+        self.build_loglik_functions()
+        self.code.indent_level -= 1
+        self.code += "}\n"
+
+        return str(self.code)
+
+    def build_loglik_functions(self):
+        self.code += "real loglik;\n"
+        for statement in self.stan_model_context.sample_statements:
+            if statement.lhs_variable in self.stan_model_context.stan_data:
+                # assume `stan_type` always starts with vector
+                param_name = statement.lhs_expr
+                loc = statement.distribution_args[0]
+                scale = statement.distribution_args[1]
+
+                if statement.distribution_type in ["normal", "lognormal"]:
+                    self.code += f"loglik += {statement.distribution_type}_lpdf({param_name}|{loc}, {scale});\n"
+                elif statement.distribution_type in ["neg_binom_2"]:
+                    self.code += f"loglik += {statement.distribution_type}_lpmf({param_name}|{loc}, {scale});\n"
+
+    def build_rng_functions(self):
+        for statement in self.stan_model_context.sample_statements:
+            if statement.lhs_variable in self.stan_model_context.stan_data:
+                param_name = statement.lhs_expr
+                stan_type = self.stan_model_context.stan_data[param_name].stan_type
+                if stan_type.startswith("vector"):
+                    self.code += f"{stan_type} {param_name}_posterior = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
+                else:
+                    self.code += f"{stan_type} {param_name}_posterior = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
 
 
 class Draws2DataStanDataBuilder(StanDataBuilder):

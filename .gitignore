@@ -4,10 +4,10 @@
 .Ruserdata
 .vdfx
 .vmfx
-.hpp
-.nc
-.hpp
-.o
+.app
+*.nc
+*.hpp
+*.o
 
 *.pyc
 .ipynb_checkpoints/

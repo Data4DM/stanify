@@ -281,7 +281,7 @@ class InitialValueCodegenWalker(BlockCodegenWalker):
             elif ast_node.reference in self.variable_ast_dict:
                 return f'({self.walk(self.variable_ast_dict[ast_node.reference])})'
             else:
-                return super().walk(ast_node)
+                return f'({super().walk(ast_node)})'
 
         elif isinstance(ast_node, ArithmeticStructure):
             # ArithmeticStructure consists of chained arithmetic expressions.

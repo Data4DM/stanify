@@ -250,12 +250,14 @@ class StanVensimModel:
             f.write(StanModelBuilder(self.stan_model_context).build_block())
             f.write("\n")
 
+            f.write(Data2DrawsStanGQBuilder(self.stan_model_context, self.vensim_model_context,
+                                            self.function_builder.ode_function_name).build_block())
+
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_model_path)
         return stan_model
 
     def stanify_draws2data(self):
         stan_model_path = os.path.join(self.stan_model_dir, f"{self.model_name}_draws2data.stan")
-        print(stan_model_path)
         with open(stan_model_path, "w") as f:
             # Include the function
             f.write("functions{")

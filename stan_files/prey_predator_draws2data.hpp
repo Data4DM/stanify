@@ -10,41 +10,41 @@ using namespace stan::math;
 stan::math::profile_map profiles__;
 static constexpr std::array<const char*, 36> locations_array__ = 
 {" (found before start of program)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 15, column 4 to column 39)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 16, column 4 to column 40)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 17, column 4 to column 41)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 18, column 4 to column 39)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 19, column 4 to column 47)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 22, column 4 to column 25)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 23, column 4 to column 28)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 25, column 4 to column 30)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 26, column 4 to column 36)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 27, column 4 to column 40)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 29, column 4 to column 130)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 30, column 4 to column 51)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 31, column 4 to column 55)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 33, column 4 to column 69)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 34, column 4 to column 77)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 5, column 4 to column 12)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 9, column 4 to column 28)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 10, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 10, column 4 to column 100)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 29, column 32 to column 35)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 30, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 31, column 10 to column 13)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 3, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 6, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 7, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 9, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 10, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 11, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 12, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 13, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 14, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 16, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 17, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 19, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
- " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_functions.stan', line 2, column 96, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files/prey_predator_draws2data.stan', line 2, column 0)"};
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 15, column 4 to column 39)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 16, column 4 to column 40)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 17, column 4 to column 41)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 18, column 4 to column 39)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 19, column 4 to column 47)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 22, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 23, column 4 to column 25)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 25, column 4 to column 30)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 26, column 4 to column 40)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 27, column 4 to column 36)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 29, column 4 to column 130)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 30, column 4 to column 55)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 31, column 4 to column 51)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 33, column 4 to column 69)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 34, column 4 to column 77)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 5, column 4 to column 12)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 9, column 4 to column 28)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 10, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 10, column 4 to column 140)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 29, column 32 to column 35)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 30, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 31, column 10 to column 13)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 3, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 6, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 7, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 9, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 10, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 11, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 12, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 13, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 14, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 16, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 17, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 19, column 4, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)",
+ " (in '/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_functions.stan', line 2, column 96, included from\n'/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files/prey_predator_draws2data.stan', line 2, column 0)"};
 
 struct vensim_ode_func_functor__ {
   template <typename T0__, typename T1__, typename T2__, typename T3__,
@@ -59,7 +59,7 @@ struct vensim_ode_func_functor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, const T2__& alpha,
-             const T3__& gamma, const T4__& beta, const T5__& delta,
+             const T3__& beta, const T4__& gamma, const T5__& delta,
              std::ostream* pstream__) const;
 };
 struct vensim_ode_func_odefunctor__ {
@@ -75,7 +75,7 @@ struct vensim_ode_func_odefunctor__ {
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                        stan::promote_args_t<T5__>>, -1, 1>
   operator()(const T0__& time, const T1__& outcome, std::ostream* pstream__,
-             const T2__& alpha, const T3__& gamma, const T4__& beta,
+             const T2__& alpha, const T3__& beta, const T4__& gamma,
              const T5__& delta) const;
 };
 
@@ -91,7 +91,7 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
   Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                      stan::promote_args_t<T5__>>, -1, 1>
   vensim_ode_func(const T0__& time, const T1__& outcome_arg__,
-                  const T2__& alpha, const T3__& gamma, const T4__& beta,
+                  const T2__& alpha, const T3__& beta, const T4__& gamma,
                   const T5__& delta, std::ostream* pstream__) {
     using local_scalar_t__ =
             stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__,
@@ -105,37 +105,37 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
     try {
       Eigen::Matrix<local_scalar_t__, -1, 1> dydt =
          Eigen::Matrix<local_scalar_t__, -1, 1>::Constant(2, DUMMY_VAR__);
-      local_scalar_t__ prey = DUMMY_VAR__;
-      current_statement__ = 24;
-      prey = stan::model::rvalue(outcome, "outcome",
-               stan::model::index_uni(1));
       local_scalar_t__ predator = DUMMY_VAR__;
-      current_statement__ = 25;
+      current_statement__ = 24;
       predator = stan::model::rvalue(outcome, "outcome",
-                   stan::model::index_uni(2));
-      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
-      current_statement__ = 26;
-      predator_birth_rate = ((delta * prey) * predator);
-      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
-      current_statement__ = 27;
-      predator_death_rate = (gamma * predator);
-      local_scalar_t__ predator_dydt = DUMMY_VAR__;
-      current_statement__ = 28;
-      predator_dydt = (predator_birth_rate - predator_death_rate);
+                   stan::model::index_uni(1));
+      local_scalar_t__ prey = DUMMY_VAR__;
+      current_statement__ = 25;
+      prey = stan::model::rvalue(outcome, "outcome",
+               stan::model::index_uni(2));
       local_scalar_t__ prey_birth_rate = DUMMY_VAR__;
-      current_statement__ = 29;
+      current_statement__ = 26;
       prey_birth_rate = (alpha * prey);
       local_scalar_t__ prey_death_rate = DUMMY_VAR__;
-      current_statement__ = 30;
+      current_statement__ = 27;
       prey_death_rate = ((beta * predator) * prey);
       local_scalar_t__ prey_dydt = DUMMY_VAR__;
-      current_statement__ = 31;
+      current_statement__ = 28;
       prey_dydt = (prey_birth_rate - prey_death_rate);
+      local_scalar_t__ predator_death_rate = DUMMY_VAR__;
+      current_statement__ = 29;
+      predator_death_rate = (gamma * predator);
+      local_scalar_t__ predator_birth_rate = DUMMY_VAR__;
+      current_statement__ = 30;
+      predator_birth_rate = ((delta * prey) * predator);
+      local_scalar_t__ predator_dydt = DUMMY_VAR__;
+      current_statement__ = 31;
+      predator_dydt = (predator_birth_rate - predator_death_rate);
       current_statement__ = 32;
-      stan::model::assign(dydt, prey_dydt,
+      stan::model::assign(dydt, predator_dydt,
         "assigning variable dydt", stan::model::index_uni(1));
       current_statement__ = 33;
-      stan::model::assign(dydt, predator_dydt,
+      stan::model::assign(dydt, prey_dydt,
         "assigning variable dydt", stan::model::index_uni(2));
       current_statement__ = 34;
       return dydt;
@@ -155,11 +155,11 @@ template <typename T0__, typename T1__, typename T2__, typename T3__,
 Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4__,
                      stan::promote_args_t<T5__>>, -1, 1>
 vensim_ode_func_functor__::operator()(const T0__& time, const T1__& outcome,
-                                      const T2__& alpha, const T3__& gamma,
-                                      const T4__& beta, const T5__& delta,
+                                      const T2__& alpha, const T3__& beta,
+                                      const T4__& gamma, const T5__& delta,
                                       std::ostream* pstream__)  const
 {
-  return vensim_ode_func(time, outcome, alpha, gamma, beta, delta, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
 }
 
 template <typename T0__, typename T1__, typename T2__, typename T3__,
@@ -176,11 +176,11 @@ Eigen::Matrix<stan::promote_args_t<T0__, stan::base_type_t<T1__>, T2__, T3__, T4
 vensim_ode_func_odefunctor__::operator()(const T0__& time,
                                          const T1__& outcome,
                                          std::ostream* pstream__,
-                                         const T2__& alpha,
-                                         const T3__& gamma, const T4__& beta,
-                                         const T5__& delta)  const
+                                         const T2__& alpha, const T3__& beta,
+                                         const T4__& gamma, const T5__& delta) 
+const
 {
-  return vensim_ode_func(time, outcome, alpha, gamma, beta, delta, pstream__);
+  return vensim_ode_func(time, outcome, alpha, beta, gamma, delta, pstream__);
 }
 
 
@@ -198,7 +198,7 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
   inline std::string model_name() const final { return "prey_predator_draws2data_model"; }
 
   inline std::vector<std::string> model_compile_info() const noexcept {
-    return std::vector<std::string>{"stanc_version = stanc3 v2.30.1", "stancflags = --include-paths=/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stan_files"};
+    return std::vector<std::string>{"stanc_version = stanc3 v2.30.1", "stancflags = --include-paths=/Users/hyunjimoon/Dropbox/15879-Fall2022/Homeworks/HW7/stanify/stan_files"};
   }
   
   
@@ -240,14 +240,14 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       
       current_statement__ = 19;
       stan::model::assign(times, std::vector<double>{1, 2, 3, 4, 5, 6, 7, 8,
-        9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
-        "assigning variable times");
+        9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29, 30}, "assigning variable times");
       current_statement__ = 20;
       stan::math::validate_non_negative_index("integrated_result", "n_t", n_t);
       current_statement__ = 21;
-      stan::math::validate_non_negative_index("prey", "n_t", n_t);
-      current_statement__ = 22;
       stan::math::validate_non_negative_index("predator", "n_t", n_t);
+      current_statement__ = 22;
+      stan::math::validate_non_negative_index("prey", "n_t", n_t);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -329,20 +329,20 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       double m_noise_scale = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 5;
       m_noise_scale = stan::math::normal_rng(0.5, 0.05, base_rng__);
-      double prey__init = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 6;
-      prey__init = 30;
       double predator__init = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 7;
+      current_statement__ = 6;
       predator__init = 4;
+      double prey__init = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 7;
+      prey__init = 30;
       Eigen::Matrix<double, -1, 1> initial_outcome =
          Eigen::Matrix<double, -1, 1>::Constant(2,
            std::numeric_limits<double>::quiet_NaN());
       current_statement__ = 9;
-      stan::model::assign(initial_outcome, prey__init,
+      stan::model::assign(initial_outcome, predator__init,
         "assigning variable initial_outcome", stan::model::index_uni(1));
       current_statement__ = 10;
-      stan::model::assign(initial_outcome, predator__init,
+      stan::model::assign(initial_outcome, prey__init,
         "assigning variable initial_outcome", stan::model::index_uni(2));
       std::vector<Eigen::Matrix<double, -1, 1>> integrated_result =
          std::vector<Eigen::Matrix<double, -1, 1>>(n_t, 
@@ -351,24 +351,24 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       current_statement__ = 11;
       stan::model::assign(integrated_result,
         stan::math::ode_rk45(vensim_ode_func_odefunctor__(), initial_outcome,
-          initial_time, times, pstream__, alpha, gamma, beta, delta),
+          initial_time, times, pstream__, alpha, beta, gamma, delta),
         "assigning variable integrated_result");
-      std::vector<double> prey =
-         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 12;
-      stan::model::assign(prey,
-        stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(1)),
-        "assigning variable prey");
       std::vector<double> predator =
          std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 13;
+      current_statement__ = 12;
       stan::model::assign(predator,
         stan::model::rvalue(integrated_result, "integrated_result",
-          stan::model::index_omni(), stan::model::index_uni(2)),
+          stan::model::index_omni(), stan::model::index_uni(1)),
         "assigning variable predator");
+      std::vector<double> prey =
+         std::vector<double>(n_t, std::numeric_limits<double>::quiet_NaN());
+      current_statement__ = 13;
+      stan::model::assign(prey,
+        stan::model::rvalue(integrated_result, "integrated_result",
+          stan::model::index_omni(), stan::model::index_uni(2)),
+        "assigning variable prey");
       Eigen::Matrix<double, -1, 1> prey_obs =
-         Eigen::Matrix<double, -1, 1>::Constant(20,
+         Eigen::Matrix<double, -1, 1>::Constant(30,
            std::numeric_limits<double>::quiet_NaN());
       current_statement__ = 14;
       stan::model::assign(prey_obs,
@@ -376,7 +376,7 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
           stan::math::normal_rng(prey, m_noise_scale, base_rng__)),
         "assigning variable prey_obs");
       Eigen::Matrix<double, -1, 1> predator_obs =
-         Eigen::Matrix<double, -1, 1>::Constant(20,
+         Eigen::Matrix<double, -1, 1>::Constant(30,
            std::numeric_limits<double>::quiet_NaN());
       current_statement__ = 15;
       stan::model::assign(predator_obs,
@@ -388,16 +388,16 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       out__.write(delta);
       out__.write(gamma);
       out__.write(m_noise_scale);
-      out__.write(prey__init);
       out__.write(predator__init);
+      out__.write(prey__init);
       out__.write(initial_outcome);
       for (int sym1__ = 1; sym1__ <= 2; ++sym1__) {
         for (int sym2__ = 1; sym2__ <= n_t; ++sym2__) {
           out__.write(integrated_result[(sym2__ - 1)][(sym1__ - 1)]);
         }
       }
-      out__.write(prey);
       out__.write(predator);
+      out__.write(prey);
       out__.write(prey_obs);
       out__.write(predator_obs);
     } catch (const std::exception& e) {
@@ -428,8 +428,8 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
   inline void get_param_names(std::vector<std::string>& names__) const {
     
     names__ = std::vector<std::string>{"alpha", "beta", "delta", "gamma",
-      "m_noise_scale", "prey__init", "predator__init", "initial_outcome",
-      "integrated_result", "prey", "predator", "prey_obs", "predator_obs"};
+      "m_noise_scale", "predator__init", "prey__init", "initial_outcome",
+      "integrated_result", "predator", "prey", "prey_obs", "predator_obs"};
     
     } // get_param_names() 
     
@@ -442,8 +442,8 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       std::vector<size_t>{static_cast<size_t>(n_t), static_cast<size_t>(2)},
       std::vector<size_t>{static_cast<size_t>(n_t)},
       std::vector<size_t>{static_cast<size_t>(n_t)},
-      std::vector<size_t>{static_cast<size_t>(20)},
-      std::vector<size_t>{static_cast<size_t>(20)}};
+      std::vector<size_t>{static_cast<size_t>(30)},
+      std::vector<size_t>{static_cast<size_t>(30)}};
     
     } // get_dims() 
     
@@ -464,8 +464,8 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       param_names__.emplace_back(std::string() + "delta");
       param_names__.emplace_back(std::string() + "gamma");
       param_names__.emplace_back(std::string() + "m_noise_scale");
-      param_names__.emplace_back(std::string() + "prey__init");
       param_names__.emplace_back(std::string() + "predator__init");
+      param_names__.emplace_back(std::string() + "prey__init");
       for (int sym1__ = 1; sym1__ <= 2; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -482,20 +482,20 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
         } 
       }
-      for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
+      for (int sym1__ = 1; sym1__ <= 30; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "prey_obs" + '.' + std::to_string(sym1__));
         } 
       }
-      for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
+      for (int sym1__ = 1; sym1__ <= 30; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "predator_obs" + '.' + std::to_string(sym1__));
         } 
@@ -521,8 +521,8 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       param_names__.emplace_back(std::string() + "delta");
       param_names__.emplace_back(std::string() + "gamma");
       param_names__.emplace_back(std::string() + "m_noise_scale");
-      param_names__.emplace_back(std::string() + "prey__init");
       param_names__.emplace_back(std::string() + "predator__init");
+      param_names__.emplace_back(std::string() + "prey__init");
       for (int sym1__ = 1; sym1__ <= 2; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "initial_outcome" + '.' + std::to_string(sym1__));
@@ -539,20 +539,20 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
         } 
       }
       for (int sym1__ = 1; sym1__ <= n_t; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "predator" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "prey" + '.' + std::to_string(sym1__));
         } 
       }
-      for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
+      for (int sym1__ = 1; sym1__ <= 30; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "prey_obs" + '.' + std::to_string(sym1__));
         } 
       }
-      for (int sym1__ = 1; sym1__ <= 20; ++sym1__) {
+      for (int sym1__ = 1; sym1__ <= 30; ++sym1__) {
         {
           param_names__.emplace_back(std::string() + "predator_obs" + '.' + std::to_string(sym1__));
         } 
@@ -563,13 +563,13 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
     
   inline std::string get_constrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(30) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(30) + "},\"block\":\"generated_quantities\"}]");
     
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     
-    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(20) + "},\"block\":\"generated_quantities\"}]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"delta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"gamma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"m_noise_scale\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"predator__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"prey__init\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"initial_outcome\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "},\"block\":\"generated_quantities\"},{\"name\":\"integrated_result\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"vector\",\"length\":" + std::to_string(2) + "}},\"block\":\"generated_quantities\"},{\"name\":\"predator\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(n_t) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"},{\"name\":\"prey_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(30) + "},\"block\":\"generated_quantities\"},{\"name\":\"predator_obs\",\"type\":{\"name\":\"vector\",\"length\":" + std::to_string(30) + "},\"block\":\"generated_quantities\"}]");
     
     } // get_unconstrained_sizedtypes() 
     
@@ -586,7 +586,7 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       const size_t num_transformed = emit_transformed_parameters * 0;
       const size_t num_gen_quantities = emit_generated_quantities * 
   ((((((((((((1 + 1) + 1) + 1) + 1) + 1) + 1) + 2) + (n_t * 2)) + n_t) + n_t)
-     + 20) + 20);
+     + 30) + 30);
       const size_t num_to_write = num_params__ + num_transformed +
         num_gen_quantities;
       std::vector<int> params_i;
@@ -607,7 +607,7 @@ class prey_predator_draws2data_model final : public model_base_crtp<prey_predato
       const size_t num_transformed = emit_transformed_parameters * 0;
       const size_t num_gen_quantities = emit_generated_quantities * 
   ((((((((((((1 + 1) + 1) + 1) + 1) + 1) + 1) + 2) + (n_t * 2)) + n_t) + n_t)
-     + 20) + 20);
+     + 30) + 30);
       const size_t num_to_write = num_params__ + num_transformed +
         num_gen_quantities;
       vars = std::vector<double>(num_to_write,

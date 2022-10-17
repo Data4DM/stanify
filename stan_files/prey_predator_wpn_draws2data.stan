@@ -29,7 +29,7 @@ generated quantities{
     initial_outcome[2] = predator__init;
     initial_outcome[3] = prey__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, gamma, alpha, delta, beta);
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, alpha, beta, gamma, delta);
     array[n_t] real process_noise = integrated_result[:, 1];
     array[n_t] real predator = integrated_result[:, 2];
     array[n_t] real prey = integrated_result[:, 3];
