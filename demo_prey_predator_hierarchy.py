@@ -1,13 +1,10 @@
-  import matplotlib
+import matplotlib
 matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.stats import truncnorm
-import numpy as np
 from pysd.translators.vensim.vensim_file import VensimFile
 from stanify.calibrator.draws_data_mapper import  draws2data, data2draws
-from stanify.builders.stan.stan_model import StanVensimModel
+from stanify.stanify.builders.stan_model import StanVensimModel
 from stanify.calibrator.visualizer import prior_pred_check, posterior_check
+from stanify.builders.utilities import get_data_path
 
 # without process noise
 # generator
@@ -21,10 +18,12 @@ setting_assumption = {
     "est_param_scalar" : ("alpha", "beta", "gamma", "delta"),
     "ass_param_scalar" : (),
     "target_simulated_vector" : ("prey", "predator"),
-    "model_name": "prey_predator",
+    "driving_data_vector" : "process_noise_std_norm_data",
+    "model_name": "prey_predator_hier",
     "integration_times": list(range(1, n_t + 1)),
     "initial_time": 0.0
 }
+
 
 ## numeric data (using values in vensim; cannot specify)
 numeric_assumption = {
@@ -53,7 +52,7 @@ model.build_stan_functions()
 
 prior_pred_obs = draws2data(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
-# prior_pred_obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}_generator.nc")
+# prior_pred_obs = xr.open_dataset(f"{get_data_path}/{model.model_name}_generator.nc")
 
 prior_pred_check(setting_assumption)
 
@@ -64,6 +63,6 @@ for key, value in prior_pred_obs[1].items():
 
 posterior = data2draws(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
-# posterior = xr.open_dataset(f"data/{setting_assumption['model_name']}_estimator.nc")
+# posterior = xr.open_dataset(f"{get_data_path}/{model.model_name}_estimator.nc")
 
 posterior_check(setting_assumption)

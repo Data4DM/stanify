@@ -2,12 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
-.vdfx
-.vmfx
+*.vdfx
+*.vmfx
 .app
 *.nc
 *.hpp
 *.o
+*.pkl
 
 *.pyc
 .ipynb_checkpoints/

@@ -1,15 +1,13 @@
 import matplotlib
+
 matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.stats import truncnorm
 import numpy as np
 from pysd.translators.vensim.vensim_file import VensimFile
 from stanify.calibrator.draws_data_mapper import  draws2data, data2draws
-from stanify.builders.stan.stan_model import StanVensimModel
-from stanify.calibrator.visualizer import prior_pred_check, posterior_check, loglik_diagnostic
+from stanify.builders.stan_model import StanVensimModel
+from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
-vf = VensimFile('vensim_models/prey_predator/prey_predator_process_noise.mdl')
+vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
 
@@ -23,6 +21,7 @@ setting_assumption = {
     "integration_times": list(range(1, n_t + 1)),
     "initial_time": 0.0
 }
+path_loc = f"{setting_assumption['model_name']}/{setting_assumption['model_name']}"
 
 ## numeric data (using values in vensim)
 numeric_assumption = {
@@ -51,7 +50,7 @@ model.build_stan_functions()
 
 prior_pred_obs = draws2data(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
-# prior_pred_obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}_generator.nc")
+# prior_pred_obs = xr.open_dataset(f"data/{path_loc}_generator.nc")
 
 prior_pred_check(setting_assumption)
 
@@ -65,6 +64,6 @@ posterior = data2draws(model, numeric_assumption)
 
 posterior_check(setting_assumption)
 
-data_df = pd.read_csv("data/hudson-bay-lynx-hare.csv")[['Predator', 'Prey']].iloc[:, :n_t]
+# data_df = pd.read_csv("data/hudson-bay-lynx-hare.csv")[['predator', 'prey']].iloc[:, :n_t]
 
-loglik_diagnostic(posterior, data_df, hierarchy = "n_g" in numeric_assumption.keys())
+# loglik_diagnostic(posterior, data_df, hierarchy = "n_g" in numeric_assumption.keys())

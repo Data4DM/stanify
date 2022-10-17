@@ -1,14 +1,10 @@
 import matplotlib
 matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import xarray as xr
-import arviz as az
 import pandas as pd
-from scipy.stats import truncnorm
 import numpy as np
 from pysd.translators.vensim.vensim_file import VensimFile
 from stanify.calibrator.draws_data_mapper import  draws2data, data2draws
-from stanify.builders.stan.stan_model import StanVensimModel
+from stanify.builders.stan_model import StanVensimModel
 from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
 # without process noise
