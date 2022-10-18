@@ -279,9 +279,11 @@ class InitialValueCodegenWalker(BlockCodegenWalker):
             if ast_node.reference in self.datastructure_function_names:
                 return f'{DataStructureCodegenWalker.get_function_name(ast_node.reference)}(0)'
             elif ast_node.reference in self.variable_ast_dict:
-                return f'({self.walk(self.variable_ast_dict[ast_node.reference])})'
+                return self.walk(self.variable_ast_dict[ast_node.reference])
+                #f'{self.walk(self.variable_ast_dict[ast_node.reference])}'
+                #return ast_node.reference
             else:
-                return f'({super().walk(ast_node)})'
+                return super().walk(ast_node)
 
         elif isinstance(ast_node, ArithmeticStructure):
             # ArithmeticStructure consists of chained arithmetic expressions.

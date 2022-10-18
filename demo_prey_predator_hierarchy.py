@@ -8,7 +8,7 @@ from stanify.builders.utilities import get_data_path
 
 # without process noise
 # generator
-vf = VensimFile('vensim_models/prey_predator/prey_predator.mdl')
+vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise_alpha.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
 

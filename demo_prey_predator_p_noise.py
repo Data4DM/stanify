@@ -7,7 +7,7 @@ from stanify.calibrator.draws_data_mapper import  draws2data, data2draws
 from stanify.builders.stan_model import StanVensimModel
 from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
-vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise.mdl')
+vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise_alpha.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
 
@@ -17,7 +17,7 @@ setting_assumption = {
     "ass_param_scalar" : (),
     "target_simulated_vector" : ("prey", "predator"),
     "driving_data_vector" : "process_noise_std_norm_data",
-    "model_name": "prey_predator_pn",
+    "model_name": "prey_predator_pn_alpha_tight",
     "integration_times": list(range(1, n_t + 1)),
     "initial_time": 0.0
 }
@@ -36,10 +36,14 @@ model = StanVensimModel(structural_assumption)
 model.set_setting(**setting_assumption)
 model.set_numeric(numeric_assumption)
 
-model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
-model.set_prior("beta", "normal", 0.05, 0.005, lower = 0)
-model.set_prior("delta", "normal", 0.05, 0.005, lower = 0)
-model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
+# model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
+# model.set_prior("beta", "normal", 0.05, 0.005, lower = 0)
+# model.set_prior("delta", "normal", 0.05, 0.005, lower = 0)
+# model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
+model.set_prior("alpha", "normal", 0.8, 0.0001, lower = 0)
+model.set_prior("beta", "normal", 0.05, 0.0001, lower = 0)
+model.set_prior("delta", "normal", 0.05,0.0001, lower = 0)
+model.set_prior("gamma", "normal", 0.8, 0.0001, lower = 0)
 
 model.set_prior("m_noise_scale", "normal", 0.5, 0.05, lower = 0)
 

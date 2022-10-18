@@ -223,7 +223,7 @@ class StanVensimModel:
         with open(stan_data2draws_path, "w") as f:
             # Include the function
             f.write("functions{\n")
-            f.write(f"    #include {self.model_name}_functions.stan\n")
+            f.write(f"    #include {self.model_name}_functions_delay.stan\n")
             f.write("}\n\n")
 
             f.write(StanDataBuilder(self.stan_model_context).build_block())
@@ -267,7 +267,7 @@ class StanVensimModel:
             # Include the function
             f.write("functions{")
             f.write("\n")
-            f.write(f"#include {self.model_name}_functions.stan\n")
+            f.write(f"#include {self.model_name}_functions_delay.stan\n")
             f.write("}")
             f.write("\n")
 

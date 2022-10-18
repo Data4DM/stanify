@@ -9,17 +9,18 @@ from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
 # without process noise
 # generator
-vf = VensimFile('vensim_models/mngInven/InventoryManagementWeek7.mdl')
+vf = VensimFile('vensim_models/mngInven/mng_inven.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
+print(structural_assumption)
 
-n_t = 30
+n_t = 250 #1600 #int(18/0.0625) # 18 weeks
 
 setting_assumption = {
     "est_param_scalar" : ("inventory_adjustment_time", "minimum_order_processing_time"),
     "ass_param_scalar" : ("inventory_coverage", "manufacturing_cycle_time", "safety_stock_coverage", "time_to_average_order_rate", "wip_adjustment_time"),
     "target_simulated_vector" : ("production_rate_stocked", "production_start_rate_stocked"),
-    "driving_data_vector" : ("customer_order_rate", "process_noise_std_norm_data", "production_start_rate_m_noise_trun_norm_data", "production_rate_m_noise_trun_norm_data"),
+    "driving_data_vector" : ("customer_order_rate", "m_noise_std_half_normal", "p_noise_std_normal"),
     "integration_times": list(range(1, n_t + 1)),
     "initial_time": 0.0,
     "model_name" : "mngInven"
@@ -28,8 +29,9 @@ setting_assumption = {
 ## numeric data (using values in vensim; cannot specify)
 numeric_assumption = {
     "n_t": n_t,
-    "customer_order_rate": pd.read_csv('data/example_retail_sales.csv').iloc[:n_t, 1].values,
-    "process_noise_std_norm_data": np.random.normal(0,1, size=n_t),
+    "customer_order_rate": np.tile(pd.read_csv('data/example_retail_sales.csv').iloc[:200, 1], 1), #pd.read_csv('data/example_retail_sales.csv').iloc[:n_t, 1].values, #sales_rep, #.iloc[:n_t, 1].values, #
+    "p_noise_std_normal": np.random.normal(0,1, size=n_t),
+    "m_noise_std_half_normal": np.abs(np.random.normal(0,1, size=n_t),)
 }
 
 for key in setting_assumption['target_simulated_vector']:
@@ -41,6 +43,10 @@ model.set_numeric(numeric_assumption)
 
 model.set_prior("inventory_adjustment_time", "normal", 7.01, 0.7, lower=0)
 model.set_prior("minimum_order_processing_time", "normal", 0.5, 0.05, lower=0)
+# model.set_prior("inventory_adjustment_time", "normal", 7.01, 0.7, lower=0)
+# model.set_prior("minimum_order_processing_time", "normal", 0.5, 0.05, lower=0)
+# model.set_prior("inventory_adjustment_time", "normal", 7.01, 0.7, lower=0)
+# model.set_prior("minimum_order_processing_time", "normal", 0.5, 0.05, lower=0)
 
 model.set_prior("m_noise_scale", "normal", 0.01, 0.0005, lower = 0)
 
@@ -51,7 +57,7 @@ model.build_stan_functions()
 
 prior_pred_obs = draws2data(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
-# prior_pred_obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}_generator.nc")
+# prior_pred_obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
 
 prior_pred_check(setting_assumption)
 
