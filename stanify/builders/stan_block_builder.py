@@ -156,7 +156,7 @@ class StanTransformedDataBuilder:
         code += "transformed data{\n"
         code.indent_level += 1
         code += f"real initial_time = {self.stan_model_context.initial_time};\n"
-        code += f"array[n_t] real times = {{{', '.join([str(x) for x in self.stan_model_context.integration_times])}}};\n"
+        code += f"vector[n_t] times = {{{', '.join([str(x) for x in self.stan_model_context.integration_times])}}};\n"
 
         code.indent_level -= 1
         code += "}\n"

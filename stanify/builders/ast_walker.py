@@ -133,10 +133,35 @@ class DataStructureCodegenWalker(BaseNodeWaler):
                 raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
 
             if node_name == "time_step":
-                self.code += f"real cum_time (real time, data vector times, data vector time_step){{\n"
+                self.code += f"real cum_time (real time, data vector times){{\n"
                 self.code.indent_level += 1
                 # Enter function body
                 self.code += f"// DataStructure for variable cum_time\n"
+                self.code += "real slope;\n"
+                self.code += "real intercept;\n\n"
+                for time_index in range(n_intervals):
+                    if time_index == 0:
+                        continue
+                    if time_index == 1:
+                        self.code += f"if(time <= times[{time_index-1}]){{\n"
+                    else:
+                        self.code += f"else if(time <= times[{time_index}]){{\n"
+
+                    self.code.indent_level += 1
+                    # enter conditional body
+                    self.code += f"intercept = {data_vector[time_index - 1]};\n"
+                    self.code += f"real time_step = times[{time_index}] - times[{time_index-1}];\n"
+                    self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_step;\n"
+                    self.code += f"return intercept + slope * (time - times[{time_index-1}]);\n"
+                    self.code.indent_level -= 1
+                    # exit conditional body
+                    self.code += "}\n"
+
+            else:
+                self.code += f"real {function_name}(real time, data vector times){{\n"
+                self.code.indent_level += 1
+                # Enter function body
+                self.code += f"// DataStructure for variable {node_name}\n"
                 self.code += "real slope;\n"
                 self.code += "real intercept;\n\n"
                 for time_index in range(n_intervals):
@@ -150,33 +175,9 @@ class DataStructureCodegenWalker(BaseNodeWaler):
                     self.code.indent_level += 1
                     # enter conditional body
                     self.code += f"intercept = {data_vector[time_index - 1]};\n"
-                    self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_step[{time_index}];\n"
-                    self.code += f"return intercept + slope * (time - cum_time({time_index}, times));\n"
-                    self.code.indent_level -= 1
-                    # exit conditional body
-                    self.code += "}\n"
-
-            else:
-                self.code += f"real {function_name}(real time, data vector times, data vector time_step){{\n"
-                self.code.indent_level += 1
-                # Enter function body
-                self.code += f"// DataStructure for variable {node_name}\n"
-                self.code += "real slope;\n"
-                self.code += "real intercept;\n\n"
-                for time_index in range(n_intervals):
-                    if time_index == 0:
-                        continue
-                    if time_index == 1:
-                        self.code += f"if(time <= cum_time({time_index}, times, time_step)){{\n"
-                    else:
-                        self.code += f"else if(time <= cum_time({time_index}, times, time_step)){{\n"
-
-                    self.code.indent_level += 1
-                    # enter conditional body
-                    self.code += f"intercept = {data_vector[time_index - 1]};\n"
                     self.code += f"real time_step = cum_time({time_index}, times) - cum_time({time_index-1}, times);\n"
                     self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_step;\n"
-                    self.code += f"return intercept + slope * (time - cum_time({time_index}, times));\n"
+                    self.code += f"return intercept + slope * (time - cum_time({time_index-1}, times));\n"
                     self.code.indent_level -= 1
                     # exit conditional body
                     self.code += "}\n"

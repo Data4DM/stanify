@@ -7,16 +7,16 @@ from stanify.builders.stan_model import StanVensimModel
 from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
 # generator with process noise
-vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise.mdl')
+vf = VensimFile('vensim_models/prey_predator/prey_predator_p_noise_subadd.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
 
-n_t = 30
+n_t =10
 time_step = 0.03125
 delta =  10**-10
 
 setting_assumption = {
-    "est_param" : ("alpha", "beta", "gamma", "delta"),
+    "est_param" : ("alpha", "beta", "gamma", "delta", "time_step"),
     "driving_vector_names" : ("process_noise_uniform_driving", "time_step"),
     "target_simulated_vector_names" : ("prey", "predator"),
     "model_name": "prey_predator",
@@ -33,6 +33,8 @@ numeric_assumption = {
 model = StanVensimModel(structural_assumption)
 model.set_setting(**setting_assumption)
 model.set_numeric(numeric_assumption)
+
+#model.set_prior("time_step", "normal", 0.8, 0.08, lower = 0)
 
 model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
 model.set_prior("beta", "normal", 0.05, 0.005, lower = 0)
