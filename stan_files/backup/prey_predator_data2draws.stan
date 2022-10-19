@@ -14,7 +14,6 @@ transformed data{
 }
 
 parameters{
-    real<lower=0> time_step;
     real<lower=0> alpha;
     real<lower=0> beta;
     real<lower=0> delta;
@@ -24,20 +23,19 @@ parameters{
 
 transformed parameters {
     // Initial ODE values
-    real prey__init = 30;
-    real predator__init = 30;
+    real predator__init = (30);
+    real prey__init = (30);
 
     vector[2] initial_outcome;  // Initial ODE state vector
-    initial_outcome[1] = prey__init;
-    initial_outcome[2] = predator__init;
+    initial_outcome[1] = predator__init;
+    initial_outcome[2] = prey__init;
 
-    vector[2] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, beta, delta, time_step, gamma, alpha);
-    array[n_t] real prey = integrated_result[:, 1];
-    array[n_t] real predator = integrated_result[:, 2];
+    vector[2] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, alpha, delta, gamma, beta);
+    array[n_t] real predator = integrated_result[:, 1];
+    array[n_t] real prey = integrated_result[:, 2];
 }
 
 model{
-    time_step ~ normal(1e-05, 1e-06);
     alpha ~ normal(0.8, 0.08);
     beta ~ normal(0.05, 0.005);
     delta ~ normal(0.05, 0.005);

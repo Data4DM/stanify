@@ -1,133 +1,133 @@
 // Begin ODE declaration
-real dataFunc__process_noise_std_norm_data(real time){
+real dataFunc__process_noise_std_norm_data(real time, real time_step){
     // DataStructure for variable process_noise_std_norm_data
     real slope;
     real intercept;
 
-    if(time <= 1){
-        intercept = -0.46350170505687144;
-        slope = -1.3284423156242855 - -0.46350170505687144;
-        return intercept + slope * (time - -0.46350170505687144);
+    if(time <= 1 * time_step){
+        intercept = 0.8634820062904083;
+        slope = (-2.8944862409543264 - 0.8634820062904083)/ time_step;
+        return intercept + slope * (time - 0 * time_step);
     }
-    else if(time <= 2){
-        intercept = -1.3284423156242855;
-        slope = -0.7590943259426065 - -1.3284423156242855;
-        return intercept + slope * (time - -1.3284423156242855);
+    else if(time <= 2 * time_step){
+        intercept = -2.8944862409543264;
+        slope = (0.5930235597024048 - -2.8944862409543264)/ time_step;
+        return intercept + slope * (time - 1 * time_step);
     }
-    else if(time <= 3){
-        intercept = -0.7590943259426065;
-        slope = -1.7166886232102514 - -0.7590943259426065;
-        return intercept + slope * (time - -0.7590943259426065);
+    else if(time <= 3 * time_step){
+        intercept = 0.5930235597024048;
+        slope = (-0.6083785568136623 - 0.5930235597024048)/ time_step;
+        return intercept + slope * (time - 2 * time_step);
     }
-    else if(time <= 4){
-        intercept = -1.7166886232102514;
-        slope = 1.1912489359351122 - -1.7166886232102514;
-        return intercept + slope * (time - -1.7166886232102514);
+    else if(time <= 4 * time_step){
+        intercept = -0.6083785568136623;
+        slope = (-2.0570065283585404 - -0.6083785568136623)/ time_step;
+        return intercept + slope * (time - 3 * time_step);
     }
-    else if(time <= 5){
-        intercept = 1.1912489359351122;
-        slope = -1.7901577072876969 - 1.1912489359351122;
-        return intercept + slope * (time - 1.1912489359351122);
+    else if(time <= 5 * time_step){
+        intercept = -2.0570065283585404;
+        slope = (-0.6267453130981673 - -2.0570065283585404)/ time_step;
+        return intercept + slope * (time - 4 * time_step);
     }
-    else if(time <= 6){
-        intercept = -1.7901577072876969;
-        slope = -0.04529691628975413 - -1.7901577072876969;
-        return intercept + slope * (time - -1.7901577072876969);
+    else if(time <= 6 * time_step){
+        intercept = -0.6267453130981673;
+        slope = (0.49555736460566 - -0.6267453130981673)/ time_step;
+        return intercept + slope * (time - 5 * time_step);
     }
-    else if(time <= 7){
-        intercept = -0.04529691628975413;
-        slope = 1.1553907081169796 - -0.04529691628975413;
-        return intercept + slope * (time - -0.04529691628975413);
+    else if(time <= 7 * time_step){
+        intercept = 0.49555736460566;
+        slope = (-0.20222824445294113 - 0.49555736460566)/ time_step;
+        return intercept + slope * (time - 6 * time_step);
     }
-    else if(time <= 8){
-        intercept = 1.1553907081169796;
-        slope = 0.2318707621816023 - 1.1553907081169796;
-        return intercept + slope * (time - 1.1553907081169796);
+    else if(time <= 8 * time_step){
+        intercept = -0.20222824445294113;
+        slope = (2.3232837927140833 - -0.20222824445294113)/ time_step;
+        return intercept + slope * (time - 7 * time_step);
     }
-    else if(time <= 9){
-        intercept = 0.2318707621816023;
-        slope = -0.43172439489098935 - 0.2318707621816023;
-        return intercept + slope * (time - 0.2318707621816023);
+    else if(time <= 9 * time_step){
+        intercept = 2.3232837927140833;
+        slope = (0.684174756239484 - 2.3232837927140833)/ time_step;
+        return intercept + slope * (time - 8 * time_step);
     }
-    else if(time <= 10){
-        intercept = -0.43172439489098935;
-        slope = 0.5040675661678943 - -0.43172439489098935;
-        return intercept + slope * (time - -0.43172439489098935);
+    else if(time <= 10 * time_step){
+        intercept = 0.684174756239484;
+        slope = (-0.8021181672763337 - 0.684174756239484)/ time_step;
+        return intercept + slope * (time - 9 * time_step);
     }
-    else if(time <= 11){
-        intercept = 0.5040675661678943;
-        slope = -0.09660305932660272 - 0.5040675661678943;
-        return intercept + slope * (time - 0.5040675661678943);
+    else if(time <= 11 * time_step){
+        intercept = -0.8021181672763337;
+        slope = (-0.5715054044804493 - -0.8021181672763337)/ time_step;
+        return intercept + slope * (time - 10 * time_step);
     }
-    else if(time <= 12){
-        intercept = -0.09660305932660272;
-        slope = 1.3351201903724212 - -0.09660305932660272;
-        return intercept + slope * (time - -0.09660305932660272);
+    else if(time <= 12 * time_step){
+        intercept = -0.5715054044804493;
+        slope = (0.18384480019710764 - -0.5715054044804493)/ time_step;
+        return intercept + slope * (time - 11 * time_step);
     }
-    else if(time <= 13){
-        intercept = 1.3351201903724212;
-        slope = -1.1956879003943353 - 1.3351201903724212;
-        return intercept + slope * (time - 1.3351201903724212);
+    else if(time <= 13 * time_step){
+        intercept = 0.18384480019710764;
+        slope = (1.6449948481654177 - 0.18384480019710764)/ time_step;
+        return intercept + slope * (time - 12 * time_step);
     }
-    else if(time <= 14){
-        intercept = -1.1956879003943353;
-        slope = -0.8970870602232718 - -1.1956879003943353;
-        return intercept + slope * (time - -1.1956879003943353);
+    else if(time <= 14 * time_step){
+        intercept = 1.6449948481654177;
+        slope = (1.0210156792051701 - 1.6449948481654177)/ time_step;
+        return intercept + slope * (time - 13 * time_step);
     }
-    else if(time <= 15){
-        intercept = -0.8970870602232718;
-        slope = 0.810220249453145 - -0.8970870602232718;
-        return intercept + slope * (time - -0.8970870602232718);
+    else if(time <= 15 * time_step){
+        intercept = 1.0210156792051701;
+        slope = (-0.6183828684163482 - 1.0210156792051701)/ time_step;
+        return intercept + slope * (time - 14 * time_step);
     }
-    else if(time <= 16){
-        intercept = 0.810220249453145;
-        slope = 0.8497000620791991 - 0.810220249453145;
-        return intercept + slope * (time - 0.810220249453145);
+    else if(time <= 16 * time_step){
+        intercept = -0.6183828684163482;
+        slope = (1.089544366076013 - -0.6183828684163482)/ time_step;
+        return intercept + slope * (time - 15 * time_step);
     }
-    else if(time <= 17){
-        intercept = 0.8497000620791991;
-        slope = -1.0901054513982777 - 0.8497000620791991;
-        return intercept + slope * (time - 0.8497000620791991);
+    else if(time <= 17 * time_step){
+        intercept = 1.089544366076013;
+        slope = (-1.9550200778574756 - 1.089544366076013)/ time_step;
+        return intercept + slope * (time - 16 * time_step);
     }
-    else if(time <= 18){
-        intercept = -1.0901054513982777;
-        slope = -1.367426952154606 - -1.0901054513982777;
-        return intercept + slope * (time - -1.0901054513982777);
+    else if(time <= 18 * time_step){
+        intercept = -1.9550200778574756;
+        slope = (-0.8856863102566178 - -1.9550200778574756)/ time_step;
+        return intercept + slope * (time - 17 * time_step);
     }
-    else if(time <= 19){
-        intercept = -1.367426952154606;
-        slope = -1.093636303877843 - -1.367426952154606;
-        return intercept + slope * (time - -1.367426952154606);
+    else if(time <= 19 * time_step){
+        intercept = -0.8856863102566178;
+        slope = (0.8557670877750648 - -0.8856863102566178)/ time_step;
+        return intercept + slope * (time - 18 * time_step);
     }
-    return -1.093636303877843;
+    return 0.8557670877750648;
 }
 
-vector vensim_ode_func(real time, vector outcome, real delta, real alpha, real beta, real gamma){
+vector vensim_ode_func(real time, vector outcome, real alpha, real time_step, real gamma, real delta, real beta){
     vector[3] dydt;  // Return vector of the ODE function
 
     // State variables
-    real prey = outcome[1];
+    real predator = outcome[1];
     real process_noise = outcome[2];
-    real predator = outcome[3];
+    real prey = outcome[3];
 
-    real predator_birth_rate = (delta) * (prey) * (predator);
-    real prey_birth_rate = (alpha) * (prey) * 1 + (process_noise);
-    real reference_prey = 30;
-    real predator_death_rate = (gamma) * (predator);
-    real tc = 3;
-    real process_noise_scale = 1;
     real reference_predator = 4;
+    real reference_prey = 30;
+    real tc = 3;
     real dt_over_tc = 0.0104167;
-    real white_noise = 2 - (dt_over_tc) / (dt_over_tc) ^ 0.5 * dataFunc__process_noise_std_norm_data(time) * (process_noise_scale);
-    real prey_death_rate = (beta) * (predator) * (prey);
-    real prey_dydt = (prey_birth_rate) - (prey_death_rate);
-    real predator_dydt = (predator_birth_rate) - (predator_death_rate);
-    real process_noise_chg_rate = (white_noise) - (process_noise) / (tc);
-    real process_noise_dydt = (process_noise_chg_rate);
+    real process_noise_scale = 1;
+    real white_noise = 2 - dt_over_tc / dt_over_tc ^ 0.5 * dataFunc__process_noise_std_norm_data(time, time_step) * process_noise_scale;
+    real process_noise_chg_rate = white_noise - process_noise / tc;
+    real predator_death_rate = gamma * predator;
+    real prey_birth_rate = alpha * prey * 1 + process_noise;
+    real prey_death_rate = beta * predator * prey;
+    real predator_birth_rate = delta * prey * predator;
+    real predator_dydt = predator_birth_rate - predator_death_rate;
+    real prey_dydt = prey_birth_rate - prey_death_rate;
+    real process_noise_dydt = process_noise_chg_rate;
 
-    dydt[1] = prey_dydt;
+    dydt[1] = predator_dydt;
     dydt[2] = process_noise_dydt;
-    dydt[3] = predator_dydt;
+    dydt[3] = prey_dydt;
 
     return dydt;
 }

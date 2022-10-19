@@ -56,7 +56,7 @@ class StanModelContext:
     exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
 
-    def identify_stan_data_types(self, numeric_assump_dict):
+    def identify_stan_data_types(self, driving_data_vector):
         def get_dims(obj):
             if isinstance(obj, numpy.ndarray):
                 return obj.shape
@@ -74,7 +74,7 @@ class StanModelContext:
                 else:
                     return [dim]
 
-        for key, val in numeric_assump_dict.items():
+        for key, val in driving_data_vector.items():
             if isinstance(val, int):
                 self.stan_data[key] = StanDataEntry(key, "int")
             elif isinstance(val, float):
@@ -176,22 +176,26 @@ class StanVensimModel:
             self.stan_model_context.sample_statements.append(SamplingStatement(variable_name, distribution_type, *args, lower=lower, upper=upper, init_state=init_state))
 
 
-    def set_setting(self, est_param_scalar: list, ass_param_scalar: list, target_simulated_vector: list, driving_data_vector: list, initial_time, integration_times, model_name):
-        self.est_param_scalar = est_param_scalar
-        self.ass_param_scalar = ass_param_scalar
-        self.target_simulated_vector = target_simulated_vector
-        self.driving_data_vector = driving_data_vector
-        self.integration_times: integration_times
+    def set_setting(self, est_param: list, target_simulated_vector_names: list, driving_vector_names: list, initial_time: float, model_name):
+        self.est_param = est_param
+        self.target_simulated_vector_names = target_simulated_vector_names
+        self.driving_vector_names = driving_vector_names
         self.initial_time = float(initial_time)
-        if initial_time in integration_times:
-            raise Exception("initial_time shouldn't be present in integration_times")
-        self.stan_model_context = StanModelContext(initial_time, integration_times)
         self.model_name = model_name
 
+    def set_numeric(self, driving_data_vector: list):
+        self.driving_data_vector = {vensim_name_to_identifier(name): value for name, value in driving_data_vector.items()}
+        self.integration_times = self.driving_data_vector['time_step'].cumsum()
+        if self.initial_time in self.integration_times:
+            raise Exception("initial_time shouldn't be present in integration_times")
+        self.stan_model_context = StanModelContext(self.initial_time, self.integration_times)
 
-    def set_numeric(self, numeric_assump_dict):
-        self.numeric_assump_dict = {vensim_name_to_identifier(name): value for name, value in numeric_assump_dict.items()}
-        self.stan_model_context.identify_stan_data_types(numeric_assump_dict)
+        self.stan_model_context.identify_stan_data_types(driving_data_vector)
+
+        for key in self.target_simulated_vector_names:
+            self.driving_data_vector[f"{key}_obs"] = self.integration_times
+
+        self.driving_data_vector["integration_times"] = self.integration_times
 
     def build_stan_functions(self):
         """
@@ -203,7 +207,7 @@ class StanVensimModel:
         -------
 
         """
-        self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric_assump_dict)
+        self.function_builder = StanFunctionBuilder(self.abstract_model, self.driving_data_vector)
         function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.vensim_model_context.stock_variable_names)
         path = get_stanfiles_path(self.model_name)
 
@@ -223,7 +227,7 @@ class StanVensimModel:
         with open(stan_data2draws_path, "w") as f:
             # Include the function
             f.write("functions{\n")
-            f.write(f"    #include {self.model_name}_functions_delay.stan\n")
+            f.write(f"    #include {self.model_name}_functions.stan\n")
             f.write("}\n\n")
 
             f.write(StanDataBuilder(self.stan_model_context).build_block())
@@ -267,7 +271,7 @@ class StanVensimModel:
             # Include the function
             f.write("functions{")
             f.write("\n")
-            f.write(f"#include {self.model_name}_functions_delay.stan\n")
+            f.write(f"#include {self.model_name}_functions.stan\n")
             f.write("}")
             f.write("\n")
 

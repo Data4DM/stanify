@@ -133,7 +133,6 @@ class StanParametersBuilder:
 class StanDataBuilder:
     def __init__(self, stan_model_context: "StanModelContext"):
         self.stan_model_context = stan_model_context
-
     def build_block(self):
         code = IndentedString()
         code += "data{\n"
