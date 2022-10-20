@@ -244,7 +244,6 @@ class StanVensimModel:
         updated_data = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
         self.numeric_data_assumption.update(updated_data)
         self.stan_model_context.identify_stan_data_types(updated_data)
-        print("self numeric==============", self.numeric_data_assumption)
         # self.numeric_data_assumption = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
         # self.stan_model_context.identify_stan_data_types(self.numeric_data_assumption)
 

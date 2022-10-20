@@ -2,24 +2,13 @@ import math
 import os
 from stanify.builders.utilities import get_data_path
 import numpy as np
-def draws2data(model, draws2data_numeric_assumption, iter_sampling = 1):
-    data_path = get_data_path(model.model_name)
-    prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True, iter_sampling = iter_sampling)
-    #prior_ppc.draws_pd(model.target_simulated_vector_names).to_pickle(f"{path}/generator.pkl")
-    prior_ppc.draws_xr().to_netcdf(f"{data_path}/generator.nc")
 
-    # obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
-    #             model.target_simulated_vector_names}
-    #TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
-    return prior_ppc # , obs_dict
-
-
-def data2draws(model, data2draws_numeric_assumption):
+def data2draws(model, data2draws_numeric_assumption, iter_sampling):
     #data2draws_model = cmdstanpy.CmdStanModel(stan_file="stan_files/" + f"{model_settings.get('model_name')}_data2draws.stan") # neg_binom doesn't receive vector; manual add for loop in stanfile
     # for key in model.target_simulated_vector_names:
     #     data2draws_numeric_assumption[f"{key}_obs"] = trunc4StanNegBinom(data2draws_numeric_assumption[f"{key}_obs"])
     data_path = get_data_path(model.model_name)
-    post_ppc = model.stanify_data2draws().sample(data=data2draws_numeric_assumption, chains = 2, iter_sampling = 100) #100
+    post_ppc = model.stanify_data2draws().sample(data=data2draws_numeric_assumption, chains = 2, iter_sampling = iter_sampling) #100
     #if not os.path.exists(nc_path):
     post_ppc.draws_xr().to_netcdf(f"{data_path}/estimator.nc")
 
@@ -38,11 +27,7 @@ def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
     prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)
     nc_path = f"{data_path}/generator.nc"
-
     prior_ppc.draws_xr().to_netcdf(nc_path)
-    obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
-                model.target_simulated_vector_names}
-    print("======", obs_dict)
     # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
     return prior_ppc.draws_xr()
 
