@@ -10,9 +10,10 @@ def prior_pred_check(setting_assumption):
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
     prior_pred = xr.open_dataset(f"{data_path}/generator.nc")
+    #print(prior_pred)
     fig, ax = plt.subplots(figsize = (15, 8))
     for target in setting_assumption['target_simulated_vector_names']:
-        ax.plot(prior_pred[target].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
+        ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
     ax.legend()
     plt.savefig(f"{plot_path}/prior_pred.png")
     return

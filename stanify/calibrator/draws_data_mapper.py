@@ -3,16 +3,15 @@ import os
 from stanify.builders.utilities import get_data_path
 import numpy as np
 def draws2data(model, draws2data_numeric_assumption, iter_sampling = 1):
-    path = get_data_path(model.model_name)
+    data_path = get_data_path(model.model_name)
     prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True, iter_sampling = iter_sampling)
-    prior_ppc.draws_pd(model.target_simulated_vector_names).to_pickle(f"{path}/generator.pkl")
-    prior_ppc.draws_xr().to_netcdf(f"{path}/generator.nc")
+    #prior_ppc.draws_pd(model.target_simulated_vector_names).to_pickle(f"{path}/generator.pkl")
+    prior_ppc.draws_xr().to_netcdf(f"{data_path}/generator.nc")
 
-    obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
-                model.target_simulated_vector_names}
-
+    # obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
+    #             model.target_simulated_vector_names}
     #TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
-    return prior_ppc, obs_dict
+    return prior_ppc # , obs_dict
 
 
 def data2draws(model, data2draws_numeric_assumption):
@@ -20,8 +19,10 @@ def data2draws(model, data2draws_numeric_assumption):
     # for key in model.target_simulated_vector_names:
     #     data2draws_numeric_assumption[f"{key}_obs"] = trunc4StanNegBinom(data2draws_numeric_assumption[f"{key}_obs"])
     data_path = get_data_path(model.model_name)
-    post_ppc = model.stanify_data2draws().sample(data=data2draws_numeric_assumption, chains = 2, iter_sampling = 100)
+    post_ppc = model.stanify_data2draws().sample(data=data2draws_numeric_assumption, chains = 2, iter_sampling = 100) #100
+    #if not os.path.exists(nc_path):
     post_ppc.draws_xr().to_netcdf(f"{data_path}/estimator.nc")
+
     return post_ppc
 
 
@@ -30,6 +31,20 @@ def trunc4StanNegBinom(real_series):
     """
     int_series = [math.trunc(i) for i in real_series]
     return int_series
+
+
+def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
+    data_path = get_data_path(model.model_name)
+    prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True,
+                                                  iter_sampling=iter_sampling)
+    nc_path = f"{data_path}/generator.nc"
+
+    prior_ppc.draws_xr().to_netcdf(nc_path)
+    obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
+                model.target_simulated_vector_names}
+    print("======", obs_dict)
+    # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
+    return prior_ppc.draws_xr()
 
 
 # def draws2data2draws():
@@ -50,20 +65,7 @@ def trunc4StanNegBinom(real_series):
 #     paramter_vector = [loglik(prior_ppc.sel(draw = d).sel(alpha_dim_0 = m,beta_dim_0 = m,gamma_dim_0 = m,delta_dim_0 = m, )['est_param'] for m in range(100)]
 #     rank[s] = sum(loglik(Y[s], param[s], model) < loglik(Y[s], param_tilde[s], model))
 
-def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
-    path = get_data_path(model.model_name)
-    prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True,
-                                                  iter_sampling=iter_sampling)
-    prior_ppc.draws_pd(model.target_simulated_vector_names).to_pickle(f"{path}/generator.pkl")
-    prior_ppc.draws_xr().to_netcdf(f"{path}/generator.nc")
 
-    obs_dict = {key: prior_ppc.draws_xr()[key + "_obs"].values.flatten() for key in
-                model.target_simulated_vector_names}
-
-    # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
-    return prior_ppc, obs_dict
-#
-#
 # # a. increase iter_sampling = 1` in`draws2data` draws from 1 to 10
 # # This can be done by increasing  `iter_sampling = 1` in [this](https://github.com/Data4DM/stanify/blob/8f64cf406d567cafce45a96cf356a31b704616c1/stanify/calibrator/draws_data_mapper.py#L7) following code:
 # # ```

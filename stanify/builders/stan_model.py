@@ -1,7 +1,6 @@
 from typing import Type
 import ast, glob, re
-
-import numpy
+import numpy as np
 
 from .stan_block_builder import *
 from .utilities import vensim_name_to_identifier
@@ -56,9 +55,9 @@ class StanModelContext:
     exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
 
-    def identify_stan_data_types(self, driving_data_vector):
+    def identify_stan_data_types(self, numeric_data_assumption):
         def get_dims(obj):
-            if isinstance(obj, numpy.ndarray):
+            if isinstance(obj, np.ndarray):
                 return obj.shape
             try:
                 iter(obj)
@@ -74,7 +73,7 @@ class StanModelContext:
                 else:
                     return [dim]
 
-        for key, val in driving_data_vector.items():
+        for key, val in numeric_data_assumption.items():
             if isinstance(val, int):
                 self.stan_data[key] = StanDataEntry(key, "int")
             elif isinstance(val, float):
@@ -108,7 +107,7 @@ class VensimModelContext:
                 if isinstance(component.ast, IntegStructure):
                     self.stock_variable_names.add(vensim_name_to_identifier(element.name))
                     break
-        print("abstract_model", abstract_model)
+
 
     def print_variable_info(self, abstract_model):
         var_names = []
@@ -137,7 +136,6 @@ class StanVensimModel:
         self.stan_model_dir = os.path.join(os.getcwd(), "stan_files")
         if not os.path.exists(self.stan_model_dir):
             os.mkdir(self.stan_model_dir)
-
         self.init_variable_regex = re.compile(".+?(?=__init$)")
         # This regex is to match all preceding characters that come before '__init' at the end of the string.
         # So something like stock_var_init__init would match into stock_var__init.
@@ -176,26 +174,80 @@ class StanVensimModel:
             self.stan_model_context.sample_statements.append(SamplingStatement(variable_name, distribution_type, *args, lower=lower, upper=upper, init_state=init_state))
 
 
-    def set_setting(self, est_param: list, target_simulated_vector_names: list, driving_vector_names: list, initial_time: float, model_name):
+    def set_setting(self, est_param: list, target_simulated_vector_names: list, driving_vector_names: list, model_name: str):
         self.est_param = est_param
         self.target_simulated_vector_names = target_simulated_vector_names
         self.driving_vector_names = driving_vector_names
-        self.initial_time = float(initial_time)
+
         self.model_name = model_name
 
-    def set_numeric(self, driving_data_vector: list):
-        self.driving_data_vector = {vensim_name_to_identifier(name): value for name, value in driving_data_vector.items()}
-        self.integration_times = self.driving_data_vector['time_step'].cumsum()
-        if self.initial_time in self.integration_times:
-            raise Exception("initial_time shouldn't be present in integration_times")
-        self.stan_model_context = StanModelContext(self.initial_time, self.integration_times)
+    # model_est = StanVensimModel(structural_assumption)
+    # model.update_numeric({"process_noise_scale": 0})
+    # model.update_setting({"model_name": "prey_predator_est"})
 
-        self.stan_model_context.identify_stan_data_types(driving_data_vector)
+    def update_setting(self, est_param: list, target_simulated_vector_names: list, driving_vector_names: list, model_name: str):
+        self.est_param = est_param
+        self.target_simulated_vector_names = target_simulated_vector_names
+        self.driving_vector_names = driving_vector_names
+        self.model_name = model_name
+        # if self.initial_time in self.integration_times:
+        #     raise Exception("initial_time shouldn't be present in integration_times")
 
-        for key in self.target_simulated_vector_names:
-            self.driving_data_vector[f"{key}_obs"] = self.integration_times
 
-        self.driving_data_vector["integration_times"] = self.integration_times
+    def set_numeric(self, numeric_data_assumption: list): #assumed_scalar: list, driving_data: list):
+        """
+        Parameters
+        ----------
+        numeric_data_assumption: dictionary to pass for stan data block and to initialize numeric component of the model
+        such as `n_t`, `time_step` (scalar or length `n_t` vector), and driving data
+
+        Returns
+        -------
+
+        """
+        if ('n_t' in numeric_data_assumption.keys() and 'time_step' in numeric_data_assumption.keys()):
+            self.time_step = numeric_data_assumption['time_step']
+            self.n_t = numeric_data_assumption['n_t']
+            self.integration_times = np.arange(0, self.n_t) * self.time_step + 0.01
+            self.stan_model_context = StanModelContext(0.0, self.integration_times)
+        else:
+            print(" 'n_t', `time_step` should be included in numeric_data_assumption!")
+        self.numeric_data_assumption = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
+        self.stan_model_context.identify_stan_data_types(self.numeric_data_assumption)
+        self.stan_model_context.exposed_parameters.update(["time_step"])
+        self.stan_model_context.exposed_parameters.update(["process_noise_scale"])
+
+        # for name in used_variable_names:
+        #     if name in self.vensim_model_context.variable_names and name not in self.vensim_model_context.stock_variable_names:
+        #         print("used_variable_names", name)
+        #         used_variable_names_stan.update()
+        #         self.stan_model_context.exposed_parameters.update(used_variable_names)
+        #self.initial_time = float(assumed_scalar['initial_time'])
+        # self.assumed_scalar = {vensim_name_to_identifier(name): value for name, value in assumed_scalar.items()}
+        # self.driving_data_vector = {vensim_name_to_identifier(name): value for name, value in driving_data.items()}
+        # self.stan_model_context.identify_stan_data_types(self.driving_data_vector)
+        # self.stan_model_context.identify_stan_data_types(self.assumed_scalar)
+        # self.stan_model_context.exposed_parameters.update(["time_step"])
+
+
+    def update_numeric(self,numeric_data_assumption: list):
+        """
+
+        Parameters
+        ----------
+        numeric_data_assumption
+        usage: model.update_numeric({'prey_obs': prior_pred_obs['prey_obs'], 'predator_obs': prior_pred_obs['predator_obs'],'process_noise_scale': 0.0 })
+        Returns
+        -------
+
+        """
+        updated_data = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
+        self.numeric_data_assumption.update(updated_data)
+        self.stan_model_context.identify_stan_data_types(updated_data)
+        print("self numeric==============", self.numeric_data_assumption)
+        # self.numeric_data_assumption = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
+        # self.stan_model_context.identify_stan_data_types(self.numeric_data_assumption)
+
 
     def build_stan_functions(self):
         """
@@ -207,7 +259,7 @@ class StanVensimModel:
         -------
 
         """
-        self.function_builder = StanFunctionBuilder(self.abstract_model, self.driving_data_vector)
+        self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric_data_assumption)
         function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.vensim_model_context.stock_variable_names)
         path = get_stanfiles_path(self.model_name)
 
@@ -227,7 +279,7 @@ class StanVensimModel:
         with open(stan_data2draws_path, "w") as f:
             # Include the function
             f.write("functions{\n")
-            f.write(f"    #include {self.model_name}_functions_delay.stan\n")
+            f.write(f"    #include {self.model_name}_functions.stan\n")
             f.write("}\n\n")
 
             f.write(StanDataBuilder(self.stan_model_context).build_block())
@@ -271,7 +323,7 @@ class StanVensimModel:
             # Include the function
             f.write("functions{")
             f.write("\n")
-            f.write(f"#include {self.model_name}_functions_delay.stan\n")
+            f.write(f"#include {self.model_name}_functions.stan\n")
             f.write("}")
             f.write("\n")
 
