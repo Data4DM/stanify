@@ -87,7 +87,7 @@ From `stanify`, S, M, N can be changed from the command above with `iter_samplin
 Use $\tilde{\alpha} =.55, \tilde{\beta}= .028, \tilde{\delta} = .024, \tilde{\gamma} = .8$ and inject  process noise. 
 
 
-## 2. Run MCMC for each Y dataset which returns one hundred sets of $\alpha_{1..100}, \beta_{1..100}, \gamma_{1..100}, \delta_{1..100}$ for each $\tilde{Y_s}$. Hundred posterior vectors for S =1 look like:
+## 2. Run MCMC for each Y dataset which returns one hundred sets of $\alpha_{1..100}, \beta_{1..100}, \gamma_{1..100}, \delta_{1..100}$ for each $\tilde{Y_s}$.
 
 
 ## 3. Calculate loglikelihood for given $Y_s$ 
