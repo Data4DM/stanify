@@ -270,6 +270,7 @@ class StanVensimModel:
                 raise Exception("Code generation aborted by user")
 
         with open(f"{path}/{self.model_name}_functions.stan", "w") as f:
+        #with open(f"{path}/{self.model_name}_functions_multi.stan", "w") as f:
             f.write(function_code)
 
     def stanify_data2draws(self):
