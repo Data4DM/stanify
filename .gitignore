@@ -4,10 +4,7 @@
 .Ruserdata
 *.vdfx
 *.vmfx
-.app
-*.nc
-*.hpp
-*.o
+.apps
 *.pkl
 
 *.pyc

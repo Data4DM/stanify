@@ -311,7 +311,7 @@ class StanVensimModel:
             f.write(Data2DrawsStanGQBuilder(self.stan_model_context, self.vensim_model_context,
                                             self.function_builder.ode_function_name).build_block())
 
-        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path)
+        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path) #TODO, compile = False
         return stan_model
 
     def stanify_draws2data(self):
@@ -352,7 +352,7 @@ class StanVensimModel:
             f.write(Draws2DataStanGQBuilder(self.stan_model_context, self.vensim_model_context,
                                             self.function_builder.ode_function_name).build_block(transformed_parameters_code=str(transformed_params_builder.code)))
 
-        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path)
+        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path) #TODO, compile = False
 
         return stan_model
 

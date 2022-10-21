@@ -18,10 +18,10 @@ setting_assumption = {
     "est_param" : ("alpha", "beta", "gamma", "delta"),
     "target_simulated_vector_names" : ("prey", "predator"),
     "driving_vector_names" : ("process_noise_uniform_driving"),
-    "model_name": "prey_predator_lognormal",
+    "model_name": "prey_predator_200n_t",
 }
 
-n_t = 20 # (final_time - initial_time)/time_step
+n_t = 200 # (final_time - initial_time)/time_step
 S = 1 # iter_sampling_draws2data
 numeric_data_assumption = {
     "n_t":n_t,
@@ -50,11 +50,11 @@ model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
 model.set_prior("m_noise_scale", "normal", 0.1, 0.001, lower = 0)
 
 for key in setting_assumption['target_simulated_vector_names']:
-    model.set_prior(f"{key}_obs", "lognormal", f"{key}", "m_noise_scale")
+    model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale") #lognormal
 
 model.build_stan_functions()
-obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = S) # compile + store data; for second run, you may only run the next line
-#obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
+#obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = S) # compile + store data; for second run, you may only run the next line
+obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
 
 obs_dict = {k: v.values.flatten() for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
 #obs_dict = {k: np.reshape(v.values, newshape = (iter_sampling_draws2data, n_t)) for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
@@ -68,7 +68,7 @@ for key, value in obs_dict.items():
 
 model.update_numeric({'prey_obs': obs_dict['prey_obs'], 'predator_obs': obs_dict['predator_obs'],'process_noise_scale': 0.0 })
 
-posterior = data2draws(model, numeric_data_assumption, iter_sampling = 1000)
-#posterior = xr.open_dataset(f"data/{setting_assumption['model_name']}/estimator.nc")
+#posterior = data2draws(model, numeric_data_assumption, chains = 4, iter_sampling = 1000)
+posterior = xr.open_dataset(f"data/{setting_assumption['model_name']}/estimator.nc")
 
 posterior_check(setting_assumption)
