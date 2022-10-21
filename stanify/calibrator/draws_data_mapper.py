@@ -26,8 +26,8 @@ def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
     data_path = get_data_path(model.model_name)
     prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)
-    nc_path = f"{data_path}/generator.nc"
-    prior_ppc.draws_xr().to_netcdf(nc_path)
+    # nc_path = f"{data_path}/generator.nc"
+    # prior_ppc.draws_xr().to_netcdf(nc_path)
     # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
     return prior_ppc.draws_xr()
 

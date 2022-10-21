@@ -3,6 +3,7 @@ import itertools
 from pathlib import Path
 from typing import Union, List, Dict, Set, Sequence, Iterable
 from numbers import Number
+import numpy as np
 from .ast_walker import *
 from .utilities import *
 from pysd.translators.structures.abstract_model import (

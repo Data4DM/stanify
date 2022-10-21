@@ -18,10 +18,11 @@ setting_assumption = {
     "est_param" : ("alpha", "beta", "gamma", "delta"),
     "driving_vector_names" : ("process_noise_uniform_driving"),
     "target_simulated_vector_names" : ("prey", "predator"),
-    "model_name": "prey_predator_1020",
+    "model_name": "prey_predator_lognormal",
 }
 
-n_t = 200
+n_t = 20
+iter_sampling_draws2data = 1
 numeric_data_assumption = {
     "n_t":n_t,
     "time_step": .03,
@@ -40,29 +41,32 @@ model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
 model.set_prior("beta", "normal", 0.05, 0.005, lower = 0)
 model.set_prior("delta", "normal", 0.05, 0.005, lower = 0)
 model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
+
 # no convergence
 # model.set_prior("alpha", "normal", 0.55, 0.055, lower = 0)
 # model.set_prior("beta", "normal", 0.028, 0.0028, lower = 0)
 # model.set_prior("delta", "normal", 0.024, 0.0024, lower = 0)
 # model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
-model.set_prior("m_noise_scale", "normal", 0.5, 0.05, lower = 0)
+model.set_prior("m_noise_scale", "normal", 0.1, 0.001, lower = 0)
 
 for key in setting_assumption['target_simulated_vector_names']:
-    model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
+    model.set_prior(f"{key}_obs", "lognormal", f"{key}", "m_noise_scale")
 
 model.build_stan_functions()
-prior_pred_obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = 30) # run this only once; it compiles and stores data
-#prior_pred_obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
+obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = iter_sampling_draws2data) # run this only once; it compiles and stores data
+#obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
 
-prior_pred_obs = {k: v.values.flatten() for (k,v) in prior_pred_obs_xr[['prey_obs','predator_obs']].items()}
-prior_pred_check(setting_assumption)
+obs_dict = {k: v.values.flatten() for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
+#obs_dict = {k: np.reshape(v.values, newshape = (iter_sampling_draws2data, n_t)) for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
+
+#prior_pred_check(setting_assumption)
 
 # estimator without process noise
 numeric_data_assumption["process_noise_scale"] = 0.0
-for key, value in prior_pred_obs.items():
+for key, value in obs_dict.items():
     numeric_data_assumption[key] = value
 
-model.update_numeric({'prey_obs': prior_pred_obs['prey_obs'], 'predator_obs': prior_pred_obs['predator_obs'],'process_noise_scale': 0.0 })
+model.update_numeric({'prey_obs': obs_dict['prey_obs'], 'predator_obs': obs_dict['predator_obs'],'process_noise_scale': 0.0 })
 
 posterior = data2draws(model, numeric_data_assumption, iter_sampling = 1000)
 #posterior = xr.open_dataset(f"data/{setting_assumption['model_name']}/estimator.nc")
