@@ -68,7 +68,3 @@ for key, value in obs_dict.items():
 
 model.update_numeric({'prey_obs': obs_dict['prey_obs'], 'predator_obs': obs_dict['predator_obs'],'process_noise_scale': 0.0 })
 
-#posterior = data2draws(model, numeric_data_assumption, chains = 4, iter_sampling = 1000)
-posterior = xr.open_dataset(f"data/{setting_assumption['model_name']}/estimator.nc")
-
-posterior_check(setting_assumption)
