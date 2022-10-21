@@ -16,13 +16,13 @@ structural_assumption = vf.get_abstract_model()
 # data for stan blocks
 setting_assumption = {
     "est_param" : ("alpha", "beta", "gamma", "delta"),
-    "driving_vector_names" : ("process_noise_uniform_driving"),
     "target_simulated_vector_names" : ("prey", "predator"),
+    "driving_vector_names" : ("process_noise_uniform_driving"),
     "model_name": "prey_predator_lognormal",
 }
 
-n_t = 20
-iter_sampling_draws2data = 1
+n_t = 20 # (final_time - initial_time)/time_step
+S = 1 # iter_sampling_draws2data
 numeric_data_assumption = {
     "n_t":n_t,
     "time_step": .03,
@@ -53,13 +53,13 @@ for key in setting_assumption['target_simulated_vector_names']:
     model.set_prior(f"{key}_obs", "lognormal", f"{key}", "m_noise_scale")
 
 model.build_stan_functions()
-obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = iter_sampling_draws2data) # run this only once; it compiles and stores data
+obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = S) # compile + store data; for second run, you may only run the next line
 #obs_xr = xr.open_dataset(f"data/{setting_assumption['model_name']}/generator.nc")
 
 obs_dict = {k: v.values.flatten() for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
 #obs_dict = {k: np.reshape(v.values, newshape = (iter_sampling_draws2data, n_t)) for (k,v) in obs_xr[['prey_obs','predator_obs']].items()}
 
-#prior_pred_check(setting_assumption)
+prior_pred_check(setting_assumption)
 
 # estimator without process noise
 numeric_data_assumption["process_noise_scale"] = 0.0

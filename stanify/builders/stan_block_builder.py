@@ -179,6 +179,52 @@ class StanModelBuilder:
         code.indent_level -= 1
         code += "}\n"
         return str(code)
+    # def build_block(self):
+    #     code = IndentedString()
+    #     code += "model{\n"
+    #     code.indent_level += 1
+    #
+    #     def get_dims(obj):
+    #         if isinstance(obj, np.ndarray):
+    #             return obj.shape
+    #         try:
+    #             iter(obj)
+    #         except:
+    #             return None
+    #         else:
+    #             dim = len(obj)
+    #             if dim == 1:
+    #                 return None
+    #             inner_dim = get_dims(obj[0])
+    #             if inner_dim:
+    #                 return [dim] + inner_dim
+    #             else:
+    #                 return [dim]
+    #
+    #     for statement in self.stan_model_context.sample_statements:
+    #         if statement.distribution_type != statement.assignment_dist: ##?
+    #             if "_obs" in f'{statement.lhs_expr}':
+    #
+    #                 code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+    #
+    #                 # Multidimensional data
+    #                 dims = get_dims(statement.lhs_expr)
+    #                 if len(dims) == 1:
+    #                     code += f"vector[{dims[0]}]"
+    #                     code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+    #                 elif len(dims) == 2:
+    #                     code += "for (t in (1:n_t)){"
+    #                     code.indent_level += 1
+    #                     code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+    #                     code.indent_level += 1
+    #                     code += "}"
+    #             else:
+    #                 code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+    #
+    #
+    #     code.indent_level -= 1
+    #     code += "}\n"
+    #     return str(code)
 
 
 class StanGeneratedQuantitiesBuilder:

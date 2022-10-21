@@ -13,17 +13,16 @@ vf = VensimFile('vensim_models/mngInven/mng_inven.mdl')
 vf.parse()
 structural_assumption = vf.get_abstract_model()
 
-n_t = 100 #(final_time - initial_time)/time_step 1600 int(18/0.0625)
+n_t = 100 # (final_time - initial_time)/time_step, int(18/0.0625)=1600
 time_step = .03
 S = 1 # iter_sampling_draws2data
 M = 100 # iter_sampling_data2draws
 
-# "ass_param_scalar" : ("inventory_coverage", "manufacturing_cycle_time", "safety_stock_coverage", "time_to_average_order_rate", "wip_adjustment_time"),
 setting_assumption = {
-    "est_param" : ("inventory_adjustment_time", "minimum_order_processing_time"),
+    "est_param" : ("wip_adjustment_time", "manufacturing_cycle_time", "inventory_adjustment_time", "target_delivery_delay", "minimum_order_processing_time","safety_stock_coverage"),
     "target_simulated_vector_names" : ("production_rate_stocked", "production_start_rate_stocked"),
     "driving_vector_names" : ("customer_order_rate", "m_noise_std_half_normal", "p_noise_std_normal"),
-    "model_name": "mngInven"
+    "model_name": "mngInven_6est"
 }
 
 # data for stan blocks
@@ -35,6 +34,7 @@ numeric_data_assumption = {
     'process_noise_scale': 0.1
 }
 
+
 for key in setting_assumption['target_simulated_vector_names']:
     numeric_data_assumption[f"{key}_obs"] = [0]*n_t
 
@@ -42,8 +42,12 @@ model = StanVensimModel(structural_assumption)
 model.set_numeric(numeric_data_assumption)
 model.set_setting(**setting_assumption)
 
-model.set_prior("inventory_adjustment_time", "normal", 7.00, 0.7, lower=0)
-model.set_prior("minimum_order_processing_time", "normal", 0.5, 0.05, lower=0)
+model.set_prior("wip_adjustment_time", "normal", 2, 0.02, lower=0)
+model.set_prior("manufacturing_cycle_time", "normal", 8, 0.08, lower=0)
+model.set_prior("inventory_adjustment_time", "normal", 8, 0.08, lower=0)
+model.set_prior("target_delivery_delay", "normal", 2, 0.02, lower=0)
+model.set_prior("minimum_order_processing_time", "normal", 2, 0.02, lower=0)
+model.set_prior("safety_stock_coverage", "normal", 2, 0.02, lower=0)
 
 model.set_prior("m_noise_scale", "normal", 0.01, 0.0005, lower = 0)
 
@@ -56,7 +60,7 @@ obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = S) # compile
 
 obs_dict = {k: v.values.flatten() for (k,v) in obs_xr[['production_rate_stocked_obs','production_start_rate_stocked_obs']].items()}
 # obs_xr[[f'{i}_obs' for i in setting_assumption['target_simulated_vector_names']]]
-prior_pred_check(setting_assumption)
+#prior_pred_check(setting_assumption)
 
 # estimator without process noise
 numeric_data_assumption["process_noise_scale"] = 0.0

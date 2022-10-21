@@ -22,19 +22,19 @@ generated quantities{
     real m_noise_scale = normal_rng(0.1, 0.001);
 
     // Initial ODE values
-    real predator__init = 4;
-    real process_noise__init = 0;
     real prey__init = 30;
+    real process_noise__init = 0;
+    real predator__init = 4;
 
     vector[3] initial_outcome;  // Initial ODE state vector
-    initial_outcome[1] = predator__init;
+    initial_outcome[1] = prey__init;
     initial_outcome[2] = process_noise__init;
-    initial_outcome[3] = prey__init;
+    initial_outcome[3] = predator__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, gamma, time_step, beta, alpha, delta, process_noise_scale);
-    array[n_t] real predator = integrated_result[:, 1];
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, delta, process_noise_scale, beta, time_step, gamma, alpha);
+    array[n_t] real prey = integrated_result[:, 1];
     array[n_t] real process_noise = integrated_result[:, 2];
-    array[n_t] real prey = integrated_result[:, 3];
+    array[n_t] real predator = integrated_result[:, 3];
 
     vector[20] prey_obs = to_vector(lognormal_rng(prey, m_noise_scale));
     vector[20] predator_obs = to_vector(lognormal_rng(predator, m_noise_scale));
