@@ -1,0 +1,586 @@
+{UTF-8}
+Desired minus Shadow PSR=
+	Production Start Rate-Production Start Rate Stocked
+	~	
+	~		|
+
+Desired minus Shadow PR=
+	Production Rate-Production Rate Stocked
+	~	
+	~		|
+
+Production Rate Stocked Change Rate=
+	Desired minus Shadow PR/TIME STEP
+	~	Widgets/(Week*Week)
+	~		|
+
+Production Start Rate Stocked Change Rate=
+	Desired minus Shadow PSR/TIME STEP
+	~	Widgets/(Week*Week)
+	~		|
+
+Customer Order Rate:INTERPOLATE:
+	~	Widgets/Week
+	~	Reference Throughput + 10 * RANDOM UNIFORM( 10, 10, 1234)
+	|
+
+Adjustment for WIP=
+	Desired minus State WIP/WIP Adjustment Time
+	~	Widgets/Week
+	~	The adjustment to the production start rate from the adequacy of WIP \
+		inventory.
+	|
+
+Adjustment from Inventory=
+	Desired minus State Inventory/Inventory Adjustment Time
+	~	Widgets/Week
+	~	The desired production rate is adjusted above or below the forecast based on the \
+		inventory position
+		        of the plant.  When desired inventory > inventory, desired production is \
+		increased (and
+		         vice-versa).  Inventory gaps are corrected over the inv. adj. \
+		time.
+	|
+
+Production Rate Stocked= INTEG (
+	Production Rate+Production Rate Stocked Change Rate,
+		Reference Throughput)
+	~	Widgets/Week
+	~	Reference Throughput
+	|
+
+Inventory= INTEG (
+	Production Rate-Shipment Rate,
+		Reference Throughput * (Safety Stock Coverage + Minimum Order Processing Time))
+	~	Widgets
+	~	Reference Throughput * 4
+		4 is Minimum order processing time  + safety stock coverage
+		The level of finished goods inventory in the plant.  Increased by production and \
+		decreased by
+		         shipments.  Initially set to the desired inventory level.
+	|
+
+Correlation Time=
+	TIME STEP * Correlation time over Time step
+	~	Week [0,50]
+	~	The correlation time constant for Pink Noise.
+	|
+
+Correlation time over Time step=
+	100
+	~	
+	~	100 * 0.03 = 3
+	|
+
+Production Start Rate Stocked= INTEG (
+	Production Start Rate+Production Start Rate Stocked Change Rate,
+		Reference Throughput)
+	~	Widgets/Week
+	~	Reference Throughput or
+	|
+
+Production Rate=
+	Work in Process Inventory/Manufacturing Cycle Time * MAX(0,One centered Process Noise\
+		)
+	~	Widgets/Week
+	~	Production is a first order delay of the production start rate, with the \
+		delay time determined by manufacturing cycle time.
+	|
+
+process noise change rate=
+	white minus process / Correlation Time
+	~	
+	~		|
+
+Desired minus State Inventory=
+	Desired Inventory-Inventory
+	~	Widgets
+	~		|
+
+Desired minus State WIP=
+	Desired WIP - Work in Process Inventory
+	~	
+	~		|
+
+White Noise=
+	4.89 * Correlation time over Time step^0.5* Process Noise Uniform Driving * Process Noise Scale
+	~	Dimensionless
+	~	White noise input to the process noise process. 4.89 = sqrt(24)
+	|
+
+Process Noise= INTEG (
+	process noise change rate,
+		0)
+	~	
+	~		|
+
+white minus process=
+	White Noise - Process Noise
+	~	
+	~		|
+
+One centered Process Noise=
+	1 + Process Noise
+	~	
+	~		|
+
+Work in Process Inventory= INTEG (
+	Production Start Rate-Production Rate,
+		Reference Throughput * Inventory Adjustment Time)
+	~	Widgets
+	~	WIP inventory accumulates the difference between production starts and \
+		completions. 8 is Manufacutring cycle time?
+	|
+
+Process Noise Uniform Driving:INTERPOLATE:
+	~	Dimensionless
+	~	RANDOM NORMAL(-6 , 6, 0 , 1 , 13)
+	|
+
+Reference Throughput=
+	170000
+	~	Widgets/Week
+	~		|
+
+Backlog= INTEG (
+	+Order Rate-Order Fulfillment Rate,
+		Order Rate * Target Delivery Delay)
+	~	Widgets
+	~	The firm's backlog of unfilled orders
+	|
+
+Change in Exp Orders=
+	(Customer Order Rate-Expected Order Rate)/Time to Average Order Rate
+	~	(Widgets/Week)/Week
+	~	The demand forecast adjusts to the actual order rate over a time period determined \
+		by the Time to
+		        Average Order Rate.  The demand forecast is formed by first-order \
+		exponential smoothing,
+		         a widely used forecasting technique.
+	|
+
+Desired Inventory = Desired Inventory Coverage*Expected Order Rate
+	~	Widgets
+	~	The desired inventory level sought by the plant.  Experience suggests that to \
+		maintain customer
+		        service by providing full and reliable deliveries, the plant must maintain a \
+		certain
+		         coverage of throughput (demand), estimated by the demand forecast.
+	|
+
+Desired Inventory Coverage=
+	 Minimum Order Processing Time + Safety Stock Coverage
+	~	Weeks
+	~	Desired inventory coverage is the number of weeks of the demand forecast the plant \
+		seeks to maintain
+		        in inventory.  This inventory coverage is required to maintain delivery \
+		reliability by
+		         buffering the plant against unforeseen variations in demand or \
+		production.  It consists of the normal order processing time plus an \
+		additional term representing the coverage desired to maintain safety \
+		stocks.
+	|
+
+Desired Production = MAX(0,Expected Order Rate+Adjustment from Inventory)
+	~	Widgets/Week
+	~	Desired Production is the demand forecast (Expected Order Rate) adjusted to bring \
+		the inventory
+		         position in line with the target inventory level.
+	|
+
+Desired Production Start Rate=
+	MAX(0,Desired Production + Adjustment for WIP)
+	~	Widgets/Week
+	~	The desired rate of production starts, equal to the desired production rate adjusted \
+		by the adequacy
+		         of the WIP inventory.
+	|
+
+Desired Shipment Rate=
+	Backlog/Target Delivery Delay
+	~	Widgets/Week
+	~	The desired shipment rate is determined by the backlog and the target \
+		delivery delay.
+	|
+
+Desired WIP=
+	Manufacturing Cycle Time*Desired Production
+	~	Widgets
+	~	The desired quantity of work in process inventory.  Proportional to the \
+		manufacturing cycle time and
+		         the desired rate of production.
+	|
+
+Expected Order Rate= INTEG (
+	Change in Exp Orders,
+		Customer Order Rate)
+	~	Widgets/Week
+	~	The demand forecast is formed by adaptive expectations, using exponential smoothing, \
+		a common
+		         forecasting technique.  The initial forecast is equal to the \
+		initial customer order rate.
+	|
+
+Inventory Adjustment Time = 8
+	~	Weeks
+	~	The inventory adjustment time is the time period over which the plant seeks to bring \
+		inventory in
+		         balance with the desired level.  Initially set to 8 weeks.
+	|
+
+Manufacturing Cycle Time=
+	8
+	~	Weeks
+	~	The average delay between the start and completion of production
+	|
+
+Maximum Shipment Rate=
+	Inventory/Minimum Order Processing Time
+	~	Widgets/Week
+	~	The maximum rate of shipments the firm can achieve given their current \
+		inventory level and the minimum order processing time.
+	|
+
+Minimum Order Processing Time=
+	2
+	~	Weeks
+	~	The minimum time required to process and ship an order.
+	|
+
+Process Noise Scale=
+	0.1
+	~	Dimensionless
+	~	The standard deviation of the pink noise process.
+	|
+
+Order Fulfillment Rate=
+	Shipment Rate
+	~	Widgets/Week
+	~	The order fulfillment rate is equal to the physical shipment rate.
+	|
+
+Order Fulfillment Ratio=
+	 Table for Order Fulfillment(Maximum Shipment Rate/Desired Shipment Rate)
+	~	Dimensionless
+	~	The Fraction of customer orders filled is determined by the ratio of the \
+		normal shipment rate to the desired rate.  The normal rate is the rate \
+		current inventory permits under normal circumstances.  Low inventory \
+		availability reduces shipments below customer orders.  Unfilled customer \
+		orders are lost.
+	|
+
+Order Rate=
+	Customer Order Rate
+	~	Widgets/Week
+	~	The incoming order rate, equal to customer orders.
+	|
+
+Production Start Rate = MAX(0,Desired Production Start Rate)
+	~	Widgets/Week
+	~	The production start rate is the desired production start rate, \
+		constrained to be nonnegative.
+	|
+
+Safety Stock Coverage=
+	2
+	~	Weeks
+	~	Safety stock coverage is the number of weeks of the expected order rate \
+		the firm would like to maintain in inventory over and above the normal \
+		order processing time.  The safety stock provides a buffer against the \
+		possibility that unforeseen variations in demand will cause shipments to \
+		fall below orders.
+	|
+
+Shipment Rate=
+	Desired Shipment Rate*Order Fulfillment Ratio
+	~	Widgets/Week
+	~	The shipment rate is the desired shipment rate multiplied by the fraction \
+		of orders filled (the order fulfillment ratio.   Shipments fall below \
+		desired shipments when the feasible shipment rate falls below the desired \
+		rate, indicating that some products are unavailable.
+	|
+
+Table for Order Fulfillment(
+	[(0,0)-(2,1)],(0,0),(0.2,0.2),(0.4,0.4),(0.6,0.58),(0.8,0.73),(1,0.85),(1.2,0.93),(1.4\
+		,0.97),(1.6,0.99),(1.8,1),(2,1),(2,1))
+	~	Dimensionless
+	~	The ability to ship is constrained by inventory availability.  As the inventory \
+		level drops, the 
+		        fraction of customer orders that can be filled decreases.  When inventory is \
+		zero, shipments
+		         cease.  Unfilled customer orders are lost.\!\!\!
+	|
+
+Target Delivery Delay=
+	2
+	~	Weeks
+	~	The firm's target for delivery time.
+	|
+
+Time to Average Order Rate = 8
+	~	Weeks
+	~	The demand forecast adjusts to actual customer orders over this time \
+		period.
+	|
+
+WIP Adjustment Time = 2
+	~	Weeks
+	~	The time required to adjust the WIP inventory to the desired level.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 100
+	~	Week
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Week
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 1
+	~	Week [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP=
+	0.03
+	~	Week [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,80,0
+10,1,Inventory,670,297,40,20,3,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+12,2,48,138,297,10,8,0,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+11,3,0,524,296,6,8,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||128-0-255,0,0,0,0,0,0
+10,4,Production Rate,524,325,42,21,40,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+12,5,48,1098,298,10,8,0,3,0,34,-1,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+11,6,0,875,298,6,8,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||128-0-255,0,0,0,0,0,0
+10,7,Shipment Rate,875,324,36,18,40,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,8,Desired Production,377,669,45,6,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,9,Adjustment from Inventory,641,496,34,10,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,10,Desired Inventory,739,545,47,19,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,11,Expected Order Rate,730,650,40,20,3,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+12,12,48,872,652,10,8,0,3,0,34,-1,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+11,13,0,817,652,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,14,Change in Exp Orders,817,666,52,6,40,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,15,Inventory Adjustment Time,581,435,40,10,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|251-2-7,0,0,0,0,0,0
+10,16,Desired Inventory Coverage,859,582,37,22,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,17,Time to Average Order Rate,928,762,39,10,8,3,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|17-128-64,0,0,0,0,0,0
+10,18,Order Fulfillment Ratio,871,429,57,27,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,19,Table for Order Fulfillment,931,506,56,21,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+10,20,Work in Process Inventory,376,297,40,20,3,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+11,21,0,257,297,6,8,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||128-0-255,0,0,0,0,0,0
+10,22,Production Start Rate,257,327,49,22,40,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,23,Manufacturing Cycle Time,482,402,34,10,8,3,0,35,0,0,0,0,17-128-64,0-0-0,Helvetica|||251-2-7,0,0,0,0,0,0
+10,24,Adjustment for WIP,377,478,49,22,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,25,Desired WIP,494,525,37,21,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,26,Desired Production Start Rate,216,471,40,23,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,27,WIP Adjustment Time,369,537,50,6,8,3,0,35,0,0,0,0,16-128-128,0-0-0,Helvetica|||251-2-7,0,0,0,0,0,0
+12,28,0,772,354,20,20,5,4,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+B
+12,29,0,774,391,39,13,8,4,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+Stockout
+12,30,0,601,352,20,20,4,4,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+B
+12,31,0,603,389,39,13,8,4,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+Inventory Control
+12,32,0,300,412,20,20,4,4,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+B
+12,33,0,302,449,39,13,8,4,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+WIP Control
+1,34,3,1,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(580,296)|
+1,35,3,20,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(467,296)|
+1,36,6,5,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(984,298)|
+1,37,6,1,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(789,298)|
+1,38,13,11,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(790,652)|
+1,39,13,12,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(842,652)|
+1,40,15,9,2,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(578,475)|
+1,41,16,10,2,0,43,0,1,0,0,0-0-0,|||0-0-0,1|(776,582)|
+1,42,11,10,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(743,603)|
+1,43,9,8,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(477,655)|
+1,44,11,8,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(553,699)|
+1,45,11,14,2,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(752,712)|
+1,46,17,14,0,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,47,18,7,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(867,378)|
+1,48,19,18,1,0,0,0,1,0,0,0-0-0,|||0-0-0,1|(879,457)|
+1,49,21,20,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(299,297)|
+1,50,21,2,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(199,297)|
+1,51,23,4,2,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(495,359)|
+1,52,23,25,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(513,471)|
+1,53,8,26,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(231,530)|
+1,54,26,22,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(223,367)|
+1,55,8,25,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(486,556)|
+1,56,24,26,2,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(287,515)|
+1,57,27,24,1,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(387,505)|
+10,58,Desired Shipment Rate,797,216,59,28,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,59,Maximum Shipment Rate,755,426,58,6,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,60,Minimum Order Processing Time,805,493,40,10,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||251-2-7,0,0,0,0,0,0
+1,61,1,59,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(717,389)|
+1,62,59,18,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(824,439)|
+1,63,60,59,1,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(757,467)|
+1,64,60,16,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(858,528)|
+10,65,Safety Stock Coverage,1028,567,51,23,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||251-2-7,0,0,0,0,0,0
+1,66,65,16,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(953,611)|
+10,67,Backlog,874,84,40,20,3,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+12,68,48,710,84,10,8,0,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,69,71,67,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(803,84)|
+1,70,71,68,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(740,84)|
+11,71,0,766,84,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,72,Order Rate,766,98,27,6,40,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+12,73,48,1031,83,10,8,0,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,74,76,73,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(999,83)|
+1,75,76,67,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(939,83)|
+11,76,0,971,83,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,77,Order Fulfillment Rate,971,97,51,6,40,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,78,58,6,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(815,253)|
+1,79,67,58,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(816,125)|
+1,80,6,77,1,0,43,0,1,192,0,0-0-0,|||0-0-0,1|(985,196)|
+10,81,Target Delivery Delay,670,213,33,33,8,3,0,34,0,0,0,0,0-0-0,0-0-0,Helvetica|||251-2-7,0,0,0,0,0,0
+1,82,81,58,1,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(745,193)|
+12,83,0,893,171,20,20,5,4,0,34,0,0,0,0,-1--1--1,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+B
+12,84,0,895,208,39,13,8,4,0,34,0,0,0,0,-1--1--1,-1--1--1,Helvetica||B|0-0-0,0,0,0,0,0,0
+Order Fulfillment
+10,85,Desired Shipment Rate,1085,430,37,53,8,2,0,35,-1,0,0,0,128-128-128,0-0-0,Helvetica||B|0-0-0,0,0,0,0,0,0
+1,86,85,18,1,0,45,0,1,192,0,0-0-0,|||0-0-0,1|(1003,441)|
+1,87,81,67,0,0,0,0,1,64,1,0-0-0,|||0-0-0,1|(0,0)|
+10,88,White Noise,754,-195,35,9,8,3,0,32,0,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,89,Process Noise Scale,647,-167,44,16,8,3,0,50,0,0,0,0,0-0-0,0-0-0,Helvetica|||15-128-255,0,0,0,0,0,0
+10,90,Correlation Time,945,-150,50,23,8,3,0,50,0,0,0,0,0-0-0,0-0-0,Helvetica|||17-128-64,0,0,0,0,0,0
+1,91,89,88,1,0,0,0,1,0,0,0-0-0,|||0-0-0,1|(714,-178)|
+10,92,Customer Order Rate,1126,661,63,23,8,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||15-128-255,0,0,0,0,0,0
+1,93,92,14,1,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(965,698)|
+1,94,92,72,1,0,0,0,1,64,0,0-0-0,|||0-0-0,1|(1120,92)|
+1,95,92,11,1,0,0,0,1,64,1,0-0-0,|||0-0-0,1|(924,624)|
+12,96,0,1820,71,163,43,8,7,0,2,-1,0,0,0,-1--1--1,-1--1--1,|||251-2-7,0,0,0,0,0,0
+Estimated Parameters are red
+12,97,0,1827,137,222,1,8,7,0,42,-1,0,0,0,-1--1--1,-1--1--1,Arial Black|12|B|0-64-0,0,0,0,0,0,0
+Assumed Parameters are dark green and bold
+1,98,20,4,1,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(437,323)|
+12,99,0,2231,154,163,43,8,7,0,2,-1,0,0,0,-1--1--1,-1--1--1,|||15-128-255,0,0,0,0,0,0
+Driving data variable is in blue
+12,100,0,2120,249,80,40,8,7,1,0,-1,0,0,0,0,0,0,0,0,0
+pu
+12,101,0,2175,336,80,40,8,7,1,0,-1,0,0,0,0,0,0,0,0,0
+Comment
+12,102,0,2172,255,80,40,8,7,1,0,-1,0,0,0,0,0,0,0,0,0
+Comment
+12,103,0,2277,71,80,40,8,7,0,2,-1,0,0,0,-1--1--1,-1--1--1,|||128-0-255,0,0,0,0,0,0
+Target simulated data variables are in purple|<<NnN>>|
+12,104,0,2196,-26,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+time series vector
+12,105,0,1822,-28,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+constant scalar
+10,106,Production Start Rate Stocked,359,-22,46,32,3,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,107,Production Rate Stocked,611,-32,54,23,3,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+12,108,48,225,-23,10,8,0,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,109,111,108,100,0,0,22,0,192,0,-1--1--1,,1|(245,-23)|
+1,110,111,106,4,0,0,22,0,192,0,-1--1--1,,1|(290,-23)|
+11,111,0,262,-23,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,112,Production Start Rate Stocked Change Rate,262,17,71,32,40,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+12,113,48,470,-33,10,8,0,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,114,116,113,100,0,0,22,0,192,0,-1--1--1,,1|(496,-33)|
+1,115,116,107,4,0,0,22,0,192,0,-1--1--1,,1|(540,-33)|
+11,116,0,518,-33,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,117,Production Rate Stocked Change Rate,518,7,54,32,40,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,118,Reference Throughput,53,737,46,23,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,119,TIME STEP,392,102,29,8,8,2,0,35,-1,0,0,0,128-128-128,0-0-0,Helvetica|||128-128-128,0,0,0,0,0,0
+1,120,119,112,1,0,0,0,1,64,0,0-0-0,|||0-0-0,1|(347,89)|
+1,121,119,117,1,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(442,74)|
+10,122,Process Noise Uniform Driving,575,-273,50,23,8,3,0,34,-1,0,0,0,0-0-0,0-0-0,Helvetica|||15-128-255,0,0,0,0,0,0
+1,123,122,88,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,124,118,20,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,125,118,1,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,126,22,106,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,127,4,107,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,128,60,1,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,129,65,1,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,130,118,106,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,131,118,107,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,132,15,20,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,133,Correlation time over Time step,832,-95,34,31,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,134,TIME STEP,1024,-76,50,13,8,2,0,35,-1,0,0,0,128-128-128,0-0-0,Helvetica|||15-128-255,0,0,0,0,0,0
+1,135,133,90,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,136,134,90,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,137,133,88,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+10,138,Process Noise,957,-262,58,23,3,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+12,139,48,748,-261,10,8,0,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,140,142,139,100,0,0,22,0,192,0,-1--1--1,,1|(790,-261)|
+1,141,142,138,4,0,0,22,0,192,0,-1--1--1,,1|(866,-261)|
+11,142,0,828,-261,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,143,process noise change rate,828,-230,58,23,40,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,144,white minus process,1016,-188,50,23,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,145,138,144,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,146,144,143,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,147,88,144,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+1,148,90,143,0,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(0,0)|
+10,149,Desired minus State WIP,374,389,35,22,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+10,150,Desired minus State Inventory,672,401,40,25,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,151,20,149,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,152,1,150,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,153,25,149,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,154,10,150,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,155,149,24,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,156,150,9,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,157,One centered Process Noise,468,260,41,16,8,3,0,32,-1,0,0,0,0-0-0,0-0-0,Helvetica|||0-0-0,0,0,0,0,0,0
+1,158,157,4,0,0,0,0,1,64,0,0-0-0,|||0-0-0,1|(0,0)|
+10,159,Process Noise,374,249,16,20,8,2,0,35,-1,0,0,0,128-128-128,0-0-0,Helvetica|||128-128-128,0,0,0,0,0,0
+1,160,159,157,1,0,0,0,0,192,0,-1--1--1,,1|(449,262)|
+10,161,Desired minus Shadow PSR,355,169,58,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,162,106,161,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,163,22,161,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,164,161,112,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,165,Desired minus Shadow PR,480,166,58,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,166,4,165,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,167,107,165,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,168,165,117,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+4:Time
+5:Safety Stock Coverage
+9:shadow_rate_reference
+19:80,0
+24:0
+25:99.99
+26:99.99
+22:Week,Weeks
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:1
+72:0
+73:0
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Courier|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
