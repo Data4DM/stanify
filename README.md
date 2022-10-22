@@ -30,7 +30,7 @@ Bridge from System dynamics ecosystem to Bayesian computation ecosystem on Stan
 
 
 
- - $*$ feature update by Oct.30 (* one-touch, **1 to many, ** hierarchical Bayes)
+-  feature update by Oct.30 (* one-touch, ** 1 to many, *** hierarchical Bayes)
 - if flow variable is targeted in vensim, _stocked_ strucutre should be built inside vensim (can use macro) as illustrated in inventory management demo
 
 ## High-bandwith Mechanism 🏭
