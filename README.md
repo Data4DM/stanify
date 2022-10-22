@@ -44,27 +44,28 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 	model.set_setting(setting, N)
 	model.set_numeric(numeric)
 	model.set_prior(prior)
-
-    target_simulated_obs = draws2data(model, S)
-    posterior = data2draws(model, target_simulated_obs, M)
+	
+	prior_sample = sample(model.prior, S) 
+	target_simulated_obs = draws2data(model, prior_sample)
+	for s in range(S):
+		posterior_sample[s] = data2draws(model, target_simulated_obs[s], M)
     
-	def draws2data(iter_sampling_draws2data)
-		return target_simulated_obs
+	def draws2data(model, prior_sample)
+		return generate(model, prior_sample).target_simulated_obs
 
 	
-	def data2draws(target_simulated_obs, M)
-		return posterior
+	def data2draws(model, target_simulated_obs, M)
+		return estimate(model, target_simulated_obs, M)
 
 
-	def diagnose(prior, posterior, test_quantity):
-	    return compare(test_quantity(prior), test_quantity(posterior))
+	def diagnose(prior_sample, posterior_sample, ,target_simulated_obs, test_quantity):
+	    return compare(test_quantity(prior_sample), test_quantity(posterior_sample))
 
-
-    return diagnose(prior, posterior, loglik)
+    return diagnose(prior_sample, posterior_sample, target_simulated_obs, ('loglik'))
 ```
 
 
-## Low-bandwith Mechanism ⚙️
+## Line by line Mechanism ⚙️ (tbc)
 ![image](https://user-images.githubusercontent.com/30194633/196929921-5c26a53d-15ab-4362-afad-593b4821c31c.png)
 
 Stanify maps vensim file to stan files. From snippet below, 
