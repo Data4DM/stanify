@@ -1,5 +1,5 @@
 # stanify 
-Bridge from System dynamics ecosystem to Bayesian computation ecosystem on Stan
+Bridge from System dynamics ecosystem to Bayesian computation ecosystem on [Stan](mc-stan.org)
 
 ## Map 🗺
 
