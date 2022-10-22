@@ -129,7 +129,7 @@ class VensimModelContext:
             print(x[0].ljust(max_length) + x[1].ljust(max_length) + ("V" if x[2] else ""))
 
 
-class StanVensimModel:
+class vensim2stan:
     def __init__(self, abstract_model):
         self.abstract_model = abstract_model
         self.vensim_model_context = VensimModelContext(self.abstract_model)
@@ -181,7 +181,7 @@ class StanVensimModel:
 
         self.model_name = model_name
 
-    # model_est = StanVensimModel(structural_assumption)
+    # model_est = vensim2stan(structural_assumption)
     # model.update_numeric({"process_noise_scale": 0})
     # model.update_setting({"model_name": "prey_predator_est"})
 
@@ -270,7 +270,6 @@ class StanVensimModel:
                 raise Exception("Code generation aborted by user")
 
         with open(f"{path}/{self.model_name}_functions.stan", "w") as f:
-        #with open(f"{path}/{self.model_name}_functions_multi.stan", "w") as f:
             f.write(function_code)
 
     def stanify_data2draws(self):

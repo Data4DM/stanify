@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pysd.translators.vensim.vensim_file import VensimFile
 from stanify.calibrator.draws_data_mapper import  draws2data, data2draws
-from stanify.builders.stan_model import StanVensimModel
+from stanify.builders.stan_model import vensim2stan
 from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 
 # generator with process noise
@@ -38,7 +38,7 @@ numeric_data_assumption = {
 for key in setting_assumption['target_simulated_vector_names']:
     numeric_data_assumption[f"{key}_obs"] = [0]*n_t
 
-model = StanVensimModel(structural_assumption)
+model = vensim2stan(structural_assumption)
 model.set_numeric(numeric_data_assumption)
 model.set_setting(**setting_assumption)
 

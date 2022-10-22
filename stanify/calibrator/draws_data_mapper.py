@@ -2,6 +2,8 @@ import math
 import os
 import matplotlib.pyplot as plt
 from stanify.builders.utilities import get_data_path
+from stanify.builders.stan_model import vensim2stan
+from pysd.translators.vensim.vensim_file import VensimFile
 import numpy as np
 import cmdstanpy
 
@@ -23,7 +25,7 @@ def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
     # ax.legend()
     # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
     prior_ppc = cmdstanpy.CmdStanModel(
-        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data_multi.stan").sample(data=draws2data_numeric_assumption, fixed_param=True,
+        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data.stan").sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)  # neg_binom doesn't receive vector; manual add for loop in stanfile
     prior_ppc.draws_xr().to_netcdf(nc_path)
     return prior_ppc.draws_xr()
@@ -38,9 +40,29 @@ def data2draws(model, data2draws_numeric_assumption, chains, iter_sampling):
     # if not os.path.exists(nc_path):
     post_ppc.draws_xr().to_netcdf(f"{data_path}/estimator.nc")
     post_ppc = cmdstanpy.CmdStanModel(
-        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws_multi.stan").sample(data=data2draws_numeric_assumption, chains=chains,
+        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws.stan").sample(data=data2draws_numeric_assumption, chains=chains,
                                                  iter_sampling=iter_sampling)   # neg_binom doesn't receive vector; manual add for loop in stanfile
     return post_ppc
+
+
+# def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
+#     vf = VensimFile(vensim)
+#     vf.parse()
+#     structural_assumption = vf.get_abstract_model()
+#
+#     model = vensim2stan(structural_assumption)
+#     model.set_setting(setting, N)
+#     model.set_numeric(numeric)
+#     model.set_prior(prior)
+#
+#     target_simulated_obs = draws2data(model, S)
+#     posterior = data2draws(model, target_simulated_obs, M)
+#
+#     return diagnose(prior, posterior, loglik)
+#
+#
+# def diagnose(prior, posterior, test_quantity):
+#     return compare(test_quantity(prior), test_quantity(posterior))
 
 # def draws2data2draws():
 # # simulation-based calibration
