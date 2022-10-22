@@ -1,6 +1,61 @@
 # stanify 
 Bridging System dynamics tool (Vensim) and Bayesian computation tool (Stan)
 
+## Map 🗺
+
+|                         | in stanify       | definition                                                               | in vensim                                           | usecase in demo                                                                                                                                   |
+| ----------------------- | ------------------------ | ------------------------------------------------------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| stanify command         |                          |                                                                          |                                                     |                                                                                                                                        |
+|                         | `draws2data`             |                                                                          |     run                                                |                                                                                                                                        |
+|                         | `data2draws`             |                                                                          |      MCMC                                               |                                                                                                                                        |
+|                         | `draws2data2draws`       |                                                                          |                                                     |                                                                                                                                        |
+|                         | `model.set_prior()`      | `estimated_parameter`  and its prior distribution                        | `.voc` has names of `estimated_parameter` and range | model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)                                                                                                                              |
+|                         |`model.set_numeric()`                   |      assuming specific prior distribution to `estiamted parameter`                                                                     |                                                     |                                                                                                                                        |
+|                         | `model.update_numeric()` | difference between generator and estimator                               |                                                     |                                                                                                                                        |
+| model assumption        |                          |                                                                          |                                                     |                                                                                                                                        |
+|                         | `vensim`                 | mdl filepath                                                             | .                                                   | `vensim_files/prey_predator.mdl`                                                                                                       |
+|                         | `setting`                | names of `estimated_parameter`, `target_simulated_stock`, `driving_data` | binding parameter, target, driving                  | { 'estimated_parameter':('alpha', 'delta',), 'driving_vector_name': 'process_noise_uniform', 'target_simulated': ('prey', 'predator')} |
+|                         | `numeric`                | prior information for estimated parameters                               |                                                     | {'alpha': (0.8, 0.08, 'normal'),'delata':  (0.05, 0.005, 'normal')}                                                                    |
+| classification settings |                          |                                                                          |                                                     |    $\alpha, \delta$                                                                                                                                    |
+|                         |`estimated_parameter`       |                                                                          | parameters in `.voc `                      |                                                                                                                                        |
+|                         |  `assumed_parameter`   |                                                                          |   all parameters in `.mdl` except `estimated_parameter`                                                     | $\beta: .55, \gamma: .8$                                                                                                                                      |
+| numeric settings        |                          |                                                                          |                                                     |                                                                                                                                        |
+|                         | `S`                      | # of draws from prior                                                    | # of sensitivity check run                          | 1*                                                                                                                                     |
+|                         | `M`                      | # of draws from posterior (# of chains * # of draws from each chain)     |                                                     | 4 * 100                                                                                                                                |
+|                         | `N`                      | length of `driving_data`                                                 |                                                     | 200                                                                                                                                    |
+|                         | `P`                      | # of `estimated_parameter`                                               |                                                     | 2 ($\alpha, \delta$)| classification settings |                          |                                                                          |                                                     |    $\alpha, \delta$                                                                                                                                    |                                                                                                                  |
+|                         | `Q`                      | # of `target_simulated_stock`                                            |                                                     | 2 (prey, predator)                                                                                                                     |
+|                         | `R`**                      | # of subscript range                                                     |                                                     | 2 region: R1, R2                                                                                                                       |
+
+
+ - $*$ feature update by Oct.30 (*1 to many, ** add hierarchy)
+- if flow variable is targeted in vensim, _stocked_ strucutre should be built inside vensim (can use macro) as illustrated in inventory management demo
+
+## High-bandwith Mechanism 🏭
+stanify is a machine that asks for `vensim`, `setting`,`numeric`, S, M, N and returns graphical and numeric diagnostics. Below is abstracted mechanism of its one-click function `draws2data2draws`.
+
+```
+def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
+	model = Vensim2Stan(vensim)
+	model.set_setting(setting, N)
+	model.set_numeric(numeric)
+	model.set_prior(prior)
+
+	target_simulated_obs = draws2data(model, S)
+	posterior = data2draws(model, target_simulated_obs, M)
+	
+	def draws2data(iter_sampling_draws2data)
+		return target_simulated_obs
+
+	
+	def data2draws(target_simulated_obs, M)
+		return posterior
+		
+	return diagnose(prior, posterior, test_quantities)
+```
+
+
+## Low-bandwith Mechanism ⚙️
 ![image](https://user-images.githubusercontent.com/30194633/196929921-5c26a53d-15ab-4362-afad-593b4821c31c.png)
 
 Stanify maps vensim file to stan files. From snippet below, 
