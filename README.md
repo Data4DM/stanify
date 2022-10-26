@@ -49,6 +49,7 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 	
 	prior_sample = sample(model.prior, S) 
 	target_simulated_obs = draws2data(model, prior_sample)
+	
 	for s in range(S):
 		posterior_sample[s] = data2draws(model, target_simulated_obs[s], M)
     
@@ -63,7 +64,7 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 	def diagnose(prior_sample, posterior_sample, ,target_simulated_obs, test_quantity):
 	    return compare(test_quantity(prior_sample), test_quantity(posterior_sample))
 
-    return diagnose(prior_sample, posterior_sample, target_simulated_obs, ('loglik'))
+    return diagnose(prior_sample, posterior_sample, target_simulated, target_simulated_obs, ('loglik'))
 ```
 
 
