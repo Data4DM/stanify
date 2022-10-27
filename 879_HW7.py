@@ -39,7 +39,7 @@ model.set_setting(**setting_assumption)
 
 model.set_prior("prey_birth_frac", "normal", 0.8, 0.08, lower = 0)
 model.set_prior("pred_birth_frac", "normal", 0.05, 0.005, lower = 0)
-model.set_prior("m_noise_scale", "beta", 2, 2, lower = 0)
+model.set_prior("m_noise_scale", "normal", .1, .01, lower = 0)
 
 for key in setting_assumption['target_simulated_vector_names']:
     model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")

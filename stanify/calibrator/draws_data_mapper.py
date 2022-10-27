@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from stanify.builders.utilities import get_data_path
 from stanify.builders.stan_model import vensim2stan
 from pysd.translators.vensim.vensim_file import VensimFile
+from stanify.calibrator.visualizer import prior_pred_check, posterior_check
 import numpy as np
 import cmdstanpy
 
@@ -31,7 +32,7 @@ def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
     return prior_ppc.draws_xr()
 
 
-def data2draws(model, data2draws_numeric_assumption, chains, iter_sampling):
+def data2draws(model, data2draws_numeric_assumption, chains = 4, iter_sampling = 250):
     # for key in model.target_simulated_vector_names:
     #     data2draws_numeric_assumption[f"{key}_obs"] = trunc4StanNegBinom(data2draws_numeric_assumption[f"{key}_obs"])
     data_path = get_data_path(model.model_name)
@@ -45,24 +46,49 @@ def data2draws(model, data2draws_numeric_assumption, chains, iter_sampling):
     return post_ppc
 
 
-# def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
-#     vf = VensimFile(vensim)
-#     vf.parse()
-#     structural_assumption = vf.get_abstract_model()
-#
-#     model = vensim2stan(structural_assumption)
-#     model.set_setting(setting, N)
-#     model.set_numeric(numeric)
-#     model.set_prior(prior)
-#
-#     target_simulated_obs = draws2data(model, S)
-#     posterior = data2draws(model, target_simulated_obs, M)
-#
-#     return diagnose(prior, posterior, loglik)
-#
-#
-# def diagnose(prior, posterior, test_quantity):
-#     return compare(test_quantity(prior), test_quantity(posterior))
+def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
+
+    for key in setting['target_simulated_vector_names']: #TODO too sensitive order prey_obs = normal_rng doesn't comes in the end
+        numeric[f"{key}_obs"] = [0] * N
+
+    vf = VensimFile(vensim)
+    vf.parse()
+    structural_assumption = vf.get_abstract_model()
+
+    model = vensim2stan(structural_assumption)
+    model.set_numeric(numeric)
+    model.set_setting(**setting)
+
+    for p in prior:
+        model.set_prior(p[0], p[1], p[2], p[3], lower = p[4])
+
+    for key in setting['target_simulated_vector_names']:
+        model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
+
+    model.build_stan_functions()
+    obs_xr = draws2data(model, numeric, iter_sampling=S)
+    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
+    obs_dict = {k: v.values.flatten() for (k, v) in obs_xr[setting_obs].items()}
+   # TODO separately deliver S
+    prior_pred_check(setting)
+    numeric["process_noise_scale"] = 0.0
+
+    for key, value in obs_dict.items():
+        numeric[key] = value
+
+    for i in setting['target_simulated_vector_names']:
+        model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
+    model.update_numeric({'process_noise_scale': 0.0})
+
+    posterior = data2draws(model, numeric, chains=4, iter_sampling=int(M/4))
+    #TODO combine S
+    posterior_check(setting)
+    diagnose(prior, posterior, 'loglik')
+    return
+
+
+def diagnose(prior, posterior, test_quantity):
+    return compare(test_quantity(prior), test_quantity(posterior))
 
 # def draws2data2draws():
 # # simulation-based calibration

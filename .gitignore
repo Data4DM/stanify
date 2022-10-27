@@ -6,7 +6,10 @@
 *.vmfx
 .apps
 *.pkl
-
+**/*.hpp
+**/*.nc
+**/*.hpp
+**/*.o
 *.pyc
 .ipynb_checkpoints/
 build/
