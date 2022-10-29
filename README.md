@@ -10,7 +10,7 @@ reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}
 | stanify command         |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
 |                         | `draws2data(model, S)`              | generate: map from parameter $\theta$ region to observation $Y$ region   | run                                                                                   |                                                                                                                                                            |
 |                         | `data2draws(model, M)`              | estimate: map from observation $Y$ region to parameter $\theta$ region   | MCMC                                                                                  |                                                                                                                                                            |
-|                         | `draws2data2draws(model, S, M, N)`* | composition of `draws2data` and `data2draws`                             | x                                                                                     |                                                                                                                                                            |
+|                         | `draws2data2draws(model, S, M, N)` | composition of `draws2data` and `data2draws`                             | x                                                                                     |                                                                                                                                                            |
 |                         | `model.set_prior()`                 | `estimated_parameter`  and its prior distribution                        | `.voc` has names of `estimated_parameter` and range                                   | model.set_prior("prey_birth_frac", "normal", 0.8, 0.08, lower = 0), model.set_prior("pred_birth_frac", "normal", 0.05, 0.005, lower = 0)                   |
 |                         | `model.set_numeric()`               | assign numeric vector to `driving data`                                  |                                                                                       |                                                                                                                                                            |
 |                         | `model.update_numeric()`            |                                                                          | assign numeric scalar to `assumed_parameter`, assign numeric vector to `driving data` | express difference between generator and estimator                                                                                                         |
@@ -34,7 +34,7 @@ reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}
 |                         |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
 
 
--  feature update by Oct.30 (* one-touch, ** 1 to many, *** hierarchical Bayes, ** **  add auto-multiplicative)
+-  feature update by Oct.30 (** 1 to many, *** hierarchical Bayes, ** **  add auto-multiplicative)
 - if flow variable is targeted in vensim, _stocked_ strucutre should be built inside vensim (can use macro) as illustrated in inventory management demo
 
 ## High-bandwith Mechanism 🏭
@@ -62,9 +62,10 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 
 
 	def diagnose(prior_sample, posterior_sample, ,target_simulated_obs, test_quantity):
-	    return compare(test_quantity(prior_sample), test_quantity(posterior_sample))
+	    return compare(test_quantity(prior_sample, target_simulated, target_simulated_obs, target_obs), 
+	    		   test_quantity(posterior_sample, target_simulated, target_simulated_obs, target_obs))
 
-    return diagnose(prior_sample, posterior_sample, target_simulated, target_simulated_obs, ('loglik'))
+    return diagnose(prior_sample, posterior_sample, target_simulated, target_simulated_obs, target_obs, ('loglik'))
 ```
 
 
