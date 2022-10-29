@@ -37,7 +37,7 @@ reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}
 -  feature update by Oct.30 (** 1 to many, *** hierarchical Bayes, ** **  add auto-multiplicative)
 - if flow variable is targeted in vensim, _stocked_ strucutre should be built inside vensim (can use macro) as illustrated in inventory management demo
 
-## High-bandwith Mechanism 🏭
+## Abstracted Mechanism 🏭
 stanify is a machine that asks for `vensim`, `setting`,`numeric`, S, M, N and returns graphical and numeric diagnostics. Below is abstracted mechanism of its one-click function `draws2data2draws`.
 
 ```
