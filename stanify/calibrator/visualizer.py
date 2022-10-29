@@ -24,14 +24,19 @@ def posterior_check(setting_assumption):
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
     posterior = xr.open_dataset(f"{data_path}/estimator.nc")
-    for est_param in setting_assumption['est_param']:
-        df = pd.DataFrame()
-        for chain in posterior.chain.values:
-            df[f"{chain}"] = pd.DataFrame(posterior[f'{est_param}'].sel(chain=chain))
-        df.plot()
-        plt.savefig(f"{plot_path}/posterior_{est_param}.png")
-        df.hist()
-        plt.savefig(f"{plot_path}/posterior_{est_param}_hist.png")
+
+    # TODO how to separate S and plot
+    # TODO draw is reserved for posterior but coordinate for prior_draw need to added
+
+    for s in range(len(posterior.draw)):
+        for est_param in setting_assumption['est_param']:
+            df = pd.DataFrame()
+            for chain in posterior.chain.values:
+                df[f"{chain}"] = pd.DataFrame(posterior[f'{est_param}'].sel(chain=chain, draw = s))
+            df.plot()
+            plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
+            df.hist()
+            plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_hist.png")
     return
 
 

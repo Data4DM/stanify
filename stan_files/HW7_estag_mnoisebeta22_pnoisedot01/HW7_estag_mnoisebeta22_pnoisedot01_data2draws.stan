@@ -24,19 +24,19 @@ parameters{
 
 transformed parameters {
     // Initial ODE values
-    real prey__init = 30;
-    real process_noise__init = 0;
     real predator__init = 4;
+    real process_noise__init = 0;
+    real prey__init = 30;
 
     vector[3] initial_outcome;  // Initial ODE state vector
-    initial_outcome[1] = prey__init;
+    initial_outcome[1] = predator__init;
     initial_outcome[2] = process_noise__init;
-    initial_outcome[3] = predator__init;
+    initial_outcome[3] = prey__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, process_noise_scale, time_step, prey_birth_frac, pred_birth_frac);
-    array[n_t] real prey = integrated_result[:, 1];
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, pred_birth_frac, process_noise_scale, prey_birth_frac, time_step);
+    array[n_t] real predator = integrated_result[:, 1];
     array[n_t] real process_noise = integrated_result[:, 2];
-    array[n_t] real predator = integrated_result[:, 3];
+    array[n_t] real prey = integrated_result[:, 3];
 }
 
 model{

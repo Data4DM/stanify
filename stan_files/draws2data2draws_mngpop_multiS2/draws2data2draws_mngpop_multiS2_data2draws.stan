@@ -1,5 +1,5 @@
 functions{
-    #include draws2data2draws_mngpop_functions.stan
+    #include draws2data2draws_mngpop_multiS2_functions.stan
 }
 
 data{
@@ -7,8 +7,8 @@ data{
     real time_step;
     vector[20] process_noise_uniform_driving;
     real process_noise_scale;
-    vector[40] prey_obs;
-    vector[40] predator_obs;
+    vector[20] prey_obs;
+    vector[20] predator_obs;
 }
 
 transformed data{
@@ -17,39 +17,39 @@ transformed data{
 }
 
 parameters{
+    real<lower=0> m_noise_scale;
     real<lower=0> pred_birth_frac;
     real<lower=0> prey_birth_frac;
-    real<lower=0> m_noise_scale;
 }
 
 transformed parameters {
     // Initial ODE values
     real predator__init = 4;
-    real prey__init = 30;
     real process_noise__init = 0;
+    real prey__init = 30;
 
     vector[3] initial_outcome;  // Initial ODE state vector
     initial_outcome[1] = predator__init;
-    initial_outcome[2] = prey__init;
-    initial_outcome[3] = process_noise__init;
+    initial_outcome[2] = process_noise__init;
+    initial_outcome[3] = prey__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, time_step, prey_birth_frac, process_noise_scale, pred_birth_frac);
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, time_step, process_noise_scale, pred_birth_frac, prey_birth_frac);
     array[n_t] real predator = integrated_result[:, 1];
-    array[n_t] real prey = integrated_result[:, 2];
-    array[n_t] real process_noise = integrated_result[:, 3];
+    array[n_t] real process_noise = integrated_result[:, 2];
+    array[n_t] real prey = integrated_result[:, 3];
 }
 
 model{
+    m_noise_scale ~ normal(0.1, 0.01);
     pred_birth_frac ~ normal(0.05, 0.005);
     prey_birth_frac ~ normal(0.8, 0.08);
-    m_noise_scale ~ normal(0.1, 0.01);
     prey_obs ~ normal(prey, m_noise_scale);
     predator_obs ~ normal(predator, m_noise_scale);
 }
 
 generated quantities{
-    vector[40] prey_obs_posterior = to_vector(normal_rng(prey, m_noise_scale));
-    vector[40] predator_obs_posterior = to_vector(normal_rng(predator, m_noise_scale));
+    vector[20] prey_obs_posterior = to_vector(normal_rng(prey, m_noise_scale));
+    vector[20] predator_obs_posterior = to_vector(normal_rng(predator, m_noise_scale));
 
     real loglik;
     loglik += normal_lpdf(prey_obs|prey, m_noise_scale);

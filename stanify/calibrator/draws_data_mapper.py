@@ -47,14 +47,17 @@ def data2draws(model, data2draws_numeric_assumption, chains = 4, iter_sampling =
 
 
 def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
-
+    # set vectors to match
+    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
     for key in setting['target_simulated_vector_names']: #TODO too sensitive order prey_obs = normal_rng doesn't comes in the end
         numeric[f"{key}_obs"] = [0] * N
 
+    # set vectors to match
     vf = VensimFile(vensim)
     vf.parse()
     structural_assumption = vf.get_abstract_model()
 
+    # configure structural, numeric, setting model components
     model = vensim2stan(structural_assumption)
     model.set_numeric(numeric)
     model.set_setting(**setting)
@@ -66,73 +69,37 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
         model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
 
     model.build_stan_functions()
-    obs_xr = draws2data(model, numeric, iter_sampling=S)
-    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
-    obs_dict = {k: v.values.flatten() for (k, v) in obs_xr[setting_obs].items()}
-   # TODO separately deliver S
+    sbc_xr = draws2data(model, numeric, iter_sampling=S)
+
     prior_pred_check(setting)
     numeric["process_noise_scale"] = 0.0
+    sbc_xr.assign_coords({'prior_draw': [s for s in range(S)]})
 
-    for key, value in obs_dict.items():
-        numeric[key] = value
+    for s in range(S):
+        sbc_xr_s = sbc_xr[setting_obs].sel(draw=s)
+        obs_dict_s = {k: v.values.flatten() for (k, v) in sbc_xr_s[setting_obs].items()}
+        for key, value in obs_dict_s.items():
+            numeric[key] = value
 
-    for i in setting['target_simulated_vector_names']:
-        model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
-    model.update_numeric({'process_noise_scale': 0.0})
+        for target_name in setting['target_simulated_vector_names']:
+            model.update_numeric({f'{target_name}_obs': obs_dict_s[f'{target_name}_obs']})
+        model.update_numeric({'process_noise_scale': 0.0})
 
-    posterior = data2draws(model, numeric, chains=4, iter_sampling=int(M/4))
-    #TODO combine S
-    posterior_check(setting)
-    diagnose(prior, posterior, 'loglik')
-    return
+        posterior_s = data2draws(model, numeric, chains=4, iter_sampling=int(M/4))
+        sbc_xr['prior_draw' == s].update(posterior_s)
 
+        posterior_check(setting)
+    data_path = get_data_path(model.model_name)
+    sbc_xr.to_netcdf(f"{data_path}/sbc.nc")
+    test_q_lst = ['loglik']
+    return diagnose(sbc_xr, test_q_lst)
 
-def diagnose(prior, posterior, test_quantity):
-    return compare(test_quantity(prior), test_quantity(posterior))
+def diagnose(sbc_xr, test_quantity): #TODO variable-wise?
 
-# def draws2data2draws():
-# # simulation-based calibration
-# # it
-# # Code
-#
-# numeric_assumption = {
-#     "n_t": n_t,
-#     "process_noise_std_norm_data": np.random.normal(0, 1, size=n_t),
-# }
-#
-# prior_ppc = draws2data(model, numeric_assumption, iter_sampling = 30)[0]
-# # 30 by n_t matrix)
-# Y_1..S =[loglik(prior_ppc.sel(draw = d)['est_param'] for d in range(30)]
-# rank = list()
-# for s in range(S):
-#     paramter_vector = [loglik(prior_ppc.sel(draw = d).sel(alpha_dim_0 = m,beta_dim_0 = m,gamma_dim_0 = m,delta_dim_0 = m, )['est_param'] for m in range(100)]
-#     rank[s] = sum(loglik(Y[s], param[s], model) < loglik(Y[s], param_tilde[s], model))
-
-
-# # a. increase iter_sampling = 1` in`draws2data` draws from 1 to 10
-# # This can be done by increasing  `iter_sampling = 1` in [this](https://github.com/Data4DM/stanify/blob/8f64cf406d567cafce45a96cf356a31b704616c1/stanify/calibrator/draws_data_mapper.py#L7) following code:
-# # ```
-# # prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True, iter_sampling = 1)
-# # ```
-# #
-# # b. invent **xarray command** that first selects by `draw`, which then parallely deliver $Y_s$ (each 2*20) as input of `data2draws`. `data2draws` runs thirty times with different value of $Y_s$. This happens in demofile e.g.
-# # ```
-# # for key, value in prior_pred_obs[1].items():
-# #     numeric_assumption[key + "_obs"] = value
-# # ```
-# #
-# # c. loglikelihood function  input is parameter value and output i
-# #
-# #     return
-#
-# def loglik(Y, parmater_vector, model):
-# """
-# Y: P * N
-# parmater_vector:
-# """
-#     for key, value in prior_pred_obs[1].items():
-#         numeric_assumption[key + "_obs"] = Y
-#
-#     posterior = data2draws(model, numeric_assumption)
-#
-#     return posterior.loglik
+    prior_sample = sbc_xr
+    posterior_sample = sbc_xr
+    target_simulated = sbc_xr
+    target_simulated_obs = sbc_xr
+    loglik = #TODO 
+    return compare(test_quantity(prior_sample, target_simulated, target_simulated_obs, target_obs),
+                   test_quantity(posterior_sample, target_simulated, target_simulated_obs, target_obs))
