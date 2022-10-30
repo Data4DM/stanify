@@ -20,12 +20,12 @@ numeric = {
     "time_step": time_step,
     "process_noise_uniform_driving": np.random.uniform(low=-.5, high=.5, size=N),
     'process_noise_scale': 0.1
-} # TODO would we have ways to pass 'n_t' as N?
+}
 
 prior = {
-    ("prey_birth_frac", "normal", 0.8, 0.08, 0), # TODO lower = 0, deliver this as arguments? **p
+    ("prey_birth_frac", "normal", 0.8, 0.08, 0),
     ("pred_birth_frac", "normal", 0.05, 0.005, 0),
-    ("m_noise_scale", "normal", .1, .01, 0)
+    ("m_noise_scale", "normal", .01, .001, 0)
 }
 
 draws2data2draws('vensim_models/mng_pop/mng_pop.mdl', setting, numeric, prior, S, M, N)
