@@ -5,8 +5,8 @@ import numpy as np
 from stanify.calibrator.draws_data_mapper import  draws2data, data2draws, draws2data2draws
 
 S = 1
-M = 1000
-N = 200
+M = 100
+N = 30
 time_step = .03
 
 setting = {
