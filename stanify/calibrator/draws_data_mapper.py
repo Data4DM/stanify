@@ -9,7 +9,8 @@ import numpy as np
 import cmdstanpy
 
 def trunc4StanNegBinom(real_series):
-    """DataArray type real series
+    """
+    DataArray type real series
     """
     int_series = [math.trunc(i) for i in real_series]
     return int_series
@@ -20,14 +21,11 @@ def draws2data(model, draws2data_numeric_assumption, iter_sampling=1):
     prior_ppc = model.stanify_draws2data().sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)
     nc_path = f"{data_path}/generator.nc"
-    # fig, ax = plt.subplots(figsize = (15, 8))
-    # for target in ['prey', 'predator']:
-    #     ax.plot(prior_ppc[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
-    # ax.legend()
-    # TODO iter_sampling = 10 merge into one xarray, merge posterior samples from ten datasets
     prior_ppc = cmdstanpy.CmdStanModel(
         stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data.stan").sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)  # neg_binom doesn't receive vector; manual add for loop in stanfile
+    if os.path.exists(f"{data_path}/generator.nc"):
+        os.remove(f"{data_path}/generator.nc")
     prior_ppc.draws_xr().to_netcdf(nc_path)
     return prior_ppc.draws_xr()
 
@@ -38,7 +36,8 @@ def data2draws(model, data2draws_numeric_assumption, chains = 4, iter_sampling =
     data_path = get_data_path(model.model_name)
     post_ppc = model.stanify_data2draws().sample(data=data2draws_numeric_assumption, chains=chains,
                                                  iter_sampling=iter_sampling)  # 100
-    # if not os.path.exists(nc_path):
+    if os.path.exists(f"{data_path}/estimator.nc"):
+        os.remove(f"{data_path}/estimator.nc")
     post_ppc.draws_xr().to_netcdf(f"{data_path}/estimator.nc")
     post_ppc = cmdstanpy.CmdStanModel(
         stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws.stan").sample(data=data2draws_numeric_assumption, chains=chains,
@@ -70,8 +69,9 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 
     model.build_stan_functions()
     sbc_xr = draws2data(model, numeric, iter_sampling=S)
-
+    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
     prior_pred_check(setting)
+
     numeric["process_noise_scale"] = 0.0
     sbc_xr.assign_coords({'prior_draw': [s for s in range(S)]})
 
@@ -84,11 +84,10 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
         for target_name in setting['target_simulated_vector_names']:
             model.update_numeric({f'{target_name}_obs': obs_dict_s[f'{target_name}_obs']})
         model.update_numeric({'process_noise_scale': 0.0})
-
         posterior_s = data2draws(model, numeric, chains=4, iter_sampling=int(M/4))
         sbc_xr['prior_draw' == s].update(posterior_s)
-
         posterior_check(setting)
+
     data_path = get_data_path(model.model_name)
     sbc_xr.to_netcdf(f"{data_path}/sbc.nc")
     test_q_lst = ['loglik']
