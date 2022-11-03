@@ -94,27 +94,17 @@ def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N):
         model.set_prior(f"{target}_obs", "normal", f"{target}", "m_noise_scale")
 
     model.build_stan_functions()
-
-    prior_draw_idx = [s + 1 for s in range(S)]
     draws2data_idata = draws2data(model, iter_sampling=S)
 
-    for s in prior_draw_idx:
-        #prior_pred_check(setting, s)
+    for s in range(S):
         model_data2draws = model_update(model, draws2data_idata, s)
         data2draws_idata = data2draws(model_data2draws, chains=4, iter_sampling=int(M/4))
+        draws2data_idata.rename({'posterior': 'prior'}, inplace=True)
 
-        if s == 1:
-            # P = draws2data_idata.integrated_result_dim_1 #TODO from scratch or recycle
-            # Q = draws2data_idata.initial_outcome_dim_0
-            # shape = (S, M, P, Q, N) # R
-            # # chain, draws, integrated_result_dim_0 (number of matching.vectors), number of every stocks (target_simulated_stock - process noise?), number of groups
-            # sbc_idata = az.convert_to_inference_data(np.zeros(*shape))
+        if s == 0:
+            sbc_idata = data2draws_idata.extend(draws2data_idata)
+        sbc_idata[matching_vector_names].iloc['prior_draw' == s] = draws2data_idata[matching_vector_names].sel(draw=s)
 
-            draws2data_idata.rename({'posterior': 'prior'}, inplace=True)
-            sbc_idata = data2draws_idata.extend(draws2data_idata.posterior)  # _dims('prior_draw')
-            sbc_idata[matching_vector_names].iloc['prior_draw' == s] = draws2data_idata[matching_vector_names].sel(draw=s)
-
-        #posterior_check(setting)
     nc_path = f"{get_data_path(model.model_name)}/generator.nc"
     idata2netcdf4store(nc_path, sbc_idata)
     test_q_lst = ['loglik']
