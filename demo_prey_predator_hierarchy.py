@@ -14,7 +14,7 @@ structural_assumption = vf.get_abstract_model()
 
 n_t = 30
 n_g = 3
-setting_assumption = {
+setting = {
     "est_param" : ("alpha", "beta", "gamma", "delta"),
     "ass_param_scalar" : (),
     "target_simulated_vector_names" : ("prey", "predator"),
@@ -31,11 +31,11 @@ numeric_assumption = {
     "n_group": n_g,
 }
 
-for key in setting_assumption['target_simulated_vector_names']:
+for key in setting['target_simulated_vector_names']:
     numeric_assumption[f"{key}_obs"] = list(range(1, n_t + 1))
 
 model = vensim2stan(structural_assumption)
-model.set_setting(**setting_assumption)
+model.set_setting(**setting)
 model.set_numeric(numeric_assumption)
 
 model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
@@ -45,7 +45,7 @@ model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
 
 model.set_prior("m_noise_scale", "normal", 0.5, 0.05, lower = 0)
 
-for key in setting_assumption['target_simulated_vector_names']:
+for key in setting['target_simulated_vector_names']:
     model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
 
 model.build_stan_functions()
@@ -54,7 +54,7 @@ prior_pred_obs = draws2data(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
 # prior_pred_obs = xr.open_dataset(f"{get_data_path}/{model.model_name}_generator.nc")
 
-prior_pred_check(setting_assumption)
+prior_pred_check(setting)
 
 # estimator
 for key, value in prior_pred_obs[1].items():
@@ -65,4 +65,4 @@ posterior = data2draws(model, numeric_assumption)
 # you only need to run `draws2data` once; next you can run below
 # posterior = xr.open_dataset(f"{get_data_path}/{model.model_name}_estimator.nc")
 
-posterior_check(setting_assumption)
+posterior_check(setting)

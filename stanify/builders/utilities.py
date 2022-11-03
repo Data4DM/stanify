@@ -1,5 +1,6 @@
 from collections import defaultdict
 import os
+from pysd.translators.vensim.vensim_file import VensimFile
 
 class IndentedString:
     def __init__(self, indent_level=0):
@@ -100,3 +101,16 @@ def StanModel_cache(model_code, model_name=None, **kwargs):
     else:
         print("Using cached StanModel")
     return sm
+
+def idata2netcdf4store(nc_path, idata):
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+    idata.to_netcdf(nc_path)
+    return
+
+
+def get_structure(vensim):
+    vf = VensimFile(vensim)
+    vf.parse()
+    structure = vf.get_abstract_model()
+    return structure
