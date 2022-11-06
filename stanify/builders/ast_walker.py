@@ -207,7 +207,7 @@ class BlockCodegenWalker(BaseNodeWaler):
     def walk(self, ast_node, current_precedence: int = 100) -> str:
         """
         current_precedence is only relevant for ArithmeticStructure. It represents the precedence level of the
-        current(parent) expression being parsed.
+        current(parent) expression being parsed. 100 is a random number which needs to be larger than 3.
         """
         if isinstance(ast_node, int):
             return f"{ast_node}"
@@ -235,6 +235,14 @@ class BlockCodegenWalker(BaseNodeWaler):
                1  1 
             We check if the operators of the subtrees of '*' have a precedence level higher than its parent, and 
             enclose them in parentheses if so.
+                   *  # precedence level 2
+                  /\
+                 /  2
+                +  # precedence level 3
+                /\
+               1  b (b is treated as reference structure)
+            
+            
             """
 
             output_string = ""
@@ -338,6 +346,9 @@ class BlockCodegenWalker(BaseNodeWaler):
 
 @dataclass
 class InitialValueCodegenWalker(BlockCodegenWalker):
+    """
+    variable_ast_dict holds rhs of auxilary variable, key is variable name, values is variable name is ast as described in
+    """
     variable_ast_dict: Dict[str, AbstractSyntax]
 
     def walk(self, ast_node, current_precedence: int = 100):
@@ -362,7 +373,9 @@ class InitialValueCodegenWalker(BlockCodegenWalker):
             # ArithmeticStructure consists of chained arithmetic expressions.
             # We parse them one by one into a single expression
             # Assume ArithmeticStructure.operators are in order of precedence(lower comes first)
-            # TODO: This is duplicated code from BlockCodegenWalker.
+            # TODO: This is duplicated code from BlockCodegenWalker: two ways
+            #  1. visitor pattern (generic classify recursion part (super().walk(ast_node))
+            #  only ReferenceStructure is special case for initialvaluecodegenwalker;
             output_string = ""
             last_argument_index = len(ast_node.arguments) - 1
 

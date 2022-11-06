@@ -3,7 +3,7 @@ matplotlib.use('TkAgg')
 import numpy as np
 from stanify.calibrator.draws_data_mapper import draws2data2draws
 
-S = 1
+S = 2
 M = 100
 N = 20
 time_step = .03
@@ -12,7 +12,7 @@ setting = {
     "est_param" : ("prey_birth_frac", "pred_birth_frac"),
     "target_simulated_vector_names" : ("prey", "predator"),
     "driving_vector_names" : ("process_noise_uniform_driving"),
-    "model_name": "sbc",
+    "model_name": "sbc2",
 }
 
 numeric = {
