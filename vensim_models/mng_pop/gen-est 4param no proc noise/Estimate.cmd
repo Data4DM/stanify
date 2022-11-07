@@ -4,7 +4,7 @@ SPECIAL>LOADMODEL|est_prey_predator.mdl
 
 ! first using ordinary Powell for the MLE with priors
 
-! single draw
+! first single draw
 SIMULATE>RUNNAME|Est1
 SIMULATE>DATA|Gen1
 SIMULATE>PAYOFF|Est.vpd
@@ -18,7 +18,21 @@ SIMULATE>PAYOFF|Est.vpd
 SIMULATE>OPTPARM|Est.voc
 MENU>RUN_OPTIMIZE|o
 
-! MCMC tbd
+! MCMC
+
+! first single draw
+SIMULATE>RUNNAME|MCMC1
+SIMULATE>DATA|Gen1
+SIMULATE>PAYOFF|Est.vpd
+SIMULATE>OPTPARM|EstMCMC.voc
+MENU>RUN_OPTIMIZE|o
+
+! second single draw
+SIMULATE>RUNNAME|MCMC2
+SIMULATE>DATA|Gen2
+SIMULATE>PAYOFF|Est.vpd
+SIMULATE>OPTPARM|EstMCMC.voc
+MENU>RUN_OPTIMIZE|o
 
 ! base run
 SIMULATE>RUNNAME|NoEst
