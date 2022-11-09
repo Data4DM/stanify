@@ -1,7 +1,7 @@
 import matplotlib
 matplotlib.use('TkAgg')
 import numpy as np
-from stanify.calibrator.draws_data_mapper import draws2data2draws
+from stanify.calibrator.draws_data_mapper import draws2data2draws, draws2data2draws_hier
 
 S = 2
 M = 100

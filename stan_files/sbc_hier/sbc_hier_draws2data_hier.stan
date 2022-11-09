@@ -3,7 +3,8 @@ functions{
 }
 data{
     int n_t;
-    int r;
+    int R;
+    int Q;
     real time_step;
     vector[20] process_noise_uniform_driving;
     real process_noise_scale;
@@ -16,9 +17,10 @@ transformed data{
 
 
 generated quantities{
-    array[r] real pred_birth_frac;
-    for (region in 1:r)
-        pred_birth_frac[region] = normal_rng(0.05, 0.005);
+    array[n_t] vector[R] prey_obs;
+    array[n_t] vector[R] predator_obs;
+
+    real pred_birth_frac[R] = normal_rng(rep_vector(0.05, R), 0.005);
     real m_noise_scale = normal_rng(0.01, 0.001);
     real prey_birth_frac = normal_rng(0.8, 0.08);
 
@@ -26,28 +28,19 @@ generated quantities{
     real prey__init = 30;
     real process_noise__init = 0;
     real predator__init = 4;
-
     vector[3] initial_outcome;  // Initial ODE state vector
     initial_outcome[1] = prey__init;
     initial_outcome[2] = process_noise__init;
     initial_outcome[3] = predator__init;
-    for (region in 1:r)
-        array[3, region] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, prey_birth_frac[region], pred_birth_frac, time_step, process_noise_scale);
-    array[n_t] real[r] prey = integrated_result[:,:, 1];
-    array[n_t] real[r] process_noise = integrated_result[:,:, 2];
-    array[n_t] real[r] predator = integrated_result[:,:, 3];
-
-    array[r] vector[n_t] prey_obs = to_vector(normal_rng(prey, m_noise_scale));
-    array[r] vector[n_t] predator_obs = to_vector(normal_rng(predator, m_noise_scale));
+    array[n_t] vector[R] prey;
+    array[n_t] vector[R] predator;
+    array[n_t] vector[R] process_noise;
+    for (r in 1:R){
+        array[n_t] vector[Q] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, prey_birth_frac, pred_birth_frac[r], time_step, process_noise_scale);
+        prey[:, r] = integrated_result[:, 1];
+        process_noise[:, r]  = integrated_result[:, 2];
+        predator[:, r]  = integrated_result[:, 3];
+        prey_obs[:, r] = normal_rng(prey[:, r], m_noise_scale);
+        predator_obs[:, r] = normal_rng(predator[:, r], m_noise_scale);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-

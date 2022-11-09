@@ -17,9 +17,9 @@ transformed data{
 }
 
 parameters{
-    real<lower=0> prey_birth_frac;
-    real<lower=0> pred_birth_frac;
     real<lower=0> m_noise_scale;
+    real<lower=0> pred_birth_frac;
+    real<lower=0> prey_birth_frac;
 }
 
 transformed parameters {
@@ -33,16 +33,16 @@ transformed parameters {
     initial_outcome[2] = predator__init;
     initial_outcome[3] = process_noise__init;
 
-    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, pred_birth_frac, prey_birth_frac, time_step, process_noise_scale);
+    vector[3] integrated_result[n_t] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, times, pred_birth_frac, prey_birth_frac, process_noise_scale, time_step);
     array[n_t] real prey = integrated_result[:, 1];
     array[n_t] real predator = integrated_result[:, 2];
     array[n_t] real process_noise = integrated_result[:, 3];
 }
 
 model{
-    prey_birth_frac ~ normal(0.8, 0.08);
-    pred_birth_frac ~ normal(0.05, 0.005);
     m_noise_scale ~ normal(0.01, 0.001);
+    pred_birth_frac ~ normal(0.05, 0.005);
+    prey_birth_frac ~ normal(0.8, 0.08);
     prey_obs ~ normal(prey, m_noise_scale);
     predator_obs ~ normal(predator, m_noise_scale);
 }
