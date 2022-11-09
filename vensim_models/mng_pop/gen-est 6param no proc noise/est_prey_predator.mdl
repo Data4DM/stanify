@@ -1,11 +1,16 @@
 {UTF-8}
+MAX THREADS=
+	0
+	~	dmnl
+	~		|
+
 pred prop noise scale=
-	Predator*M noise scale
+	Meas Predator*M noise scale
 	~	pred
 	~		|
 
 prey prop noise scale=
-	Prey*M noise scale
+	Meas Prey*M noise scale
 	~	prey
 	~		|
 
@@ -140,7 +145,7 @@ gamma sd=
 
 Predator init=
 	4
-	~	pred
+	~	pred [0,100]
 	~		|
 
 Sample Interval=
@@ -155,7 +160,7 @@ M noise scale sd=
 
 Prey init=
 	30
-	~	prey
+	~	prey [0,100]
 	~		|
 
 NOISE SEED=
@@ -170,7 +175,7 @@ predator birth rate=
 
 delta=
 	0.04
-	~	fraction/prey/Time [0,?]
+	~	fraction/prey/Time [0,1]
 	~	predator birth fraction
 	|
 
@@ -345,11 +350,12 @@ Predator
 1,95,41,89,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
 10,96,prey prop noise scale,507,298,54,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,97,55,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,98,1,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,99,pred prop noise scale,642,867,52,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,100,M noise scale,647,961,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
-1,101,2,99,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,102,100,99,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,98,pred prop noise scale,642,867,52,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,99,M noise scale,647,961,42,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,100,99,98,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,101,53,96,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,102,54,98,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,103,MAX THREADS,120,239,45,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 ///---\\\
 :GRAPH Population
 :TITLE Population
@@ -386,22 +392,30 @@ Predator
 :VAR Predator
 :VAR Meas Predator
 :L<%^E!@
-1:Gen1.vdfx
 1:NoEst.vdfx
+1:MCMC2.vdfx
+1:MCMC1.vdfx
+1:Est2.vdfx
+1:test.vdfx
+1:Corr1.vdfx
+1:Est1-LN.vdfx
+1:Est1.vdfx
+1:Gen1.vdfx
 4:Time
-5:M noise scale
+5:alpha
 9:NoEst
 19:89,0
 24:0
 25:12
 26:12
+10:Corr1.cin
 11:Est.voc
-12:Est-Pois.vpd
+12:Est-prop.vpd
 13:Gen1
 23:0
 18:NoiseSeed.vsc
 20:Meas+Act.lst
-15:0,0,0,0,0,0
+15:1,0,0,0,0,0
 27:0,
 34:0,
 42:0

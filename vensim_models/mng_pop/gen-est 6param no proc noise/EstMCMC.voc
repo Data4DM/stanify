@@ -31,9 +31,9 @@
 :MCEPSILON=0.01
 :MCFTEMP=1
 0<=alpha<=1
-0<=beta<=1
+0.001<=beta<=1
 0<=delta<=1
 0<=gamma<=1
-1e-06<=M noise scale<=1
+.001<=M noise scale<=1
 1<=Prey init<=100
 1<=Predator init<=100

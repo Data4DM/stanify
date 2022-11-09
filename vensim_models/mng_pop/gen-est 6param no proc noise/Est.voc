@@ -1,11 +1,11 @@
 :OPTIMIZER=Powell
 :SENSITIVITY=Off
-:MULTIPLE_START=Off
+:MULTIPLE_START=RRandom
 :RANDOM_NUMBER=Default
 :OUTPUT_LEVEL=On
 :TRACE=Off
 :MAX_ITERATIONS=1000
-:RESTART_MAX=0
+:RESTART_MAX=10
 :PASS_LIMIT=2
 :FRACTIONAL_TOLERANCE=0.0003
 :TOLERANCE_MULTIPLIER=21
@@ -31,9 +31,9 @@
 :MCEPSILON=0.01
 :MCFTEMP=1
 0<=alpha<=1
-0<=beta<=1
+0.001<=beta<=1
 0<=delta<=1
 0<=gamma<=1
-0<=M noise scale<=1
+0.001<=M noise scale<=1
 1<=Prey init<=100
 1<=Predator init<=100
