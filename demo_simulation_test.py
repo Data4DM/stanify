@@ -3,8 +3,8 @@ matplotlib.use('TkAgg')
 import numpy as np
 from stanify.calibrator.draws_data_mapper import draws2data2draws_hier
 
-S = 2 # # of draws from prior
-M = 100 # # of draws from posterior (# of chains * # of draws from each chain)
+S = 3 # # of draws from prior
+M = 1000 # # of draws from posterior (# of chains * # of draws from each chain)
 N = 20
 Q = 3 # # of target_simulated_stock
 R= 2 # # of subgroups for hierarchical Bayes
@@ -14,7 +14,7 @@ setting = {
     "est_param" : ("prey_birth_frac", "pred_birth_frac"),
     "target_simulated_vector_names" : ("prey", "predator"),
     "driving_vector_names" : ("process_noise_uniform_driving"),
-    "model_name": "sbc_hier",
+    "model_name": "sbc_hier2",
 }
 
 numeric = {

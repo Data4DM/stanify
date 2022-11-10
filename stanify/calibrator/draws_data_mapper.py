@@ -115,8 +115,6 @@ def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N, R = 1):
         data2draws_idata_raw = data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
         est_path = f"{get_data_path(model.model_name)}/estimator.nc"
         idata2netcdf4store(est_path, data2draws_idata_raw)
-
-        #
         draws2data_idata.sel(draw = s) + data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
     else:
         return
@@ -151,7 +149,7 @@ def model_update(model, draws2data_idata, s):
 
 ################################### TEMPTORY USE, WILL BE DEPRECATED ###################################
 
-def draws2data_hier(model, draws2data_numeric_assumption, R, iter_sampling=1):
+def draws2data_hier(model, draws2data_numeric_assumption, iter_sampling=1):
     prior_ppc = cmdstanpy.CmdStanModel(
         stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data_hier.stan").sample(data=draws2data_numeric_assumption, fixed_param=True,
                                                   iter_sampling=iter_sampling)  # neg_binom doesn't receivRe vector; manual add for loop in stanfile
@@ -161,13 +159,14 @@ def draws2data_hier(model, draws2data_numeric_assumption, R, iter_sampling=1):
     return prior_ppc.draws_xr()
 
 
-def data2draws_hier(model, data2draws_numeric_assumption, R, chains = 4, iter_sampling = 250):
+def data2draws_hier(model, data2draws_numeric_assumption, s, chains = 4, iter_sampling = 250):
     post_ppc = cmdstanpy.CmdStanModel(
         stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws_hier.stan").sample(data=data2draws_numeric_assumption, chains=chains,
                                                  iter_sampling=iter_sampling)   # neg_binom doesn't receive vector; manual add for loop in stanfile
 
-    nc_path = f"{get_data_path(model.model_name)}/estimator.nc"
+    nc_path = f"{get_data_path(model.model_name)}/estimator_{s}.nc"
     idata2netcdf4store(nc_path, post_ppc.draws_xr())
+    print("post_ppc to check prey_birth_frac_dim_0", post_ppc.draws_xr())
 
     return post_ppc
 
@@ -188,20 +187,19 @@ def draws2data2draws_hier(vensim, setting, numeric, prior, S, M, N, R):
         model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
 
     model.build_stan_functions()
-    obs_xr = draws2data_hier(model, numeric, R, iter_sampling=S)
+    obs_xr = draws2data_hier(model, numeric, iter_sampling=S)
     setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
-    obs_dict = {k: v.values.flatten().reshape((model.n_t, R)) for (k, v) in obs_xr[setting_obs].items()}
-    for s in range(S):
-        prior_pred_check(setting, s)
     numeric["process_noise_scale"] = 0.0
+    for s in range(S):
+        obs_s_xr = obs_xr.sel(draw = s)
+        obs_dict = {k: v.values.flatten().reshape((model.n_t, R)) for (k, v) in obs_s_xr[setting_obs].items()}
+        prior_pred_check(setting, s)
+        for key, value in obs_dict.items():
+            numeric[key] = value
+        for i in setting['target_simulated_vector_names']:
+            model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
+        model.update_numeric({'process_noise_scale': 0.0})
 
-    for key, value in obs_dict.items():
-        numeric[key] = value
-
-    for i in setting['target_simulated_vector_names']:
-        model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
-    model.update_numeric({'process_noise_scale': 0.0})
-
-    posterior = data2draws_hier(model, numeric, R, chains=4, iter_sampling=int(M/4))
-    posterior_check(setting)
+        posterior = data2draws_hier(model, numeric, s, chains=2, iter_sampling=int(M/2))
+        posterior_check(setting, s)
     return posterior

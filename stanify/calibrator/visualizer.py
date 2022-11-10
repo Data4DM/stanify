@@ -9,7 +9,7 @@ def prior_pred_check(setting, s):
     model_name = setting['model_name']
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
-    prior_pred = xr.open_dataset(f"{data_path}/generator.nc")
+    prior_pred = xr.open_dataset(f"{data_path}/generator.nc").sel(draw = s)
     fig, ax = plt.subplots(figsize = (15, 8))
     for target in setting['target_simulated_vector_names']:
         ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
@@ -18,24 +18,40 @@ def prior_pred_check(setting, s):
     return
 
 
-def posterior_check(setting):
+def posterior_check(setting, s):
     model_name = setting['model_name']
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
-    posterior = xr.open_dataset(f"{data_path}/estimator.nc")
-
+    posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
     # TODO how to separate S and plot
     # TODO draw is reserved for posterior but coordinate for prior_draw need to added
-
-    for s in range(len(posterior.draw)):
-        for est_param in setting['est_param']:
-            df = pd.DataFrame()
-            for chain in posterior.chain.values:
-                df[f"{chain}"] = pd.DataFrame(posterior[f'{est_param}'].sel(chain=chain, draw = s))
+    for est_param in setting['est_param']:
+        if posterior.dims.__contains__(f'{est_param}_dim_0'):
+            D = posterior.dims[f'{est_param}_dim_0']
+            df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, D]))
+            print("est_param", est_param)
+            print("df", df.shape)
+            for d in range(D):
+                df.plot()
+                plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}.png")
+                df.hist()
+                plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}_hist.png")
+        else:
+            df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, 1]))
+            print("est_param", est_param)
             df.plot()
             plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
             df.hist()
             plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_hist.png")
+    # for s in range(len(posterior.draw)):
+    #     for est_param in setting['est_param']:
+    #         df = pd.DataFrame()
+    #         for chain in posterior.chain.values:
+    #             df[f"{chain}"] = pd.DataFrame(posterior[f'{est_param}'].sel(chain=chain, draw = s))
+    #         df.plot()
+    #         plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
+    #         df.hist()
+    #         plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_hist.png")
     return
 
 
