@@ -1,7 +1,7 @@
 *CG
-Predator|Meas Predator/pred prop noise scale
+Predator[region]|Meas Predator[region]/pred prop noise scale[region]
 *CG
-Prey|Meas Prey/prey prop noise scale
+Prey[region]|Meas Prey[region]/prey prop noise scale[region]
 *PI
 alpha prior ll/1
 *PI
@@ -13,6 +13,8 @@ gamma prior ll/1
 *PI
 M noise scale prior ll/1
 *PI
-pred init prior ll/1
+pred init prior ll[region]/1
 *PI
-prey init prior ll/1
+prey init prior ll[region]/1
+*PI
+variety prior ll/1

@@ -5,7 +5,7 @@
 :OUTPUT_LEVEL=On
 :TRACE=Off
 :MAX_ITERATIONS=1000
-:RESTART_MAX=10
+:RESTART_MAX=100
 :PASS_LIMIT=2
 :FRACTIONAL_TOLERANCE=0.0003
 :TOLERANCE_MULTIPLIER=21
@@ -30,10 +30,11 @@
 :MCKNN=0
 :MCEPSILON=0.01
 :MCFTEMP=1
-0<=alpha<=1
-0.001<=beta<=1
-0<=delta<=1
-0<=gamma<=1
+0<=alpha[region]<=1
+0.001<=beta[Region]<=1
+0<=delta[Region]<=1
+0<=gamma[Region]<=1
 0.001<=M noise scale<=1
-1<=Prey init<=100
-1<=Predator init<=100
+1<=Prey init[Region]<=100
+1<=Predator init[Region]<=100
+0<=vital rate variety sd<=1
