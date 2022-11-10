@@ -1,0 +1,478 @@
+{UTF-8}
+alpha[Region]= INITIAL(
+	alpha mu + alpha sd*RANDOM NORMAL(-6,6,0,1,0))
+	~	fraction/Time [0,?]
+	~	prey birth fraction
+	|
+
+prey birth rate[Region]=
+	alpha[Region]*Prey[Region]
+	~	prey/Time
+	~		|
+
+prey death rate[Region]=
+	(beta[Region]*Predator[Region])*Prey[Region]
+	~	prey/Time
+	~		|
+
+beta[Region]= INITIAL(
+	beta mu + beta sd*RANDOM NORMAL(-6,6,0,1,0))
+	~	fraction/pred/Time [0,?]
+	~	prey death proportionality constant
+	|
+
+Pred Migration Rate= INITIAL(
+	migration mu * EXP( migration sd*RANDOM NORMAL(-6,6,0,1,0)))
+	~	fraction/Time [0,?]
+	~	Migration rate is the same across regions and species, and is lognormally \
+		distributed
+	|
+
+Predator[Region]= INTEG (
+	predator birth rate[Region]-predator death rate[Region]
+	-SUM(Predator Migration[Region,ToRegion!])+SUM(Predator Migration[FromRegion!,Region\
+		]),
+		Predator init[Region])
+	~	pred
+	~		|
+
+delta[Region]= INITIAL(
+	delta mu + delta sd*RANDOM NORMAL(-6,6,0,1,0))
+	~	fraction/prey/Time [0,?]
+	~	predator birth fraction
+	|
+
+predator death rate[Region]=
+	gamma[Region]*Predator[Region]
+	~	pred/Time
+	~		|
+
+Predator init[Region]= INITIAL(
+	pred init mu * EXP( pred init sd*RANDOM NORMAL(-6,6,0,1,0) ))
+	~	pred
+	~		|
+
+FromRegion<->
+	Region
+	~	
+	~		|
+
+gamma[Region]= INITIAL(
+	gamma mu + gamma sd*RANDOM NORMAL(-6,6,0,1,0))
+	~	fraction/Time [0,?]
+	~	predator death proportionality constant
+	|
+
+Meas Predator[Region]=
+	IF THEN ELSE( PULSE TRAIN(INITIAL TIME, TIME STEP , Sample Interval , FINAL TIME )
+	,IF THEN ELSE(noise model=0, RANDOM NORMAL(0,1e+06,Predator[Region],Predator[Region]\
+		*M noise scale,0)
+	 ,IF THEN ELSE(noise model=1, Predator[Region]*EXP( M noise scale*RANDOM NORMAL(-6,6\
+		,0,1,0) )
+	  ,RANDOM POISSON(0, 1e+06 , Predator[Region] , 0 , 1 , 0 )))
+	,:NA:)
+	~	pred
+	~		|
+
+Meas Prey[Region]=
+	IF THEN ELSE( PULSE TRAIN(INITIAL TIME, TIME STEP , Sample Interval , FINAL TIME )
+	,IF THEN ELSE(noise model=0, RANDOM NORMAL(0,1e+06,Prey[Region],Prey[Region]*M noise scale\
+		,0)
+	 ,IF THEN ELSE(noise model=1, Prey[Region]*EXP( M noise scale*RANDOM NORMAL(-6,6,0,1\
+		,0) )
+	  ,RANDOM POISSON(0, 1e+06 , Prey[Region] , 0 , 1 , 0 )))
+	,:NA:)
+	~	prey
+	~		|
+
+Prey init[Region]= INITIAL(
+	prey init mu * EXP( prey init sd*RANDOM NORMAL(-6,6,0,1,0) ))
+	~	prey
+	~		|
+
+migration sd=
+	1
+	~	fraction [1e-06,2]
+	~		|
+
+ToRegion<->
+	Region
+	~	
+	~		|
+
+predator birth rate[Region]=
+	(delta[Region]*Prey[Region])*Predator[Region]
+	~	pred/Time
+	~		|
+
+Prey Migration Rate= INITIAL(
+	migration mu * EXP( migration sd*RANDOM NORMAL(-6,6,0,1,0)))
+	~	fraction/Time [0,1]
+	~	Migration rate is the same across regions and species, and is lognormally \
+		distributed
+	|
+
+migration mu=
+	0.01
+	~	fraction/Time [0,1]
+	~		|
+
+Predator Migration[FromRegion,ToRegion]=
+	Predator[FromRegion]*Pred Migration Rate
+	~	
+	~		|
+
+Prey[Region]= INTEG (
+	prey birth rate[Region]-prey death rate[Region]
+	-SUM(Prey Migration[Region,ToRegion!])+SUM(Prey Migration[FromRegion!,Region]),
+		Prey init[Region])
+	~	prey
+	~		|
+
+Prey Migration[FromRegion,ToRegion]=
+	(Prey[FromRegion]-Prey[ToRegion])*Prey Migration Rate
+	~	prey/Time
+	~		|
+
+Region:
+	N,S,E,W
+	~	
+	~		|
+
+noise model=
+	1
+	~	dmnl [0,2,1]
+	~	0 = additive normal, SD proportional to mean
+		1 = lognormal
+		2 = Poisson
+	|
+
+prey init sd=
+	0.5
+	~	fraction
+	~	Geometric SD of initial prey
+	|
+
+pred init sd=
+	0.5
+	~	fraction
+	~	Geometric SD of initial pred
+	|
+
+pred init mu=
+	10
+	~	pred
+	~	Geometric mean of initial pred
+	|
+
+prey init mu=
+	10
+	~	prey
+	~	Geometric mean of initial prey
+	|
+
+M noise scale mu=
+	0.1
+	~	fraction [0,1]
+	~		|
+
+alpha mu=
+	0.8
+	~	fraction/Time
+	~		|
+
+alpha sd=
+	0.08
+	~	fraction/Time
+	~		|
+
+beta mu=
+	0.05
+	~	fraction/pred/Time
+	~		|
+
+beta sd=
+	0.005
+	~	fraction/pred/Time
+	~		|
+
+M noise scale= INITIAL(
+	M noise scale mu * EXP( M noise scale sd*RANDOM NORMAL(-6,6,0,1,0) ))
+	~	fraction
+	~	Noise, as a fraction of mean or geometric SD. Ignored if noise model is \
+		Poisson. Scale itself is lognormally distributed.
+	|
+
+delta mu=
+	0.05
+	~	fraction/prey/Time
+	~		|
+
+delta sd=
+	0.005
+	~	fraction/prey/Time
+	~		|
+
+gamma mu=
+	0.8
+	~	fraction/Time
+	~		|
+
+gamma sd=
+	0.08
+	~	fraction/Time
+	~		|
+
+Sample Interval=
+	1
+	~	Time
+	~		|
+
+M noise scale sd=
+	0.5
+	~	fraction [0,1]
+	~		|
+
+NOISE SEED=
+	1
+	~	dmnl [1,1000,1]
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 12
+	~	Time
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Time
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Time [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.03125
+	~	Time [0.001,0.04,0.001]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,89,0
+10,1,Prey,434,379,53,27,3,3,0,3,0,0,0,0,17-128-64,0-0-0,|||17-128-64,0,0,0,0,0,0
+10,2,Predator,567,602,53,27,3,3,0,3,0,0,0,0,17-128-64,0-0-0,|||17-128-64,0,0,0,0,0,0
+12,3,48,247,381,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,6,1,4,0,0,22,0,0,0,-1--1--1,,1|(350,381)|
+1,5,6,3,100,0,0,22,0,0,0,-1--1--1,,1|(280,381)|
+11,6,0,311,381,8,11,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+10,7,prey birth rate,311,403,56,11,40,3,0,2,-1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+12,8,48,602,381,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,9,11,8,4,0,0,22,0,0,0,-1--1--1,,1|(568,381)|
+1,10,11,1,100,0,0,22,0,0,0,-1--1--1,,1|(508,381)|
+11,11,0,537,381,8,11,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+10,12,prey death rate,537,403,59,11,40,3,0,2,-1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+12,13,48,401,605,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,14,16,2,4,0,0,22,0,0,0,-1--1--1,,1|(488,605)|
+1,15,16,13,100,0,0,22,0,0,0,-1--1--1,,1|(428,605)|
+11,16,0,454,605,8,11,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+10,17,predator birth rate,454,634,55,18,40,3,0,2,-1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+12,18,48,754,603,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,19,21,18,4,0,0,22,0,0,0,-1--1--1,,1|(713,603)|
+1,20,21,2,100,0,0,22,0,0,0,-1--1--1,,1|(643,603)|
+11,21,0,674,603,8,11,34,3,0,2,1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+10,22,predator death rate,674,632,58,18,40,3,0,2,-1,0,0,0,0-0-0,0-0-0,|||0-0-255,0,0,0,0,0,0
+10,23,alpha,208,450,23,11,8,3,0,2,0,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+10,24,delta,314,681,21,11,8,3,0,2,0,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+10,25,beta,653,442,19,11,8,3,0,2,0,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+10,26,gamma,769,696,30,11,8,3,0,2,0,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+1,27,23,7,0,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(0,0)|
+1,28,1,7,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(374,432)|
+1,29,1,16,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(421,536)|
+1,30,1,12,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(473,427)|
+1,31,25,12,0,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(0,0)|
+1,32,2,12,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(566,516)|
+1,33,26,22,0,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(0,0)|
+1,34,2,22,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(601,663)|
+1,35,2,17,1,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(534,659)|
+1,36,24,17,0,0,43,0,1,64,0,0-0-0,|||0-0-0,1|(0,0)|
+12,37,0,1739,397,247,195,3,44,0,0,1,0,0,0,0,0,0,0,0,0
+Population
+12,38,0,1709,798,218,202,3,44,0,0,1,0,0,0,0,0,0,0,0,0
+Phases
+10,39,TIME STEP,131,176,62,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,40,Prey init,255,294,43,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,41,Predator init,364,753,54,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,42,40,1,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+1,43,41,2,1,0,0,0,0,64,1,-1--1--1,,1|(496,705)|
+10,44,alpha mu,130,502,34,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,45,44,23,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,46,alpha sd,112,441,32,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,47,46,23,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,48,delta mu,199,730,32,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,49,48,24,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,50,delta sd,197,671,30,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,51,50,24,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,52,beta mu,786,430,30,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,53,52,25,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,54,beta sd,768,484,28,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,55,54,25,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,56,gamma mu,867,764,41,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,57,56,26,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,58,gamma sd,749,787,39,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,59,58,26,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,60,NOISE SEED,293,989,63,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,61,Meas Prey,602,1047,49,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,62,Meas Predator,604,1228,43,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,63,64,61,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,64,M noise scale,499,1140,42,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,65,64,62,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,66,M noise scale mu,306,1095,51,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,67,M noise scale sd,303,1173,51,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,68,FINAL TIME,812,1106,53,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,69,68,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,70,INITIAL TIME,808,1059,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,71,70,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,72,81,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,73,TIME STEP,804,999,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,74,73,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,75,FINAL TIME,558,1407,53,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,76,75,62,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,77,INITIAL TIME,500,1353,56,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,78,77,62,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,79,TIME STEP,473,1310,52,10,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,80,79,62,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,81,Sample Interval,780,1159,42,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,82,81,62,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,83,0,2267,397,247,195,3,44,0,0,1,0,0,0,0,0,0,0,0,0
+Prey
+12,84,0,2270,794,247,195,3,44,0,0,1,0,0,0,0,0,0,0,0,0
+Predator
+10,85,prey init mu,113,310,42,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,86,85,40,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,87,prey init sd,108,261,40,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,88,87,40,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,89,pred init mu,229,855,43,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,90,89,41,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+10,91,pred init sd,229,800,41,10,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,92,91,41,0,0,0,0,0,64,1,-1--1--1,,1|(0,0)|
+1,93,94,61,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,94,noise model,636,1145,36,18,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,95,94,62,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,96,Prey,447,1047,34,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,97,Predator,452,1222,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,98,96,61,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,99,97,62,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,100,66,64,0,0,0,0,0,0,1,-1--1--1,,1|(0,0)|
+1,101,67,64,0,0,0,0,0,0,1,-1--1--1,,1|(0,0)|
+12,102,48,434,212,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,103,105,102,100,0,0,22,0,192,0,-1--1--1,,1|(434,250)|
+1,104,105,1,4,0,0,22,0,192,0,-1--1--1,,1|(434,322)|
+11,105,0,434,286,8,6,33,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,106,Prey Migration,506,286,64,23,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,107,1,106,1,0,0,0,0,192,0,-1--1--1,,1|(485,334)|
+10,108,Prey Migration Rate,517,207,64,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,109,108,106,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,110,48,561,767,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,111,113,110,100,0,0,22,0,192,0,-1--1--1,,1|(561,736)|
+1,112,113,2,4,0,0,22,0,192,0,-1--1--1,,1|(561,665)|
+11,113,0,561,707,8,6,33,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,114,Predator Migration,612,707,43,23,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,115,2,114,1,0,0,0,0,192,0,-1--1--1,,1|(589,666)|
+10,116,Pred Migration Rate,634,804,43,25,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,117,116,114,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,118,0,1225,407,247,195,3,44,0,0,2,0,0,0,0,0,0,0,0,0
+Prey,Graph
+12,119,0,1228,804,247,195,3,44,0,0,2,0,0,0,0,0,0,0,0,0
+Predator,Graph
+10,120,migration mu,467,127,58,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,121,migration sd,589,130,55,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,122,120,108,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,123,121,108,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,124,migration mu,576,898,48,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,125,migration sd,710,896,48,18,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,126,124,116,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,127,125,116,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+///---\\\
+:GRAPH Population
+:TITLE Population
+:X-AXIS Time
+:SCALE
+:VAR Predator
+:Y-MIN 0
+:Y-MAX 60
+:LINE-WIDTH 2
+:VAR Prey
+:LINE-WIDTH 2
+
+:GRAPH Phases
+:TITLE Phases
+:X-AXIS Prey
+:X-MIN 0
+:X-MAX 60
+:SCALE
+:VAR Predator
+:Y-MIN 0
+:Y-MAX 60
+:LINE-WIDTH 2
+
+:GRAPH Prey
+:TITLE Prey
+:SCALE
+:VAR Prey
+:Y-MIN 0
+:VAR Meas Prey
+
+:GRAPH Predator
+:TITLE Predator
+:SCALE
+:VAR Predator
+:VAR Meas Predator
+:L<%^E!@
+1:Gen1.vdfx
+4:Time
+5:migration mu
+6:E
+6:N
+6:S
+6:W
+9:Gen1
+19:89,0
+24:0
+25:12
+26:12
+23:0
+18:NoiseSeed.vsc
+20:Meas+Act.lst
+15:0,0,0,1,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Courier|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
