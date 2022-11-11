@@ -55,7 +55,7 @@ class StanModelContext:
     exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
 
-    def identify_stan_data_types(self, numeric_data_assumption):
+    def identify_stan_data_types(self, numeric):
         def get_dims(obj):
             if isinstance(obj, np.ndarray):
                 return obj.shape
@@ -73,7 +73,7 @@ class StanModelContext:
                 else:
                     return [dim]
 
-        for key, val in numeric_data_assumption.items():
+        for key, val in numeric.items():
             if isinstance(val, int):
                 self.stan_data[key] = StanDataEntry(key, "int")
             elif isinstance(val, float):
@@ -141,11 +141,13 @@ class vensim2stan:
         # So something like stock_var_init__init would match into stock_var__init.
         # This is used to parse out the corresponding stock names for init parameters.
 
+
     def print_info(self):
         print("- Vensim model information:")
         self.vensim_model_context.print_variable_info(self.abstract_model)
         print("*" * 10)
         print("- Stan model information:")
+
 
     def set_prior(self, variable_name: str, distribution_type: str, *args, lower=float("-inf"), upper=float("inf"), init_state=False):
         if init_state:
@@ -178,12 +180,13 @@ class vensim2stan:
         self.est_param = est_param
         self.target_simulated_vector_names = target_simulated_vector_names
         self.driving_vector_names = driving_vector_names
-
         self.model_name = model_name
 
-    # model_est = vensim2stan(structural_assumption)
-    # model.update_numeric({"process_noise_scale": 0})
-    # model.update_setting({"model_name": "prey_predator_est"})
+
+    def get_matching_vector_names(self):
+        matching_vector_names = [f'{target}_obs' for target in self.target_simulated_vector_names]
+        return matching_vector_names
+
 
     def update_setting(self, est_param: list, target_simulated_vector_names: list, driving_vector_names: list, model_name: str):
         self.est_param = est_param
@@ -194,26 +197,26 @@ class vensim2stan:
         #     raise Exception("initial_time shouldn't be present in integration_times")
 
 
-    def set_numeric(self, numeric_data_assumption: list): #assumed_scalar: list, driving_data: list):
+    def set_numeric(self, numeric: list): #assumed_scalar: list, driving_data: list):
         """
         Parameters
         ----------
-        numeric_data_assumption: dictionary to pass for stan data block and to initialize numeric component of the model
+        numeric: dictionary to pass for stan data block and to initialize numeric component of the model
         such as `n_t`, `time_step` (scalar or length `n_t` vector), and driving data
 
         Returns
         -------
 
         """
-        if ('n_t' in numeric_data_assumption.keys() and 'time_step' in numeric_data_assumption.keys()):
-            self.time_step = numeric_data_assumption['time_step']
-            self.n_t = numeric_data_assumption['n_t']
+        if ('n_t' in numeric.keys() and 'time_step' in numeric.keys()):
+            self.time_step = numeric['time_step']
+            self.n_t = numeric['n_t']
             self.integration_times = np.arange(0, self.n_t) * self.time_step + 0.01
             self.stan_model_context = StanModelContext(0.0, self.integration_times)
         else:
-            print(" 'n_t', `time_step` should be included in numeric_data_assumption!")
-        self.numeric_data_assumption = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
-        self.stan_model_context.identify_stan_data_types(self.numeric_data_assumption)
+            print(" 'n_t', `time_step` should be included in numeric!")
+        self.numeric = {vensim_name_to_identifier(name): value for name, value in numeric.items()}
+        self.stan_model_context.identify_stan_data_types(self.numeric)
         self.stan_model_context.exposed_parameters.update(["time_step"])
         self.stan_model_context.exposed_parameters.update(["process_noise_scale"])
 
@@ -230,22 +233,22 @@ class vensim2stan:
         # self.stan_model_context.exposed_parameters.update(["time_step"])
 
 
-    def update_numeric(self,numeric_data_assumption: list):
+    def update_numeric(self,numeric: list):
         """
 
         Parameters
         ----------
-        numeric_data_assumption
+        numeric
         usage: model.update_numeric({'prey_obs': prior_pred_obs['prey_obs'], 'predator_obs': prior_pred_obs['predator_obs'],'process_noise_scale': 0.0 })
         Returns
         -------
 
         """
-        updated_data = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
-        self.numeric_data_assumption.update(updated_data)
+        updated_data = {vensim_name_to_identifier(name): value for name, value in numeric.items()}
+        self.numeric.update(updated_data)
         self.stan_model_context.identify_stan_data_types(updated_data)
-        # self.numeric_data_assumption = {vensim_name_to_identifier(name): value for name, value in numeric_data_assumption.items()}
-        # self.stan_model_context.identify_stan_data_types(self.numeric_data_assumption)
+        # self.numeric = {vensim_name_to_identifier(name): value for name, value in numeric.items()}
+        # self.stan_model_context.identify_stan_data_types(self.numeric)
 
 
     def build_stan_functions(self):
@@ -258,7 +261,7 @@ class vensim2stan:
         -------
 
         """
-        self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric_data_assumption)
+        self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric)
         function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.vensim_model_context.stock_variable_names)
         path = get_stanfiles_path(self.model_name)
 
@@ -271,6 +274,7 @@ class vensim2stan:
 
         with open(f"{path}/{self.model_name}_functions.stan", "w") as f:
             f.write(function_code)
+
 
     def stanify_data2draws(self):
         stanfiles_path = get_stanfiles_path(self.model_name)
@@ -314,6 +318,7 @@ class vensim2stan:
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path) #TODO, compile = False
         return stan_model
 
+
     def stanify_draws2data(self):
         stanfiles_path = get_stanfiles_path(self.model_name)
         stan_draws2data_path = f"{stanfiles_path}/{self.model_name}_draws2data.stan"
@@ -353,6 +358,7 @@ class vensim2stan:
                                             self.function_builder.ode_function_name).build_block(transformed_parameters_code=str(transformed_params_builder.code)))
 
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path) #TODO, compile = False
+
 
         return stan_model
 

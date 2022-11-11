@@ -1,5 +1,7 @@
 from collections import defaultdict
 import os
+from pysd.translators.vensim.vensim_file import VensimFile
+import numpy as np
 
 class IndentedString:
     def __init__(self, indent_level=0):
@@ -100,3 +102,31 @@ def StanModel_cache(model_code, model_name=None, **kwargs):
     else:
         print("Using cached StanModel")
     return sm
+
+def idata2netcdf4store(nc_path, idata):
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+    idata.to_netcdf(nc_path)
+    return
+
+
+def get_structure(vensim):
+    vf = VensimFile(vensim)
+    vf.parse()
+    structure = vf.get_abstract_model()
+    return structure
+
+
+def diagnose(sbc_xr, test_quantity, matching_obs): #TODO variable-wise?
+
+    prior_sample = sbc_xr.prior_sample #[dim: prior_draws (no chain, draws..)]
+    posterior_sample = sbc_xr.posterior_sample
+    matching_simulated = sbc_xr.matching_simulated
+    matching_simulated_obs = sbc_xr.matching_simulated_obs
+    target_obs = sbc_xr.sbc_xr
+    loglik = 1 #TODO
+    return compare(test_quantity(prior_sample, target_simulated, target_simulated_obs, target_obs),
+                   test_quantity(posterior_sample, target_simulated, target_simulated_obs, target_obs))
+
+def compare(a, b):
+    return np.abs(a-b)

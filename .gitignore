@@ -3,7 +3,7 @@
 .RData
 .Ruserdata
 *.vdfx
-*.vmfx
+**/*.vmfx
 .apps
 *.pkl
 **/*.hpp
