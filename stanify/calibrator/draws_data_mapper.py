@@ -30,20 +30,19 @@ def draws2data(model, iter_sampling=1, R = 1):
     -------
     matching_data: InferenceData type with shape (chain: 1, (prior_)draw: S, (regional_)group: R)
     """
-    if R == 1:
+    nc_path = f"{get_data_path(model.model_name)}/generator.nc"
+    if iter_sampling == 1 or R ==1:
         draws2data_data = model.stanify_draws2data().sample(data=model.numeric, fixed_param=True, iter_sampling=iter_sampling)
+        draws2data_idata = draws2data_data.draws_xr()
     else:
         draws2data_data = cmdstanpy.CmdStanModel(
-            stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data_hier.stan").sample(data=model.numeric, fixed_param=True, iter_sampling=iter_sampling)
+            stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_draws2data.stan").sample(data=model.numeric, fixed_param=True, iter_sampling=iter_sampling)
 
-    draws2data_idata = az.from_cmdstanpy(prior = draws2data_data)
-
-    nc_path = f"{get_data_path(model.model_name)}/generator.nc"
+        draws2data_idata = az.from_cmdstanpy(prior = draws2data_data)
     idata2netcdf4store(nc_path, draws2data_idata)
     return draws2data_idata #TODO return all vs sample_stats
 
-
-def data2draws(model, R, chains = 4, iter_sampling = 250):
+def data2draws(model, s, R, chains = 2, iter_sampling = 250):
     """
     Parameters
     ----------
@@ -58,22 +57,23 @@ def data2draws(model, R, chains = 4, iter_sampling = 250):
     # for key in model.target_simulated_vector_names:
     #     data2draws_numeric_assumption[f"{key}_obs"] = trunc4StanNegBinom(data2draws_numeric_assumption[f"{key}_obs"])
 
-    if R == 1:
+
+    if s == -1 and R == 1: #TODO s = -1 best choice?
+        nc_path = f"{get_data_path(model.model_name)}/estimator.nc"
         data2draws_data = model.stanify_data2draws().sample(data=model.numeric, chains=chains, iter_sampling=iter_sampling)
+
     else:
+        nc_path = f"{get_data_path(model.model_name)}/estimator_{s}.nc"
         data2draws_data = cmdstanpy.CmdStanModel(
-            stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws_hier.stan").sample(data=model.numeric, iter_sampling=iter_sampling)
-
-    #data2draws_idata = az.from_cmdstanpy(data2draws_data)
-    data2draws_data = data2draws_data.draws_xr()
-    print("data2draws_data",data2draws_data )
-    # nc_path = f"{get_data_path(model.model_name)}/estimator.nc"
-    # idata2netcdf4store(nc_path, data2draws_idata)
-
-    return
+                stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_data2draws.stan").sample(data=model.numeric, chains=chains, iter_sampling=iter_sampling)
+        #data2draws_idata = az.from_cmdstanpy(data2draws_data)
+    data2draws_idata = data2draws_data.draws_xr()
+    idata2netcdf4store(nc_path, data2draws_idata)
+    return data2draws_data
 
 
-def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N, R = 1):
+
+def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N, R ):
     """
     vensim: vensim filepath which provides structral assumption
     setting: modeler's selection of which parameter to estimate
@@ -103,27 +103,56 @@ def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N, R = 1):
         model.set_prior(f"{target}_obs", "normal", f"{target}", "m_noise_scale")
 
     model.build_stan_functions()
-    draws2data_idata = draws2data(model, S, R)
-    P = len(draws2data_idata.posterior.integrated_result_dim_1)
-    Q = len(draws2data_idata.posterior.initial_outcome_dim_0)
-    shape = (S, M, P, Q, N) # R shape (2, 100, 3, 3, 20)
-    # chain, draws, integrated_result_dim_0 (number of matching.vectors), number of every stocks (target_simulated_stock - process noise?), number of groups
-    sbc_idata_raw = np.random.randn(*shape)#az.convert_to_inference_data(np.random.randn(*shape))
+    obs_xr = draws2data(model, iter_sampling=S)
+    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
 
-    for s in range(S): #multiprocessing
-        model_data2draws = model_update(model, draws2data_idata, s)
-        data2draws_idata_raw = data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
-        est_path = f"{get_data_path(model.model_name)}/estimator.nc"
-        idata2netcdf4store(est_path, data2draws_idata_raw)
-        draws2data_idata.sel(draw = s) + data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
+    if S == 1 and R == 1:
+        obs_dict = {k: v.values.flatten() for (k, v) in obs_xr[setting_obs].items()}
+        prior_pred_check(setting)
+        numeric["process_noise_scale"] = 0.0
+        for key, value in obs_dict.items():
+            numeric[key] = value
+        for i in setting['target_simulated_vector_names']:
+            model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
+        model.update_numeric({'process_noise_scale': 0.0})
+        posterior = data2draws(model, s = -1, R = 1, chains=2, iter_sampling=int(M/2))
+        posterior_check(setting)
     else:
-        return
-    nc_path = f"{get_data_path(model.model_name)}/generator.nc"
-    sbc_path = f"{get_data_path(model.model_name)}/sbc2.nc"
-    idata2netcdf4store(nc_path, sbc_idata)
-    test_q_lst = ['loglik']
-    return diagnose(sbc_idata, test_q_lst)
+        for s in range(S): #TODO better choice than s = -1 for single dataset?
+            obs_s_xr = obs_xr.sel(draw=s)
+            obs_dict = {k: v.values.flatten().reshape((model.n_t, R)) for (k, v) in obs_s_xr[setting_obs].items()}
+            prior_pred_check(setting, s)
+            for key, value in obs_dict.items():
+                numeric[key] = value
+            for i in setting['target_simulated_vector_names']:
+                model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
+            model.update_numeric({'process_noise_scale': 0.0})
 
+            posterior = data2draws(model, s=s, R=R, chains=2, iter_sampling=int(M/2))
+            posterior_check(setting, s=s)
+    return posterior
+
+    # draws2data_idata = draws2data(model, S, R)
+    # if S == 1:
+    # else:
+    #     P = len(draws2data_idata.posterior.integrated_result_dim_1)
+    #     Q = len(draws2data_idata.posterior.initial_outcome_dim_0)
+    #     shape = (S, M, P, Q, N) # R shape (2, 100, 3, 3, 20)
+    #     # chain, draws, integrated_result_dim_0 (number of matching.vectors), number of every stocks (target_simulated_stock - process noise?), number of groups
+    #     sbc_idata_raw = np.random.randn(*shape)#az.convert_to_inference_data(np.random.randn(*shape))
+    #
+    #     for s in range(S): #multiprocessing
+    #         model_data2draws = model_update(model, draws2data_idata, s)
+    #         data2draws_idata_raw = data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
+    #         est_path = f"{get_data_path(model.model_name)}/estimator.nc"
+    #         idata2netcdf4store(est_path, data2draws_idata_raw)
+    #         draws2data_idata.sel(draw = s) + data2draws(model_data2draws, R, chains=4, iter_sampling=int(M/4))
+    #     else:
+    #         return
+    #     sbc_path = f"{get_data_path(model.model_name)}/sbc.nc"
+    #     idata2netcdf4store(sbc_path, sbc_idata)
+    #     test_q_lst = ['loglik']
+    #     return diagnose(sbc_idata, test_q_lst)
 
 def model_update(model, draws2data_idata, s):
     """
@@ -145,61 +174,3 @@ def model_update(model, draws2data_idata, s):
         model.update_numeric({f'{matching}': obs_dict[f'{matching}']})
     model.update_numeric({'process_noise_scale': 0.0})
     return model
-
-
-################################### TEMPTORY USE, WILL BE DEPRECATED ###################################
-
-def draws2data_hier(model, draws2data_numeric_assumption, iter_sampling=1):
-    prior_ppc = cmdstanpy.CmdStanModel(
-        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_draws2data_hier.stan").sample(data=draws2data_numeric_assumption, fixed_param=True,
-                                                  iter_sampling=iter_sampling)  # neg_binom doesn't receivRe vector; manual add for loop in stanfile
-
-    nc_path = f"{get_data_path(model.model_name)}/generator.nc"
-    idata2netcdf4store(nc_path, prior_ppc.draws_xr())
-    return prior_ppc.draws_xr()
-
-
-def data2draws_hier(model, data2draws_numeric_assumption, s, chains = 4, iter_sampling = 250):
-    post_ppc = cmdstanpy.CmdStanModel(
-        stan_file="stan_files/" + f"{model.model_name}/{model.model_name}_data2draws_hier.stan").sample(data=data2draws_numeric_assumption, chains=chains,
-                                                 iter_sampling=iter_sampling)   # neg_binom doesn't receive vector; manual add for loop in stanfile
-
-    nc_path = f"{get_data_path(model.model_name)}/estimator_{s}.nc"
-    idata2netcdf4store(nc_path, post_ppc.draws_xr())
-    print("post_ppc to check prey_birth_frac_dim_0", post_ppc.draws_xr())
-
-    return post_ppc
-
-
-def draws2data2draws_hier(vensim, setting, numeric, prior, S, M, N, R):
-
-    for key in setting['target_simulated_vector_names']: #TODO sensitive order prey_obs = normal_rng doesn't comes in the end
-        numeric[f"{key}_obs"] = [0] * N
-
-    model = vensim2stan(get_structure(vensim))
-    model.set_numeric(numeric)
-    model.set_setting(**setting)
-
-    for p in prior:
-        model.set_prior(p[0], p[1], p[2], p[3], lower = p[4])
-
-    for key in setting['target_simulated_vector_names']:
-        model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
-
-    model.build_stan_functions()
-    obs_xr = draws2data_hier(model, numeric, iter_sampling=S)
-    setting_obs = [f'{i}_obs' for i in setting['target_simulated_vector_names']]
-    numeric["process_noise_scale"] = 0.0
-    for s in range(S):
-        obs_s_xr = obs_xr.sel(draw = s)
-        obs_dict = {k: v.values.flatten().reshape((model.n_t, R)) for (k, v) in obs_s_xr[setting_obs].items()}
-        prior_pred_check(setting, s)
-        for key, value in obs_dict.items():
-            numeric[key] = value
-        for i in setting['target_simulated_vector_names']:
-            model.update_numeric({f'{i}_obs': obs_dict[f'{i}_obs']})
-        model.update_numeric({'process_noise_scale': 0.0})
-
-        posterior = data2draws_hier(model, numeric, s, chains=2, iter_sampling=int(M/2))
-        posterior_check(setting, s)
-    return posterior

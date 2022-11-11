@@ -5,24 +5,36 @@ import arviz as az
 import numpy as np
 from ..builders.utilities import get_data_path, get_plot_path
 
-def prior_pred_check(setting, s):
+def prior_pred_check(setting, s = -1):
     model_name = setting['model_name']
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
-    prior_pred = xr.open_dataset(f"{data_path}/generator.nc").sel(draw = s)
-    fig, ax = plt.subplots(figsize = (15, 8))
-    for target in setting['target_simulated_vector_names']:
-        ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
-    ax.legend()
-    plt.savefig(f"{plot_path}/prior_pred_{s}.png")
+    if s == -1: # only one synthetic dataset
+        prior_pred = xr.open_dataset(f"{data_path}/generator.nc")
+        fig, ax = plt.subplots(figsize = (15, 8))
+        for target in setting['target_simulated_vector_names']:
+            ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
+        ax.legend()
+        plt.savefig(f"{plot_path}/prior_pred.png")
+    else:
+        prior_pred = xr.open_dataset(f"{data_path}/generator.nc").sel(draw = s)
+        fig, ax = plt.subplots(figsize = (15, 8))
+        for target in setting['target_simulated_vector_names']:
+            ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
+        ax.legend()
+        plt.savefig(f"{plot_path}/prior_pred_{s}.png")
     return
 
 
-def posterior_check(setting, s):
+
+def posterior_check(setting, s = -1):
     model_name = setting['model_name']
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
-    posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
+    if s==-1:
+        posterior = xr.open_dataset(f"{data_path}/estimator.nc")
+    else:
+        posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
     # TODO how to separate S and plot
     # TODO draw is reserved for posterior but coordinate for prior_draw need to added
     for est_param in setting['est_param']:
@@ -30,7 +42,6 @@ def posterior_check(setting, s):
             D = posterior.dims[f'{est_param}_dim_0']
             df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, D]))
             print("est_param", est_param)
-            print("df", df.shape)
             for d in range(D):
                 df.plot()
                 plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}.png")
@@ -38,7 +49,6 @@ def posterior_check(setting, s):
                 plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}_hist.png")
         else:
             df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, 1]))
-            print("est_param", est_param)
             df.plot()
             plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
             df.hist()
