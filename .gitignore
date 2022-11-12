@@ -7,7 +7,6 @@
 .apps
 *.pkl
 **/*.hpp
-**/*.nc
 **/*.hpp
 **/*.o
 *.pyc
