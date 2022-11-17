@@ -26,7 +26,7 @@ numeric = {
     "time_step": .03,
     "customer_order_rate": np.tile(pd.read_csv('data/example_retail_sales.csv').iloc[:N, 1], 1),
     "process_noise_uniform_driving": np.random.uniform(low=-.5, high=.5, size=N),
-    'process_noise_scale': 0.1
+    'process_noise_scale': 0 #.1
 }
 #
 # prior = {
@@ -35,7 +35,7 @@ numeric = {
 #     ("m_noise_scale", "normal", 0.01, 0.0005, 0)
 # }
 #
-# draws2data2draws('vensim_models/mng_inven/mng_inven.mdl', setting, numeric, prior, S, M, N)
+# draws2data2draws('vensim_models/mng_inven/mng_inven.mdl', setting, numeric, prior, S, M, N, R)
 
 # six parameter estimation
 
@@ -43,7 +43,7 @@ new_setting = {
     "est_param" : ("wip_adjustment_time", "manufacturing_cycle_time", "inventory_adjustment_time", "target_delivery_delay", "minimum_order_processing_time","safety_stock_coverage"),
     "target_simulated_vector_names" : ("production_rate_stocked", "production_start_rate_stocked"),
     "driving_vector_names" : ("customer_order_rate", "m_noise_std_half_normal", "p_noise_std_normal"),
-    "model_name": "Inven_6est"
+    "model_name": "Inven_6est_wo_pnoise"
 }
 
 new_prior = {
@@ -56,4 +56,4 @@ new_prior = {
     ("m_noise_scale", "normal", 0.01, 0.0005, 0)
 }
 
-draws2data2draws('vensim_models/inventory/inventory.mdl', new_setting, numeric, new_prior, S, M, N)
+draws2data2draws('vensim_models/inventory/inventory.mdl', new_setting, numeric, new_prior, S, M, N, R)
