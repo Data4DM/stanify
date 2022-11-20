@@ -315,7 +315,7 @@ class vensim2stan:
             f.write(Data2DrawsStanGQBuilder(self.stan_model_context, self.vensim_model_context,
                                             self.function_builder.ode_function_name).build_block())
 
-        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path) #TODO, compile = False
+        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path, cpp_options={'STAN_THREADS':'true'}) #TODO, compile = False
         return stan_model
 
 
@@ -357,7 +357,7 @@ class vensim2stan:
             f.write(Draws2DataStanGQBuilder(self.stan_model_context, self.vensim_model_context,
                                             self.function_builder.ode_function_name).build_block(transformed_parameters_code=str(transformed_params_builder.code)))
 
-        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path) #TODO, compile = False
+        stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path, cpp_options={'STAN_THREADS':'true'}) #TODO, compile = False
 
 
         return stan_model

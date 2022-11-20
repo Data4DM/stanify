@@ -36,8 +36,31 @@ def draws2data(model, iter_sampling=1, R = 1):
         draws2data_idata = draws2data_data.draws_xr()
     else:
         draws2data_data = cmdstanpy.CmdStanModel(
-            stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_draws2data.stan").sample(data=model.numeric, fixed_param=True, iter_sampling=iter_sampling)
-
+            stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_draws2data.stan", cpp_options={'STAN_THREADS':'true'})\
+            .sample(data=model.numeric, fixed_param=True, iter_sampling=iter_sampling)
+        # 1. create sbc_idata
+        """
+        idata_kwargs = dict(
+        prior_predictive=["slack_comments_hat","github_commits_hat"],
+        posterior_predictive=["slack_comments_hat","github_commits_hat"],
+        log_likelihood={
+            "slack_comments": "log_likelihood_slack_comments",
+            "github_commits": "log_likelihood_github_commits"
+        },
+        coords={"developer": names},
+        dims={
+            "slack_comments": ["developer"],
+            "github_commits" : ["developer"],
+            "slack_comments_hat": ["developer"],
+            "github_commits_hat": ["developer"],
+            "time_since_joined": ["developer"],
+        }
+        )
+        idata_orig = az.from_cmdstanpy(
+            prior=prior_fit, **idata_kwargs
+        ).stack(prior_draw=["chain", "draw"], groups="prior_groups")
+        idata_orig
+        """
         draws2data_idata = az.from_cmdstanpy(prior = draws2data_data)
     idata2netcdf4store(nc_path, draws2data_idata)
     return draws2data_idata #TODO return all vs sample_stats
@@ -65,7 +88,8 @@ def data2draws(model, s, R, chains = 2, iter_sampling = 250):
     else:
         nc_path = f"{get_data_path(model.model_name)}/estimator_{s}.nc"
         data2draws_data = cmdstanpy.CmdStanModel(
-                stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_data2draws.stan").sample(data=model.numeric, chains=chains, iter_sampling=iter_sampling)
+                stan_file="stan_files/pp_hierORsbc/pp_hierORsbc_data2draws.stan", cpp_options={'STAN_THREADS':'true'})\
+            .sample(data=model.numeric, chains=chains, iter_sampling=iter_sampling)
         #data2draws_idata = az.from_cmdstanpy(data2draws_data)
     data2draws_idata = data2draws_data.draws_xr()
     idata2netcdf4store(nc_path, data2draws_idata)
@@ -118,8 +142,31 @@ def draws2data2draws(vensim, setting, numeric, prior_coord, S, M, N, R ):
         posterior = data2draws(model, s = -1, R = 1, chains=2, iter_sampling=int(M/2))
         posterior_check(setting)
     else:
-        for s in range(S): #TODO better choice than s = -1 for single dataset?
+        for s in range(S): #TODO better choice than s = -1 for single dataset? + REMOVE S == 1 and R == 1
+            # 2. add prior_predictive
+            """
+            prior_pred = idata_orig.prior_predictive
+            S = prior_pred.dims["prior_draw"]
+            idata_list = []
+            for i in range(S):
+                data_s = prior_pred.isel(prior_draw=i)
+                data_dict = {
+                    "slack_comments": data_s["slack_comments_hat"].values,
+                    "github_commits": data_s["github_commits_hat"].values,
+                    **linreg_base_data
+                }
+                write_stan_json("linreg_data.json", data_dict)
+                fit = model.sample(data="linreg_data.json")
+                idata = az.from_cmdstanpy(posterior=fit, **idata_kwargs)
+                idata_list.append(idata)
+            """
             obs_s_xr = obs_xr.sel(draw=s)
+            # 3. add posterior
+            """
+            post = xr.concat((idata.posterior for idata in idata_list), dim="prior_draws")
+            post_pred = xr.concat((idata.posterior_predictive for idata in idata_list), dim="prior_draws")
+            idata_orig.add_groups(posterior=post, posterior_preditive=post_pred)
+            """
             obs_dict = {k: v.values.flatten().reshape((model.n_t, R)) for (k, v) in obs_s_xr[setting_obs].items()}
             prior_pred_check(setting, s)
             for key, value in obs_dict.items():
