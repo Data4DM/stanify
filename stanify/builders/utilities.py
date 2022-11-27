@@ -1,5 +1,6 @@
 from collections import defaultdict
 import os
+import arviz as az
 from pysd.translators.vensim.vensim_file import VensimFile
 import numpy as np
 
@@ -90,7 +91,7 @@ def get_stanfiles_path(model_name):
         os.makedirs(stanfiles_path)
     return stanfiles_path
 
-# TODO @Dashadower
+# TODO @Dashadower caching
 def StanModel_cache(model_code, model_name=None, **kwargs):
     """Use just as you would `stan`"""
     code_hash = md5(model_code.encode('ascii')).hexdigest()
@@ -111,7 +112,8 @@ def StanModel_cache(model_code, model_name=None, **kwargs):
 def idata2netcdf4store(nc_path, idata):
     if os.path.exists(nc_path):
         os.remove(nc_path)
-    idata.to_netcdf(nc_path)
+    idata.to_netcdf(nc_path) #, compress = False
+    #az.to_netcdf(idata, nc_path, group=idata.groups, coords=idata.coords, dims = idata.dims)
     return
 
 
@@ -135,3 +137,10 @@ def diagnose(sbc_xr, test_quantity, matching_obs): #TODO variable-wise?
 
 def compare(a, b):
     return np.abs(a-b)
+
+def hier(precision, setting, idata_kwargs):
+    if precision['R'] > 1:
+        idata_kwargs['coords']['region'] = [r for r in range(precision['R'])]
+        for vector in setting['target_simulated_vector_names']:
+            idata_kwargs['dims'][f'{vector}_obs'] = ["time", "region"]
+    return idata_kwargs

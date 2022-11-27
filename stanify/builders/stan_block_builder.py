@@ -212,16 +212,13 @@ class StanDataBuilder:
     def __init__(self, stan_model_context: "StanModelContext"):
         self.stan_model_context = stan_model_context
     def build_block(self):
-        code = IndentedString()
-        code += "data{\n"
-        code += "}\n"
-        return code.string
+        raise NotImplementedError()
 
 
 class Draws2DataStanDataBuilder(StanDataBuilder):
     def __init__(self, stan_model_context):
         self.stan_model_context = stan_model_context
-        super(Draws2DataStanDataBuilder, self).__init__(self.stan_model_context)
+        super().__init__(self.stan_model_context) # (Draws2DataStanDataBuilder, self)
 
     def build_block(self):
         stan_params = [stmt.lhs_variable for stmt in self.stan_model_context.sample_statements]
@@ -329,7 +326,7 @@ class StanTransformedDataBuilder:
         self.code += "\n"
 
         self.code += "// Initialize ODE stock vector\n"
-        self.code += "vector[Q] initial_outcome; \n"
+        self.code += f'vector[{len(integ_outcome_vector_names)}] initial_outcome; \n'
         for index, name in enumerate(integ_outcome_vector_names, 1):
             if name in stock_initial_values:
                 self.code += f"initial_outcome[{index}] = {stock_initial_values[name]};  // Defined within stan\n"
@@ -459,7 +456,7 @@ class StanTransformedParametersBuilder:
         else:
             self.code += "for (r in 1:R){\n"
             self.code.indent_level += 1
-            ode_solver_code = f"array[N] vector[Q] integrated_result = ode_rk45({function_name}, initial_outcome, initial_time, integration_times"
+            ode_solver_code = f"array[N] vector[{len(integ_outcome_vector_names)}] integrated_result = ode_rk45({function_name}, initial_outcome, initial_time, integration_times"
 
             if len(argument_variables) > 0:
                 for var in argument_variables:
@@ -491,7 +488,6 @@ class StanModelBuilder:
                 if statement.distribution_type != statement.assignment_dist:
                     code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
         else:
-            print("self.stan_model_context.stan_data", self.stan_model_context.stan_data)
             for statement in self.stan_model_context.sample_statements:
                 param_name = statement.lhs_expr
                 if param_name in hier_est_param_names:
@@ -513,26 +509,9 @@ class StanModelBuilder:
         #TODO @Dashadower what is the diff btw classes that has its own code vs not (self.code VS return str(code))
         return str(code)
 
-class StanGQBuilder:
-    def __init__(self, sampling_statements: Iterable["SamplingStatement"]):
-        self.sampling_statements = sampling_statements
-
-    def build_block(self):
-        code = IndentedString()
-        code += "generated quantities{\n"
-        code.indent_level += 1
-        for statement in self.sampling_statements:
-            code += f"real {statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
-
-        code.indent_level -= 1
-        code += "}\n"
-        return str(code)
-
-    #def build_obs_rng_functions(self):
-
 
 # TODO @Dashadower: should/could `Draws2DataStanGQBuilder`, `Data2DrawsStanGQBuilder` inherit `StanGQBuilder`?
-class Draws2DataStanGQBuilder(StanGQBuilder):
+class Draws2DataStanGQBuilder():
     def __init__(self, precision_context: "PrecisionContext", stan_model_context: "StanModelContext", vensim_model_context: "VensimModelContext"):
         self.precision_context = precision_context
         self.stan_model_context = stan_model_context
@@ -616,11 +595,11 @@ class Draws2DataStanGQBuilder(StanGQBuilder):
                     vec_name = statement.lhs_expr
                     dist_code = f'{vec_name}'[:-4] + "[:, r], " + f"{', '.join(statement.distribution_args[1:])}"
                     self.code += f"{vec_name}[:, r] = {statement.distribution_type}_rng({dist_code});\n"
-
+            # link(alpha) ~ N(0,1); link(alpha) is expr, alpha is var
             self.code.indent_level -= 1
             self.code += "}\n"
 
-class Data2DrawsStanGQBuilder(StanGQBuilder):
+class Data2DrawsStanGQBuilder():
     def __init__(self, precision_context: "PrecisionContext", stan_model_context: "StanModelContext", vensim_model_context: "VensimModelContext"):
         self.precision_context = precision_context
         self.stan_model_context = stan_model_context
@@ -676,14 +655,14 @@ class Data2DrawsStanGQBuilder(StanGQBuilder):
                     stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type
                     scale = statement.distribution_args[1]
                     if stan_type.startswith("vector"):
-                        self.code += f"{stan_type} {statement.lhs_expr}_post_pred = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
+                        self.code += f"{stan_type} {statement.lhs_expr}_post = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
                     else:
-                        self.code += f"{stan_type} {statement.lhs_expr}_post_pred = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                        self.code += f"{stan_type} {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
         else:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    self.code += f"array[N] vector[R] {statement.lhs_expr}_post_pred;\n"
+                    self.code += f"array[N] vector[R] {statement.lhs_expr}_post;\n"
 
             self.code += "// Assign generated value to observed vector (matching vector)\n"
             self.code += "for (r in 1:R){\n"
@@ -693,6 +672,7 @@ class Data2DrawsStanGQBuilder(StanGQBuilder):
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
                     scale = statement.distribution_args[1]
                    #TODO {', '.join(statement.distribution_args)} is better; posterior predictive remove _obs?? (w.o. loc, scale)
-                    self.code += f"{statement.lhs_expr}_post_pred[:, r] = {statement.distribution_type}_rng({statement.lhs_expr[:-4]}[:, r], {scale});\n"
+                    self.code += f"{statement.lhs_expr}_post[:, r] = {statement.distribution_type}_rng({statement.lhs_expr[:-4]}[:, r], {scale});\n"
             self.code.indent_level -= 1
             self.code += "}\n"
+

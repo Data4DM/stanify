@@ -40,7 +40,7 @@ class SamplingStatement:
             # TODO: Check if it's a valid stan distribution
             self.distribution_return_type = float
 
-#TODO @Dashadower benefit of dataclass?
+# dataclass remove boilerplate
 @dataclass
 class StanDataEntry:
     data_name: str
@@ -50,7 +50,7 @@ class StanDataEntry:
 class StanModelContext:
     initial_time: float
     integration_times: Iterable[float]
-    stan_data: Dict[str, StanDataEntry] = field(default_factory=dict)
+    stan_data: Dict[str, StanDataEntry] = field(default_factory=dict) # dictionary is obj, lambda function (not obj butclass)
     sample_statements: List[SamplingStatement] = field(default_factory=list)
     exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function (include both hier, nonhier)
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
@@ -93,7 +93,7 @@ class StanModelContext:
                     self.stan_data[key] = StanDataEntry(key, f"array[{dims[0]}] vector[{dims[1]}]")
 
 
-#TODO @Dashadower: class or input?
+
 @dataclass
 class PrecisionContext:
     S: int
@@ -102,7 +102,7 @@ class PrecisionContext:
     Q: int
     R: int
 class VensimModelContext:
-    def __init__(self, abstract_model):
+    def  __init__(self, abstract_model):
         self.variable_names = set()  # stanified
         self.integ_outcome_vector_names = set()
         self.abstract_model = abstract_model
@@ -271,18 +271,20 @@ class vensim2stan:
         function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.hier_est_param_names, self.vensim_model_context.integ_outcome_vector_names)
 
 
-        if glob.glob(stan_function_path):
-            with open(stan_function_path, "r") as f:
-                if f.read().rstrip() == function_code.rstrip():
-                    return
-                else:
-                    if input(f"{self.model_name}_functions.stan already exists in the current working directory. Overwrite? (y/n):").lower() != "y":
-                        raise Exception("Code generation aborted by user")
-        else:
-            with open(stan_function_path, "w") as f:
-                f.write(function_code)
-
-
+        # if glob.glob(stan_function_path):
+        #     with open(stan_function_path, "r") as f:
+        #         if f.read().rstrip() == function_code.rstrip():
+        #             return
+        #         else:
+        #             if input(f"{self.model_name}_functions.stan already exists in the current working directory. Overwrite? (y/n):").lower() != "y":
+        #                 raise Exception("Code generation aborted by user")
+        # else:
+        #     with open(stan_function_path, "w") as f:
+        #         f.write(function_code)
+        if os.path.exists(stan_function_path):
+            os.remove(stan_function_path)
+        with open(stan_function_path, "w") as f:
+            f.write(function_code)
     def stanify_draws2data(self):
         stan_draws2data_path = f"{ get_stanfiles_path(self.model_name)}/{self.model_name}_draws2data.stan"
 

@@ -4,10 +4,11 @@ import pandas as pd
 import numpy as np
 import random
 random.seed(10)
-from stanify.calibrator.draws_data_mapper import  draws2data, data2draws, draws2data2draws
+from stanify.calibrator.draws_data_mapper import draws2data2draws
+from stanify.builders.utilities import hier
 
+# INPUT FORMAT
 N = 20
-
 setting = {
     "est_param_names" : ("inventory_adjustment_time", "wip_adjustment_time"),
     "hier_est_param_names": ("wip_adjustment_time", ),
@@ -22,7 +23,7 @@ numeric = {
     'process_noise_scale': .1
 }
 
-precision ={
+precision = {
     "S": 3, # # of draws from prior
     "M": 100, # # of draws from posterior (# of chains * # of draws from each chain)
     "N": N, # # of observation
@@ -38,12 +39,30 @@ prior = {
     ("m_noise_scale", "normal", 0.01, 0.0005, 0)
 }
 
-draws2data2draws('vensim_models/inventory/inventory.mdl', setting, precision, numeric, prior)
+# OUTPUT FORMAT
+idata_kwargs = dict(
+    prior_predictive=["production_rate_stocked_obs", "production_start_rate_stocked_obs"],
+    posterior_predictive=["production_rate_stocked_obs_post", "production_start_rate_stocked_obs_post"],
+    log_likelihood={
+        "loglik": "loglik"
+    },
+    coords={
+        "time": [n for n in range(precision['N'])],
+        "stock": [q for q in range(precision['Q'])],
+        "region": [r for r in range(precision['R'])]
+    },
+    dims={
+        'initial_outcome': ["stock"],
+        'integrated_result': ["time", "stock"],
+        'production_rate_stocked': ["time"],
+        'production_start_rate_stocked': ["time"],
+        'process_noise': ["time"],
+        "production_rate_stocked_obs": ["time"],
+        "production_start_rate_stocked_obs": ["time"],
+    }
+)
 
-# Exception: vector[uni] assign: accessing element out of range. index 3 out of range; expecting index to be between 1 and 2 (in '/Users/hyunjimoon/Dropbox/stanify/stan_files/Inven_S3R2/Inven_S3R2_draws2data.stan', line 34, column 4 to column 41)
-# Command and output files:
-# RunSet: chains=1, chain_ids=[1], num_processes=1
-
+draws2data2draws('vensim_models/inventory/inventory.mdl', setting, precision, numeric, prior, hier(precision, setting, idata_kwargs))
 
 
 # six parameter estimation

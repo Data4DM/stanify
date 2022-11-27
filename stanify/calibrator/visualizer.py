@@ -5,34 +5,33 @@ import arviz as az
 import numpy as np
 from ..builders.utilities import get_data_path, get_plot_path
 
-def plot_prior_qoi(setting, s = -1):
-    model_name = setting['model_name']
+
+def plot_prior_qoi(model_name, latent_vector_names):
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
-    if s == -1: # only one synthetic dataset
-        prior_pred = xr.open_dataset(f"{data_path}/generator.nc")
-        fig, ax = plt.subplots(figsize = (15, 8))
-        for target in setting['target_simulated_vector_names']:
-            ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
-        ax.legend()
-        plt.savefig(f"{plot_path}/prior_pred.png")
-    else:
-        prior_pred = xr.open_dataset(f"{data_path}/generator.nc").sel(draw = s)
-        fig, ax = plt.subplots(figsize = (15, 8))
-        for target in setting['target_simulated_vector_names']:
-            ax.plot(prior_pred[f'{target}_obs'].mean(["chain"]).to_dataframe().values, label=f"{target}_obs")
-        ax.legend()
-        plt.savefig(f"{plot_path}/prior_pred_{s}.png")
+
+    draws2data_idata = az.from_netcdf(f"{data_path}/draws2data.nc")
+    fig, ax = plt.subplots(figsize=(15, 8))
+    for target in latent_vector_names:
+        ax.plot(draws2data_idata.prior[target].to_dataframe().values, label=f"{target}")
+        ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].to_dataframe().values, label=f"{target}_obs")
+    ax.legend()
+    plt.savefig(f"{plot_path}/{model_name}_draws2data_each.png")
+
+    # fig, ax = plt.subplots(figsize = (15, 8))
+    # for target in latent_vector_names:
+    #     ax.plot(draws2data_idata.prior[target].mean(["region"]).to_dataframe().values, label=f"{target}")
+    #     ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].mean(["region"]).to_dataframe().values, label=f"{target}_obs")
+    # ax.legend()
+    # plt.savefig(f"{plot_path}/{latent_vector_names}_draws2data.png")
     return
 
 
-
-def plot_posterior_qoi(setting, s = -1):
-    model_name = setting['model_name']
+def plot_posterior_qoi(model_name, latent_vector_names):
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
     if s==-1:
-        posterior = xr.open_dataset(f"{data_path}/estimator.nc")
+        posterior = xr.open_dataset(f"{data_path}/data2draws.nc")
     else:
         posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
     # TODO how to separate S and plot

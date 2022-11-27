@@ -1,34 +1,29 @@
 import matplotlib
 matplotlib.use('TkAgg')
 import numpy as np
-from stanify.calibrator.draws_data_mapper import draws2data2draws
+from stanify.calibrator.draws_data_mapper import draws2data2draws, transform_data
 import random
 random.seed(10)
 
-N = 20
-#TODO @tomfid naming, downsampling?
+# INPUT FORMAT
 precision ={
-    "S": 3, # # of draws from prior
+    "S": 1, # # of draws from prior
     "M": 10, # # of draws from posterior (# of chains * # of draws from each chain)
-    "N": N, # # of observation
-    "Q": 3, # # of target_simulated_stock
-    "R": 4, # # of subgroups for hierarchical Bayes
-    "time_step": .03,
-    "integration_times": np.arange(0, N) * .03 + 0.01,  # initial_time < integration_times, .03 need not be time_step, but length should be N
+    "N": 200, # # of observation
+    "R": 2, # # of subgroups for hierarchical Bayes
 }
 
 setting = {
     "est_param_names": ("prey_birth_frac", "pred_birth_frac"),
-    "hier_est_param_names": ("pred_birth_frac", ), #need ,) to be list downstream  # chosen among "est_param_names"
+    "hier_est_param_names": ("pred_birth_frac", ), # chosen among "est_param_names", need (,)
     "target_simulated_vector_names": ("prey", "predator"),
     "driving_vector_names": ("process_noise_uniform_driving"),
-    "model_name": "S3R4",
+    "model_name": "prey_predator",
 }
 
-# TODO @Dashadower advantages in having `process_noise_uniform_driving` in stan data block, when only function block use this?
 numeric = {
     "process_noise_uniform_driving": np.random.uniform(low=-.5, high=.5, size = precision['N']),
-    'process_noise_scale': 0.1
+    'process_noise_scale': 0.01
 }
 
 prior = {
@@ -37,4 +32,26 @@ prior = {
     ("m_noise_scale", "normal", .01, .001, 0)
 }
 
-draws2data2draws('vensim_models/prey_predator/prey_predator.mdl', setting, precision, numeric, prior)
+output_format = dict(
+    prior_predictive=["prey_obs", "predator_obs"],
+    posterior_predictive=["prey_obs_post", "predator_obs_post"],
+    log_likelihood={
+        "loglik": "loglik"
+    },
+    coords={
+        "time": [n for n in range(precision['N'])],
+        "stock": setting['target_simulated_vector_names'],
+        "region": [r for r in range(precision['R'])]
+    },
+    dims={
+        'initial_outcome': ["stock"],
+        'integrated_result': ["time", "stock"],
+        'prey': ["time"],
+        'predator': ["time"],
+        'process_noise': ["time"],
+        "prey_obs": ["time"],
+        "predator_obs": ["time"],
+    }
+)
+
+draws2data2draws('vensim_models/prey_predator/prey_predator.mdl', *transform_data(setting, precision, numeric, prior, output_format))

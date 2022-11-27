@@ -128,7 +128,7 @@ class DataStructureCodegenWalker(BaseNodeWaler):
             self.data_variable_names.add(node_name)
             try:
                 data_vector = self.input_data_dict[vensim_name_to_identifier(node_name)]
-                n_intervals = len(data_vector)
+                n_intervals = len(data_vector) # only defined in vensim
             except KeyError:
                 raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
 
