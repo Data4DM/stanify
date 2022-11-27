@@ -81,11 +81,16 @@ def get_data_path(model_name):
     return data_path
 
 def get_stanfiles_path(model_name):
-    stanfiles_path = f"stan_files/{model_name}/"
+    stan_model_dir = os.path.join(os.getcwd(), "stan_files")
+    if not os.path.exists(stan_model_dir):
+        os.mkdir(stan_model_dir)
+
+    stanfiles_path = f"{stan_model_dir}/{model_name}/"
     if not os.path.exists(stanfiles_path):
         os.makedirs(stanfiles_path)
     return stanfiles_path
 
+# TODO @Dashadower
 def StanModel_cache(model_code, model_name=None, **kwargs):
     """Use just as you would `stan`"""
     code_hash = md5(model_code.encode('ascii')).hexdigest()

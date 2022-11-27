@@ -5,7 +5,7 @@ import arviz as az
 import numpy as np
 from ..builders.utilities import get_data_path, get_plot_path
 
-def prior_pred_check(setting, s = -1):
+def plot_prior_qoi(setting, s = -1):
     model_name = setting['model_name']
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
@@ -27,7 +27,7 @@ def prior_pred_check(setting, s = -1):
 
 
 
-def posterior_check(setting, s = -1):
+def plot_posterior_qoi(setting, s = -1):
     model_name = setting['model_name']
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
@@ -37,11 +37,11 @@ def posterior_check(setting, s = -1):
         posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
     # TODO how to separate S and plot
     # TODO draw is reserved for posterior but coordinate for prior_draw need to added
-    for est_param in setting['est_param']:
+    for est_param in setting['est_param_names']:
         if posterior.dims.__contains__(f'{est_param}_dim_0'):
             D = posterior.dims[f'{est_param}_dim_0']
             df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, D]))
-            print("est_param", est_param)
+
             for d in range(D):
                 df.plot()
                 plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}.png")
