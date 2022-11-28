@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
 import arviz as az
-import numpy as np
 from ..builders.utilities import get_data_path, get_plot_path
 
 
+import numpy as np
+# TODO draw is reserved for posterior but coordinate for prior_draw need to added
 def plot_prior_qoi(model_name, latent_vector_names):
     data_path = get_data_path(model_name)
     plot_path = get_plot_path(model_name)
@@ -13,8 +14,8 @@ def plot_prior_qoi(model_name, latent_vector_names):
     draws2data_idata = az.from_netcdf(f"{data_path}/draws2data.nc")
     fig, ax = plt.subplots(figsize=(15, 8))
     for target in latent_vector_names:
-        ax.plot(draws2data_idata.prior[target].to_dataframe().values, label=f"{target}")
-        ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].to_dataframe().values, label=f"{target}_obs")
+        ax.plot(draws2data_idata.prior[target].mean('prior_draw').to_dataframe().values, label=f"{target}")
+        ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].mean('prior_draw').to_dataframe().values, label=f"{target}_obs")
     ax.legend()
     plt.savefig(f"{plot_path}/{model_name}_draws2data_each.png")
 
@@ -27,40 +28,26 @@ def plot_prior_qoi(model_name, latent_vector_names):
     return
 
 
-def plot_posterior_qoi(model_name, latent_vector_names):
+##TODO @Oriol could we infer `hier_est_param_name` from .nc?
+def plot_posterior_qoi(model_name, est_param_name, hier_est_param_name):
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
-    if s==-1:
-        posterior = xr.open_dataset(f"{data_path}/data2draws.nc")
-    else:
-        posterior = xr.open_dataset(f"{data_path}/estimator_{s}.nc")
-    # TODO how to separate S and plot
-    # TODO draw is reserved for posterior but coordinate for prior_draw need to added
-    for est_param in setting['est_param_names']:
-        if posterior.dims.__contains__(f'{est_param}_dim_0'):
-            D = posterior.dims[f'{est_param}_dim_0']
-            df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, D]))
+    data2draws = xr.open_dataset(f"{data_path}/data2draws.nc")
 
-            for d in range(D):
-                df.plot()
-                plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}.png")
-                df.hist()
-                plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_{d}_hist.png")
-        else:
-            df = pd.DataFrame(posterior[f'{est_param}'].values.reshape([-1, 1]))
-            df.plot()
-            plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
-            df.hist()
-            plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_hist.png")
-    # for s in range(len(posterior.draw)):
-    #     for est_param in setting['est_param']:
-    #         df = pd.DataFrame()
-    #         for chain in posterior.chain.values:
-    #             df[f"{chain}"] = pd.DataFrame(posterior[f'{est_param}'].sel(chain=chain, draw = s))
-    #         df.plot()
-    #         plt.savefig(f"{plot_path}/posterior_{est_param}_{s}.png")
-    #         df.hist()
-    #         plt.savefig(f"{plot_path}/posterior_{est_param}_{s}_hist.png")
+    # univariate
+    #for param in est_param_name:
+    az.plot_trace(data2draws, var_names=est_param_name, divergences=True, compact=True)
+    plt.savefig(f"{plot_path}/plot_trace.png")
+    plt.clf()
+
+    # joint: pair plot
+    az.plot_pair(data2draws, var_names=est_param_name, divergences=True)
+    plt.savefig(f"{plot_path}/plot_trace.png")
+    plt.clf()
+    # rank plot with loglik
+
+    # fig out special treatment needed for hier_est_param
+
     return
 
 

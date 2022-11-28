@@ -204,10 +204,7 @@ class StanFunctionBuilder:
             for component in element.components:
                 self.datastructure_builder_walker.walk(component.ast, vensim_name_to_identifier(element.name))
 
-
-#TODO @Dashadower if two classes (`Draws2DataStanDataBuilder`, `Data2DrawsStanDataBuilder`) inherit `StanDataBuilder`,
-# what is the minimum things to be left in parent class? e.g. if build_block is to be rewritten, erasing all below and leave only return o.k?
-#TODO @Dashadower meaning of super(Draws2DataStanDataBuilder, self).__init__(self.stan_model_context)? recursion?
+# all class share init and build_block() function, motivating the inheritance (modularize functions to use super(); relevant to visitor pattern)
 class StanDataBuilder:
     def __init__(self, stan_model_context: "StanModelContext"):
         self.stan_model_context = stan_model_context
@@ -228,7 +225,7 @@ class Draws2DataStanDataBuilder(StanDataBuilder):
         code += "int <lower=0> S;  // # of draws from prior \n"
         code += "int <lower=0> M;  // # of draws from posterior (# of chains * # of draws from each chain)\n"
         code += "int <lower=0> N;  // # of observation\n"
-        code += "int <lower=0> Q;  // # of target_simulated_stock \n"
+        code += "int <lower=0> Q;  // # of target_simulated_stock and obs_vectors \n"
         code += "int <lower=0> R;  // # of subgroups for hierarchical Bayes \n"
         code += "real <lower=0> time_step;\n"
         code += "array[N] real integration_times;\n"
@@ -253,7 +250,7 @@ class Data2DrawsStanDataBuilder(StanDataBuilder): #TODO @Dashadower I copied sup
         code += "int <lower=0> S;  // # of draws from prior \n"
         code += "int <lower=0> M;  // # of draws from posterior (# of chains * # of draws from each chain)\n"
         code += "int <lower=0> N;  // # of observation\n"
-        code += "int <lower=0> Q;  // # of target_simulated_stock \n"
+        code += "int <lower=0> Q;  // # of target_simulated_stock and obs_vectors \n"
         code += "int <lower=0> R;  // # of subgroups for hierarchical Bayes \n"
         code += "real <lower=0> time_step;\n"
         code += "array[N] real integration_times;\n"
@@ -271,7 +268,7 @@ class Data2DrawsStanDataBuilder(StanDataBuilder): #TODO @Dashadower I copied sup
 
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    code += f"array[N] {statement.lhs_variable};\n"
+                    code += f"array[N] real {statement.lhs_variable};\n"
 
         else:
             for _, entry in self.stan_model_context.stan_data.items():
@@ -510,7 +507,6 @@ class StanModelBuilder:
         return str(code)
 
 
-# TODO @Dashadower: should/could `Draws2DataStanGQBuilder`, `Data2DrawsStanGQBuilder` inherit `StanGQBuilder`?
 class Draws2DataStanGQBuilder():
     def __init__(self, precision_context: "PrecisionContext", stan_model_context: "StanModelContext", vensim_model_context: "VensimModelContext"):
         self.precision_context = precision_context
@@ -562,6 +558,8 @@ class Draws2DataStanGQBuilder():
                     if statement.init_state:
                         param_name = param_name + "__init"
                     if param_name in hier_est_param_names:
+
+
                         dist_code = "rep_vector(" + f'{statement.distribution_args[0]}, R), ' + f"{', '.join(statement.distribution_args[1:])}"
                         self.code += f"real {param_name}[R] =  {statement.distribution_type}_rng({dist_code});\n"
                     else:
@@ -575,11 +573,7 @@ class Draws2DataStanGQBuilder():
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
                     vec_name = statement.lhs_expr
-                    stan_type = self.stan_model_context.stan_data[vec_name].stan_type
-                    if stan_type.startswith("vector"):
-                        self.code += f"{stan_type} {vec_name} = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
-                    else:
-                        self.code += f"{stan_type} {vec_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                    self.code += f"array [N] real {vec_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
         else:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:
@@ -652,12 +646,14 @@ class Data2DrawsStanGQBuilder():
             self.code += "// Define and assign generated value to posterior predictive vector\n"
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type
+                    # TODO @Dashadower how to use the following in the future?
+                    #  stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type #     stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type KeyError: 'prey_obs'
                     scale = statement.distribution_args[1]
-                    if stan_type.startswith("vector"):
-                        self.code += f"{stan_type} {statement.lhs_expr}_post = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
-                    else:
-                        self.code += f"{stan_type} {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                    # if stan_type.startswith("vector"):
+                    #     self.code += f"{stan_type} {statement.lhs_expr}_post = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
+                    # else:
+                    #     self.code += f"{stan_type} {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                    self.code += f"array[N] real {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
         else:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:

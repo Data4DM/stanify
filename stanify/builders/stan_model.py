@@ -50,7 +50,7 @@ class StanDataEntry:
 class StanModelContext:
     initial_time: float
     integration_times: Iterable[float]
-    stan_data: Dict[str, StanDataEntry] = field(default_factory=dict) # dictionary is obj, lambda function (not obj butclass)
+    stan_data: Dict[str, StanDataEntry] = field(default_factory=dict) # dictionary is obj, lambda function (not obj butc lass)
     sample_statements: List[SamplingStatement] = field(default_factory=list)
     exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function (include both hier, nonhier)
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
@@ -266,7 +266,7 @@ class vensim2stan:
         -------
 
         """
-        stan_function_path = f"{get_stanfiles_path(self.model_name)}/{self.model_name}_functions.stan"
+        stan_function_path = f"{get_stanfiles_path(self.model_name)}/functions.stan"
         self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric)
         function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.hier_est_param_names, self.vensim_model_context.integ_outcome_vector_names)
 
@@ -286,7 +286,7 @@ class vensim2stan:
         with open(stan_function_path, "w") as f:
             f.write(function_code)
     def stanify_draws2data(self):
-        stan_draws2data_path = f"{ get_stanfiles_path(self.model_name)}/{self.model_name}_draws2data.stan"
+        stan_draws2data_path = f"{ get_stanfiles_path(self.model_name)}/draws2data.stan"
 
         # Find sampling statements for init
         stock_initials = {}
@@ -298,7 +298,7 @@ class vensim2stan:
             # Include the function
             f.write("functions{")
             f.write("\n")
-            f.write(f"  #include {self.model_name}_functions.stan\n")
+            f.write(f"  #include functions.stan\n")
             f.write("}")
             f.write("\n")
             f.write("\n")
@@ -340,7 +340,7 @@ class vensim2stan:
 
 
     def stanify_data2draws(self):
-        stan_data2draws_path = f"{get_stanfiles_path(self.model_name)}/{self.model_name}_data2draws.stan"
+        stan_data2draws_path = f"{get_stanfiles_path(self.model_name)}/data2draws.stan"
 
         # Find sampling statements for init
         stock_initials = {}
@@ -351,7 +351,7 @@ class vensim2stan:
         with open(stan_data2draws_path, "w") as f:
             # Include the function
             f.write("functions{\n")
-            f.write(f"    #include {self.model_name}_functions.stan\n")
+            f.write(f"    #include functions.stan\n")
             f.write("}\n\n")
 
             f.write(Data2DrawsStanDataBuilder(self.precision_context, self.stan_model_context).build_block())

@@ -143,4 +143,5 @@ def hier(precision, setting, idata_kwargs):
         idata_kwargs['coords']['region'] = [r for r in range(precision['R'])]
         for vector in setting['target_simulated_vector_names']:
             idata_kwargs['dims'][f'{vector}_obs'] = ["time", "region"]
+
     return idata_kwargs

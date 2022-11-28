@@ -28,10 +28,14 @@ def draws2data(model, idata_kwargs, data_dict):
     -------
     matching_data: InferenceData type with shape (chain: 1, (prior_)draw: S, (regional_)group: R)
     """
-    draws2data_fit = model.stanify_draws2data().sample(data=data_dict, fixed_param=True, iter_sampling=model.precision_context.M)
-    draws2data_idata = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs).stack(prior_draw=["chain", "draw"], groups="prior_groups")
-    draws2data_idata.reset_index("prior_draw", inplace=True)
+    draws2data_fit = model.stanify_draws2data().sample(data=data_dict, fixed_param=True, chains = 1, iter_sampling=model.precision_context.S)
 
+    draws2data_idata_bf = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs)
+    #draws2data_idata_bf.draws_xr().to_netcdf("idata.nc")
+    draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups", create_index = [])
+   # draws2data_idata.reset_index("prior_draw", inplace=True)
+    # draws2data_idata.prior['prey'].shape (200, 1)
+    # draws2data_idata_bf.prior['prey'].shape (1, 1, 200)
     # save as .nc
     idata2netcdf4store(f"{get_data_path(model.model_name)}/draws2data.nc", draws2data_idata)
 
@@ -55,7 +59,7 @@ def data2draws(model, idata_kwargs, data_dict):
     idata2netcdf4store(f"{get_data_path(model.model_name)}/data2draws.nc", data2draws_idata)
 
     # plot as .png
-    plot_posterior_qoi(model.model_name, model.get_latent_vector_names())
+    plot_posterior_qoi(model.model_name, model.est_param_name, model.hier_est_param_name)
 
     return data2draws_idata
 
@@ -71,25 +75,8 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
     numeric: driving data
     prior: dictionary-like container for estimated parameters (default point mass for assumed parameters)
     """
-    # obs vectors match draws2data and data2draws
-    numeric_setting = dict(**numeric)
-    #TODO @Dashadower below is very error-prone
-    for matching in setting['target_simulated_vector_names']:
-        numeric_setting[f"{matching}_obs"] = [0] * precision['N']
 
-    # set five model components: structure, numeric_[precision_scalar, vector], type, prior
-    # in order of clamp-ease: prior, numeric_precision, type, numeric_vector, structure
-    model = vensim2stan(get_structure(vensim))
-    model.set_numeric(precision, numeric)
-    model.set_type(**setting)
-
-    # perception (brain, flow)
-    for est_param in prior:
-        model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
-
-    for latent in model.get_latent_vector_names():
-        model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
-
+    model = transform_input(vensim, setting, precision, numeric, prior, idata_kwargs)
     model.stanify_ode_function()
     # which info to get from which context
 
@@ -100,8 +87,11 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
     idata_orig = draws2data(model, idata_kwargs, data_dict)
 
     draws2data_dataset = idata_orig.prior_predictive
+
+    # prepare gathering posterior
     sbc_list = []
     model.update_numeric({'process_noise_scale': 0.0})
+    idata_kwargs = update_draw2data_2_data2draws_format(idata_kwargs)
 
     for s in range(model.precision_context.S):
         draws2data_s = draws2data_dataset.isel(prior_draw=s)
@@ -122,7 +112,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
 
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
-
+    return model
 def update_numeric_obs(model, draws2data_s):
     """
     Parameters
@@ -136,25 +126,67 @@ def update_numeric_obs(model, draws2data_s):
     numeric_data2draws: draws2data_s added as observed data
     """
     matching_vector_names = model.get_matching_vector_names()
-    print("draws2data_s", draws2data_s )
+
     obs_dict = {k: v.values.flatten().reshape((model.N, model.R)) for (k, v) in draws2data_s[matching_vector_names].items()}
     for matching in matching_vector_names:
         model.update_numeric({f'{matching}': obs_dict[f'{matching}']})
 
     return model
 
-def transform_data(setting, precision, numeric, prior, output_format):
+def transform_input(vensim, setting, precision, numeric, prior, output_format):
+    """
+    vensim: vensim filepath which provides structral assumption
+    setting: modeler's selection of which parameter to estimate
+    precision: dictionary with five hyper-parameters S, M, N, P, Q
+        higher the number, the more precise approximation the model is to continuous model
+        S: number of draws from prior; prior samples are dim: stored in sbc_xr as [S * M] n_prior_draws
+        M: number of draws from posterior; posterior samples are stored in sbc_xr as [S * M]
+        N: length of matching timeseries vectors (final time - initial time (0)) / time_step
+    numeric: driving data
+    prior: dictionary-like container for estimated parameters (default point mass for assumed parameters)
+    """
     ## draws2data-specific precision
     precision['time_step'] = .125
 
     ## data2draws-specific precision
-    precision['integration_times'] = np.arange(0, 200) * .03 + 0.01 #np.arange(0, precision['N']) * precision['time_step'] + 0.01  # length N is the only constraint
+    precision['integration_times'] = np.arange(0, precision['N']) * precision['time_step'] + 0.01 #np.arange(0, precision['N']) * precision['time_step'] + 0.01  # length N is the only constraint
 
-    precision["Q"] = len(setting['target_simulated_vector_names'])
-    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}M{precision["M"]}N{precision["N"]}Q{precision["Q"]}R{precision["R"]}'
-
+    ## precision for both draws2data and data2draws
     precision['Q'] = len(setting['target_simulated_vector_names'])
+
+    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}R{precision["R"]}'
+
+    # obs vectors match draws2data and data2draws
+    numeric_setting = dict(**numeric)
+    #TODO @Dashadower below is very error-prone
+    for target in setting['target_simulated_vector_names']:
+        numeric_setting[f"{target}_obs"] = [0] * precision['N']
+
+    # set five model components: structure, numeric_[precision_scalar, vector], type, prior
+    # in order of clamp-ease: prior, numeric_precision, type, numeric_vector, structure
+    model = vensim2stan(get_structure(vensim))
+    model.set_numeric(precision, numeric)
+    model.set_type(**setting)
+
+    # perception (brain, flow)
+    for est_param in prior:
+        model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
+
+    for latent in model.get_latent_vector_names():
+        model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
+
     idata_kwargs = hier(precision, setting, output_format)
     idata_kwargs['coords']['time'] =  np.arange(0, precision['N']) * precision['time_step'] + 0.01 #precision['integration_times']
+    idata_kwargs["coords"]["stock"] =  model.vensim_model_context.integ_outcome_vector_names
+    # 11.28 FIND WHERE TO upadate_in_output() for ppc
 
-    return setting, precision, numeric, prior, idata_kwargs
+    return model
+
+def update_draw2data_2_data2draws_format(output_format):
+    #perhpas process noise scale (update_numeric can come here)
+    # remove prior_predcitve
+    # add obs data
+    #TODO @Oriol for future xr.concat() do we need "prior_predictive" keys?
+    #output_format.pop("prior_predictive")
+    output_format["observed_data"] = ["prey_obs", "predator_obs"]
+    return output_format

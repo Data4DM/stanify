@@ -14,7 +14,7 @@ setting = {
     "hier_est_param_names": ("wip_adjustment_time", ),
     "target_simulated_vector_names" : ("production_rate_stocked", "production_start_rate_stocked"),
     "driving_vector_names" : ("customer_order_rate", "process_noise_uniform_driving"),
-    "model_name": "Inven_S3R2"
+    "model_name": "Inven"
 }
 
 numeric = {

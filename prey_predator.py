@@ -1,21 +1,22 @@
 import matplotlib
 matplotlib.use('TkAgg')
 import numpy as np
-from stanify.calibrator.draws_data_mapper import draws2data2draws, transform_data
+from stanify.calibrator.draws_data_mapper import draws2data2draws
+from stanify.calibrator.calib_utilities import check_consistency
 import random
 random.seed(10)
 
 # INPUT FORMAT
 precision ={
-    "S": 1, # # of draws from prior
-    "M": 10, # # of draws from posterior (# of chains * # of draws from each chain)
-    "N": 200, # # of observation
-    "R": 2, # # of subgroups for hierarchical Bayes
+    "S": 2, # # of draws from prior
+    "M": 100, # # of draws from posterior (# of chains * # of draws from each chain)
+    "N": 201, # # of observation
+    "R": 1, # # of subgroups for hierarchical Bayes
 }
 
 setting = {
     "est_param_names": ("prey_birth_frac", "pred_birth_frac"),
-    "hier_est_param_names": ("pred_birth_frac", ), # chosen among "est_param_names", need (,)
+    "hier_est_param_names": (), #("pred_birth_frac", ), # chosen among "est_param_names", need (,)
     "target_simulated_vector_names": ("prey", "predator"),
     "driving_vector_names": ("process_noise_uniform_driving"),
     "model_name": "prey_predator",
@@ -40,7 +41,7 @@ output_format = dict(
     },
     coords={
         "time": [n for n in range(precision['N'])],
-        "stock": setting['target_simulated_vector_names'],
+        "stock": setting['target_simulated_vector_names'], # updated
         "region": [r for r in range(precision['R'])]
     },
     dims={
@@ -54,4 +55,5 @@ output_format = dict(
     }
 )
 
-draws2data2draws('vensim_models/prey_predator/prey_predator.mdl', *transform_data(setting, precision, numeric, prior, output_format))
+if check_consistency(setting, precision, numeric, prior, output_format):
+    draws2data2draws('vensim_models/prey_predator/prey_predator.mdl', setting, precision, numeric, prior, output_format)
