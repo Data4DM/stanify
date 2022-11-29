@@ -32,8 +32,10 @@ def draws2data(model, idata_kwargs, data_dict):
 
     draws2data_idata_bf = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs)
     #draws2data_idata_bf.draws_xr().to_netcdf("idata.nc")
-    draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups", create_index = [])
-   # draws2data_idata.reset_index("prior_draw", inplace=True)
+    draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups") #, create_index = []
+    draws2data_idata.reset_index("prior_draw", inplace=True)
+    # model = draws2data2draws('../vensim_models/prey_predator/prey_predator.mdl', setting, precision, numeric, prior, output_format)
+
     # draws2data_idata.prior['prey'].shape (200, 1)
     # draws2data_idata_bf.prior['prey'].shape (1, 1, 200)
     # save as .nc
@@ -53,13 +55,13 @@ def data2draws(model, idata_kwargs, data_dict):
     -------
     InferenceData type
     """
-    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=2, iter_sampling=int(model.precision_context.M / 2))
+    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=2, iter_warmup = 50, iter_sampling= int(model.precision_context.M / 2))
     # save as .nc
     data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, **idata_kwargs)
     idata2netcdf4store(f"{get_data_path(model.model_name)}/data2draws.nc", data2draws_idata)
 
     # plot as .png
-    plot_posterior_qoi(model.model_name, model.est_param_name, model.hier_est_param_name)
+    #plot_posterior_qoi(model.model_name, model.est_param_name, model.hier_est_param_name)
 
     return data2draws_idata
 
@@ -91,7 +93,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
     # prepare gathering posterior
     sbc_list = []
     model.update_numeric({'process_noise_scale': 0.0})
-    idata_kwargs = update_draw2data_2_data2draws_format(idata_kwargs)
+    #idata_kwargs = update_draw2data_2_data2draws_format(idata_kwargs)
 
     for s in range(model.precision_context.S):
         draws2data_s = draws2data_dataset.isel(prior_draw=s)

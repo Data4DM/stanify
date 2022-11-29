@@ -8,8 +8,8 @@ random.seed(10)
 
 # INPUT FORMAT
 precision ={
-    "S": 2, # # of draws from prior
-    "M": 100, # # of draws from posterior (# of chains * # of draws from each chain)
+    "S": 1, # # of draws from prior
+    "M": 50, # # of draws from posterior (# of chains * # of draws from each chain)
     "N": 201, # # of observation
     "R": 1, # # of subgroups for hierarchical Bayes
 }

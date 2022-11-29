@@ -32,8 +32,8 @@ transformed data {
 }
 
 parameters{
-    real<lower=0> prey_birth_frac;
     real<lower=0> pred_birth_frac;
+    real<lower=0> prey_birth_frac;
     real<lower=0> m_noise_scale;
 }
 
@@ -44,7 +44,7 @@ transformed parameters {
     array[N] real process_noise; 
 
     // Generate integration approximation 
-    vector[3] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, prey_birth_frac, pred_birth_frac, time_step, process_noise_scale);
+    vector[3] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, pred_birth_frac, time_step, prey_birth_frac, process_noise_scale);
 
     // Assign approximated integration to target simulated vectors
     predator = integrated_result[:, 1];
@@ -53,8 +53,8 @@ transformed parameters {
 }
 
 model{
-    prey_birth_frac ~ normal(0.8, 0.08);
     pred_birth_frac ~ normal(0.05, 0.005);
+    prey_birth_frac ~ normal(0.8, 0.08);
     m_noise_scale ~ normal(0.01, 0.001);
     prey_obs ~ normal(prey, m_noise_scale);
     predator_obs ~ normal(predator, m_noise_scale);

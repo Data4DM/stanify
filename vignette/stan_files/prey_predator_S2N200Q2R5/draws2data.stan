@@ -30,24 +30,31 @@ transformed data {
 }
 
 generated quantities{
-    real prey_birth_frac = normal_rng(0.8, 0.08);
+    real pred_birth_frac[R] =  normal_rng(rep_vector(0.9, R), 0.001);
     real m_noise_scale = normal_rng(0.01, 0.001);
-    real pred_birth_frac = normal_rng(0.05, 0.005);
+    real prey_birth_frac = normal_rng(0.9, 0.001);
 
     // Define integ_outcome (sytax), target simulated (semantic) vector
-    array[N] real predator; 
-    array[N] real prey; 
-    array[N] real process_noise; 
+    array[N] vector[R] predator; 
+    array[N] vector[R] prey; 
+    array[N] vector[R] process_noise; 
 
     // Generate integration approximation 
-    vector[3] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, prey_birth_frac, pred_birth_frac, time_step);
+    for (r in 1:R){
+        array[N] vector[3] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, time_step, process_noise_scale, prey_birth_frac, pred_birth_frac[r]);
 
-    // Assign approximated integration to target simulated vectors
-    predator = integrated_result[:, 1];
-    prey = integrated_result[:, 2];
-    process_noise = integrated_result[:, 3];
+        // Assign target simulated to latent stock vectors
+        predator[:, r] = integrated_result[:, 1];
+        prey[:, r] = integrated_result[:, 2];
+        process_noise[:, r] = integrated_result[:, 3];
+    }
 
-    // Define and assign generated value to observed vector (matching vector)
-    array [N] real prey_obs = normal_rng(prey, m_noise_scale);
-    array [N] real predator_obs = normal_rng(predator, m_noise_scale);
+    // Define observed vector (matching vector)
+    array[N] vector[R] prey_obs;
+    array[N] vector[R] predator_obs;
+    // Assign generated value to observed vector (matching vector)
+    for (r in 1:R){
+        prey_obs[:, r] = normal_rng(prey[:, r], m_noise_scale);
+        predator_obs[:, r] = normal_rng(predator[:, r], m_noise_scale);
+    }
 }

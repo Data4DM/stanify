@@ -158,7 +158,7 @@ class vensim2stan:
         print("*" * 10)
         print("- Stan model information:")
 
-
+    #TODO @Dash how to set prior value summary as filename?
     def set_prior(self, variable_name: str, distribution_type: str, *args, lower=float("-inf"), upper=float("inf"), init_state=False):
         if init_state:
             # This means the initial value of the ODE state variable.

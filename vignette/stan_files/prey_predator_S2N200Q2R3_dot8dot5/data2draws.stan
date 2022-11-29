@@ -1,5 +1,5 @@
 functions{
-  #include functions.stan
+    #include functions.stan
 }
 
 data{
@@ -12,6 +12,8 @@ data{
     array[N] real integration_times;
     vector[200] process_noise_uniform_driving;
     real process_noise_scale;
+    array[N] vector[R] prey_obs;
+    array[N] vector[R] predator_obs;
 }
 
 transformed data {
@@ -29,11 +31,13 @@ transformed data {
     initial_outcome[3] = process_noise__init;
 }
 
-generated quantities{
-    real prey_birth_frac = normal_rng(0.9, 0.001);
-    real m_noise_scale = normal_rng(0.01, 0.001);
-    real pred_birth_frac[R] =  normal_rng(rep_vector(0.9, R), 0.001);
+parameters{
+    array[R] real<lower=0> pred_birth_frac;
+    real<lower=0> prey_birth_frac;
+    real<lower=0> m_noise_scale;
+}
 
+transformed parameters {
     // Define integ_outcome (sytax), target simulated (semantic) vector
     array[N] vector[R] predator; 
     array[N] vector[R] prey; 
@@ -41,20 +45,38 @@ generated quantities{
 
     // Generate integration approximation 
     for (r in 1:R){
-        array[N] vector[3] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, prey_birth_frac, time_step, pred_birth_frac[r]);
+        array[N] vector[3] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, time_step, pred_birth_frac[r], process_noise_scale, prey_birth_frac);
 
         // Assign target simulated to latent stock vectors
         predator[:, r] = integrated_result[:, 1];
         prey[:, r] = integrated_result[:, 2];
         process_noise[:, r] = integrated_result[:, 3];
     }
+}
 
+model{
+    pred_birth_frac ~ normal(rep_vector(0.05, R), 0.005);
+    prey_birth_frac ~ normal(0.8, 0.08);
+    m_noise_scale ~ normal(0.01, 0.001);
+    for (r in 1:R)
+        prey_obs[:, r] ~ normal(prey[:, r], m_noise_scale);
+    for (r in 1:R)
+        predator_obs[:, r] ~ normal(predator[:, r], m_noise_scale);
+}
+
+generated quantities{
     // Define observed vector (matching vector)
-    array[N] vector[R] prey_obs;
-    array[N] vector[R] predator_obs;
+    array[N] vector[R] prey_obs_post;
+    array[N] vector[R] predator_obs_post;
     // Assign generated value to observed vector (matching vector)
     for (r in 1:R){
-        prey_obs[:, r] = normal_rng(prey[:, r], m_noise_scale);
-        predator_obs[:, r] = normal_rng(predator[:, r], m_noise_scale);
+        prey_obs_post[:, r] = normal_rng(prey[:, r], m_noise_scale);
+        predator_obs_post[:, r] = normal_rng(predator[:, r], m_noise_scale);
+    }
+
+    real loglik;
+    for (r in 1:R){
+        loglik += normal_lpdf(prey_obs[:, r]|prey[:, r], m_noise_scale);
+        loglik += normal_lpdf(predator_obs[:, r]|predator[:, r], m_noise_scale);
     }
 }
