@@ -32,8 +32,11 @@ def draws2data(model, idata_kwargs, data_dict):
 
     draws2data_idata_bf = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs)
     #draws2data_idata_bf.draws_xr().to_netcdf("idata.nc")
-    draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups") #, create_index = []
-    draws2data_idata.reset_index("prior_draw", inplace=True)
+    draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups", create_index = False)
+    # with multiindex, we cannot have dim name (general sup idx name), draws or chain in posterior
+    # we can idex with both prior_draw = (0,0) and draws = 0
+    # stack apply only to prior, prior_predictive, sample_stats
+    #draws2data_idata.reset_index("prior_draw", inplace=True)
     # model = draws2data2draws('../vensim_models/prey_predator/prey_predator.mdl', setting, precision, numeric, prior, output_format)
 
     # draws2data_idata.prior['prey'].shape (200, 1)
@@ -57,7 +60,9 @@ def data2draws(model, idata_kwargs, data_dict):
     """
     data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=2, iter_warmup = 50, iter_sampling= int(model.precision_context.M / 2))
     # save as .nc
-    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, **idata_kwargs)
+    # add observed_data to idata_kwargs
+    # add data
+    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = data_dict, **idata_kwargs)
     idata2netcdf4store(f"{get_data_path(model.model_name)}/data2draws.nc", data2draws_idata)
 
     # plot as .png
@@ -186,9 +191,9 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
 
 def update_draw2data_2_data2draws_format(output_format):
     #perhpas process noise scale (update_numeric can come here)
-    # remove prior_predcitve
+
     # add obs data
-    #TODO @Oriol for future xr.concat() do we need "prior_predictive" keys?
-    #output_format.pop("prior_predictive")
+    #TODO @Oriol for future xr.concat() do we need "prior_predictive" keys? let's keep prior predictive but the original pp is in obsereved data now
+
     output_format["observed_data"] = ["prey_obs", "predator_obs"]
     return output_format
