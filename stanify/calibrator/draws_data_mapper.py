@@ -58,11 +58,11 @@ def data2draws(model, idata_kwargs, data_dict):
     -------
     InferenceData type
     """
-    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=2, iter_warmup = 50, iter_sampling= int(model.precision_context.M / 2))
-    # save as .nc
+    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=4, iter_sampling= int(model.precision_context.M / 4))
+
     # add observed_data to idata_kwargs
-    # add data
-    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = data_dict, **idata_kwargs)
+    observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
+    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = observed_data, **idata_kwargs)
     idata2netcdf4store(f"{get_data_path(model.model_name)}/data2draws.nc", data2draws_idata)
 
     # plot as .png
@@ -97,8 +97,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
 
     # prepare gathering posterior
     sbc_list = []
-    model.update_numeric({'process_noise_scale': 0.0})
-    #idata_kwargs = update_draw2data_2_data2draws_format(idata_kwargs)
+    #model.update_numeric({'process_noise_scale': 0.0})
 
     for s in range(model.precision_context.S):
         draws2data_s = draws2data_dataset.isel(prior_draw=s)
@@ -107,7 +106,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
             **numeric, # driving data (don't use model.numeric which is precision + numeric)
             **precision
         }
-
+        draws2data_s['process_noise_scale'] = 0.0
         data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
         sbc_list.append(data2draws_idata_s)
 
@@ -185,15 +184,5 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
     idata_kwargs = hier(precision, setting, output_format)
     idata_kwargs['coords']['time'] =  np.arange(0, precision['N']) * precision['time_step'] + 0.01 #precision['integration_times']
     idata_kwargs["coords"]["stock"] =  model.vensim_model_context.integ_outcome_vector_names
-    # 11.28 FIND WHERE TO upadate_in_output() for ppc
-
+    #idata_kwargs["coords"]["obsereved_data"] = model.get_obs_vector_names()
     return model
-
-def update_draw2data_2_data2draws_format(output_format):
-    #perhpas process noise scale (update_numeric can come here)
-
-    # add obs data
-    #TODO @Oriol for future xr.concat() do we need "prior_predictive" keys? let's keep prior predictive but the original pp is in obsereved data now
-
-    output_format["observed_data"] = ["prey_obs", "predator_obs"]
-    return output_format

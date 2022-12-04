@@ -53,7 +53,7 @@ generated quantities{
     array[N] real work_in_process_inventory; 
 
     // Generate integration approximation 
-    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, inventory_adjustment_time, time_step, process_noise_scale, wip_adjustment_time);
+    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, wip_adjustment_time, time_step, inventory_adjustment_time, process_noise_scale);
 
     // Assign approximated integration to target simulated vectors
     backlog = integrated_result[:, 1];
