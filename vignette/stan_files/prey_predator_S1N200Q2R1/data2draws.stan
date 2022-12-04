@@ -53,9 +53,9 @@ transformed parameters {
 }
 
 model{
-    pred_birth_frac ~ normal(0.9, 0.001);
+    pred_birth_frac ~ normal(0.05, 0.005);
     m_noise_scale ~ normal(0.01, 0.001);
-    prey_birth_frac ~ normal(0.9, 0.001);
+    prey_birth_frac ~ normal(0.8, 0.08);
     prey_obs ~ normal(prey, m_noise_scale);
     predator_obs ~ normal(predator, m_noise_scale);
 }

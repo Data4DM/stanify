@@ -30,9 +30,9 @@ transformed data {
 }
 
 generated quantities{
-    real pred_birth_frac = normal_rng(0.9, 0.001);
+    real pred_birth_frac = normal_rng(0.05, 0.005);
     real m_noise_scale = normal_rng(0.01, 0.001);
-    real prey_birth_frac = normal_rng(0.9, 0.001);
+    real prey_birth_frac = normal_rng(0.8, 0.08);
 
     // Define integ_outcome (sytax), target simulated (semantic) vector
     array[N] real predator; 

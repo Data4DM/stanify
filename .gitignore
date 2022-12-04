@@ -19,3 +19,4 @@ build/
 venv/
 .png
 **/.DS_Store
+.idea/
