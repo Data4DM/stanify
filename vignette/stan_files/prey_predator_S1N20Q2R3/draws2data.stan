@@ -31,8 +31,8 @@ transformed data {
 
 generated quantities{
     real pred_birth_frac[R] =  normal_rng(rep_vector(0.05, R), 0.005);
-    real prey_birth_frac = normal_rng(0.8, 0.08);
     real m_noise_scale = normal_rng(1, 0.1);
+    real prey_birth_frac = normal_rng(0.8, 0.08);
 
     // Define integ_outcome (sytax), target simulated (semantic) vector
     array[N] vector[R] predator; 
@@ -41,7 +41,7 @@ generated quantities{
 
     // Generate integration approximation 
     for (r in 1:R){
-        array[N] vector[3] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, time_step, process_noise_scale, prey_birth_frac, pred_birth_frac[r]);
+        array[N] vector[3] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, time_step, prey_birth_frac, pred_birth_frac[r]);
 
         // Assign target simulated to latent stock vectors
         predator[:, r] = integrated_result[:, 1];
