@@ -41,9 +41,8 @@ transformed data {
 }
 
 parameters{
-    real<lower=0> wip_adjustment_time;
-    real<lower=0> inventory_adjustment_time;
     real<lower=0> m_noise_scale;
+    real<lower=0> inventory_adjustment_time;
 }
 
 transformed parameters {
@@ -57,7 +56,7 @@ transformed parameters {
     array[N] real work_in_process_inventory; 
 
     // Generate integration approximation 
-    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, wip_adjustment_time, time_step, inventory_adjustment_time, process_noise_scale);
+    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, time_step, inventory_adjustment_time);
 
     // Assign approximated integration to target simulated vectors
     backlog = integrated_result[:, 1];
@@ -70,9 +69,8 @@ transformed parameters {
 }
 
 model{
-    wip_adjustment_time ~ normal(2, 0.02);
-    inventory_adjustment_time ~ normal(7.0, 0.7);
     m_noise_scale ~ normal(0.01, 0.0005);
+    inventory_adjustment_time ~ normal(7.0, 0.7);
     production_rate_stocked_obs ~ normal(production_rate_stocked, m_noise_scale);
     production_start_rate_stocked_obs ~ normal(production_start_rate_stocked, m_noise_scale);
 }

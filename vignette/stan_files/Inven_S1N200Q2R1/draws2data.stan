@@ -39,9 +39,8 @@ transformed data {
 }
 
 generated quantities{
-    real wip_adjustment_time = normal_rng(2, 0.02);
-    real inventory_adjustment_time = normal_rng(7.0, 0.7);
     real m_noise_scale = normal_rng(0.01, 0.0005);
+    real inventory_adjustment_time = normal_rng(7.0, 0.7);
 
     // Define integ_outcome (sytax), target simulated (semantic) vector
     array[N] real backlog; 
@@ -53,7 +52,7 @@ generated quantities{
     array[N] real work_in_process_inventory; 
 
     // Generate integration approximation 
-    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, wip_adjustment_time, time_step, inventory_adjustment_time, process_noise_scale);
+    vector[7] integrated_result[N] = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, time_step, inventory_adjustment_time);
 
     // Assign approximated integration to target simulated vectors
     backlog = integrated_result[:, 1];

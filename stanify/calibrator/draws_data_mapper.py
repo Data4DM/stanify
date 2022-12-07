@@ -49,7 +49,7 @@ def draws2data(model, idata_kwargs, data_dict):
 
     return draws2data_idata
 
-def data2draws(model, idata_kwargs, data_dict):
+def data2draws(model, chains, idata_kwargs, data_dict):
     """
     Parameters
     ----------
@@ -58,7 +58,7 @@ def data2draws(model, idata_kwargs, data_dict):
     -------
     InferenceData type
     """
-    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=4, iter_sampling= int(model.precision_context.M / 4))
+    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains))
 
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
@@ -107,7 +107,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
             **precision
         }
         draws2data_s['process_noise_scale'] = 0.0
-        data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
+        data2draws_idata_s = data2draws(model, precision['M_c'], idata_kwargs, data_dict)
         sbc_list.append(data2draws_idata_s)
 
     post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draws")
