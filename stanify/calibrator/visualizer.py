@@ -6,48 +6,46 @@ from ..builders.utilities import get_data_path, get_plot_path
 
 
 import numpy as np
-# TODO draw is reserved for posterior but coordinate for prior_draw need to added
-def plot_prior_qoi(model_name, latent_vector_names):
-    data_path = get_data_path(model_name)
-    plot_path = get_plot_path(model_name)
-
-    draws2data_idata = az.from_netcdf(f"{data_path}/draws2data.nc")
-    fig, ax = plt.subplots(figsize=(15, 8))
-    for target in latent_vector_names:
-        ax.plot(draws2data_idata.prior[target].mean('prior_draw').to_dataframe().values, label=f"{target}")
-        ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].mean('prior_draw').to_dataframe().values, label=f"{target}_obs")
-    ax.legend()
-    plt.savefig(f"{plot_path}/{model_name}_draws2data_each.png")
-
-    # fig, ax = plt.subplots(figsize = (15, 8))
-    # for target in latent_vector_names:
-    #     ax.plot(draws2data_idata.prior[target].mean(["region"]).to_dataframe().values, label=f"{target}")
-    #     ax.plot(draws2data_idata.prior_predictive[f'{target}_obs'].mean(["region"]).to_dataframe().values, label=f"{target}_obs")
-    # ax.legend()
-    # plt.savefig(f"{plot_path}/{latent_vector_names}_draws2data.png")
-    return
-
-
+# TODO how to use default e.g. if sbc_precision is not null, read from data
 ##TODO @Oriol could we infer `hier_est_param_name` from .nc?
-def plot_posterior_qoi(model_name, est_param_name, hier_est_param_name):
+def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     plot_path = get_plot_path(model_name)
     data_path = get_data_path(model_name)
-    data2draws = xr.open_dataset(f"{data_path}/data2draws.nc")
+    #sbc = xr.open_dataset(f"{data_path}/sbc.nc")
+    sbc = sbc_precision
+    if precision['R'] > 1:
+        sbc.observed_data.to_dataframe()[idata_kwargs['prior_predictive']].plot(by='region')
+    else:
+        sbc.observed_data.to_dataframe()[idata_kwargs['prior_predictive']].plot()
 
-    # univariate
-    #for param in est_param_name:
-    az.plot_trace(data2draws, var_names=est_param_name, divergences=True, compact=True)
-    plt.savefig(f"{plot_path}/plot_trace.png")
+    plt.savefig(f"{get_plot_path(model_name)}/{model_name}_draws2data_obs.png")
     plt.clf()
+
+    est_param_names = setting['est_param_names']
+
+    az.plot_posterior(sbc, var_names=est_param_names)
+    plt.savefig(f"{plot_path}/data2draws_posterior.png")
+    plt.clf()
+
+    az.plot_trace(sbc, var_names=est_param_names, divergences=True, compact=True)
+    plt.savefig(f"{plot_path}/data2draws_trace.png")
+    plt.clf()
+
+    data_pairs = dict()
+    for obs_name in idata_kwargs['prior_predictive']:
+        data_pairs[obs_name] = f'{obs_name}_post'
+    az.plot_ppc(sbc, data_pairs=data_pairs)
 
     # joint: pair plot
-    az.plot_pair(data2draws, var_names=est_param_name, divergences=True)
-    plt.savefig(f"{plot_path}/plot_trace.png")
+    az.plot_pair(sbc, var_names=est_param_names, divergences=True)
+    plt.savefig(f"{plot_path}/data2draws_pair.png")
     plt.clf()
+
     # rank plot with loglik
-
-    # fig out special treatment needed for hier_est_param
-
+    fig, axes = plt.subplots(1, len(est_param_names))
+    az.plot_rank(sbc, var_names=est_param_names, ax=axes)
+    plt.savefig(f"{plot_path}/data2draws_rank.png")
+    plt.clf()
     return
 
 

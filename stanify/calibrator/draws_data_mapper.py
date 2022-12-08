@@ -2,7 +2,7 @@ import math
 import cmdstanpy
 from ..builders.utilities import get_data_path, idata2netcdf4store, get_structure, hier, diagnose
 from ..builders.stan_model import vensim2stan
-from ..calibrator.visualizer import plot_prior_qoi, plot_posterior_qoi
+from ..calibrator.visualizer import plot_qoi
 import numpy as np
 import xarray as xr
 xr.set_options(display_expand_attrs = False)
@@ -29,23 +29,8 @@ def draws2data(model, idata_kwargs, data_dict):
     matching_data: InferenceData type with shape (chain: 1, (prior_)draw: S, (regional_)group: R)
     """
     draws2data_fit = model.stanify_draws2data().sample(data=data_dict, fixed_param=True, chains = 1, iter_sampling=model.precision_context.S)
-
     draws2data_idata_bf = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs)
-    #draws2data_idata_bf.draws_xr().to_netcdf("idata.nc")
     draws2data_idata = draws2data_idata_bf.stack(prior_draw=["chain", "draw"], groups="prior_groups", create_index = False)
-    # with multiindex, we cannot have dim name (general sup idx name), draws or chain in posterior
-    # we can idex with both prior_draw = (0,0) and draws = 0
-    # stack apply only to prior, prior_predictive, sample_stats
-    #draws2data_idata.reset_index("prior_draw", inplace=True)
-    # model = draws2data2draws('../vensim_models/prey_predator/prey_predator.mdl', setting, precision, numeric, prior, output_format)
-
-    # draws2data_idata.prior['prey'].shape (200, 1)
-    # draws2data_idata_bf.prior['prey'].shape (1, 1, 200)
-    # save as .nc
-    idata2netcdf4store(f"{get_data_path(model.model_name)}/draws2data.nc", draws2data_idata)
-
-    # plot as .png
-    plot_prior_qoi(model.model_name, model.get_latent_vector_names())
 
     return draws2data_idata
 
@@ -64,10 +49,6 @@ def data2draws(model, idata_kwargs, data_dict):
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
     data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = observed_data, **idata_kwargs)
-    idata2netcdf4store(f"{get_data_path(model.model_name)}/data2draws.nc", data2draws_idata)
-
-    # plot as .png
-    #plot_posterior_qoi(model.model_name, model.est_param_name, model.hier_est_param_name)
 
     return data2draws_idata
 
@@ -113,13 +94,16 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
 
     post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draws")
     post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draws")
-    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred)
+    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset)
 
-    idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc.nc", idata_orig)
-
+    # idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_{prior['m_noise_scale']}_{numeric['process_noise_scale']}.nc", idata_orig)
+    idata2netcdf4store(
+        f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise{numeric['process_noise_scale']}.nc",
+        idata_orig)
+    plot_qoi(idata_orig, setting, precision, idata_kwargs, model.model_name)
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
-    return model
+    return idata_orig
 def update_numeric_obs(model, draws2data_s):
     """
     Parameters
