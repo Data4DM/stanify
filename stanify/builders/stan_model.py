@@ -236,7 +236,9 @@ class vensim2stan:
 
         self.stan_model_context.identify_stan_data_types(self.numeric)
         self.stan_model_context.exposed_parameters.update(["time_step"])
-        self.stan_model_context.exposed_parameters.update(["process_noise_scale"])
+        if 'process_noise_scale' in numeric.keys():
+            self.stan_model_context.exposed_parameters.update(["process_noise_scale"])
+
 
 
 

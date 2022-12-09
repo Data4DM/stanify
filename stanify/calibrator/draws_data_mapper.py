@@ -79,7 +79,6 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
 
     # prepare gathering posterior
     sbc_list = []
-    #model.update_numeric({'process_noise_scale': 0.0})
 
     for s in range(model.precision_context.S):
         draws2data_s = draws2data_dataset.isel(prior_draw=s)
@@ -88,7 +87,8 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
             **numeric, # driving data (don't use model.numeric which is precision + numeric)
             **precision
         }
-        draws2data_s['process_noise_scale'] = 0.0
+        if 'process_noise_scale' in numeric.keys():
+            draws2data_s['process_noise_scale'] = 0.0
         data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
         sbc_list.append(data2draws_idata_s)
 
@@ -97,13 +97,14 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
     idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset)
 
     # idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_{prior['m_noise_scale']}_{numeric['process_noise_scale']}.nc", idata_orig)
-    idata2netcdf4store(
-        f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise{numeric['process_noise_scale']}.nc",
-        idata_orig)
+    if 'process_noise_scale' in numeric.keys():
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise{numeric['process_noise_scale']}.nc", idata_orig)
+    else:
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise0.nc", idata_orig)
     plot_qoi(idata_orig, setting, precision, idata_kwargs, model.model_name)
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
-    return idata_orig
+    return idata_orig, model
 def update_numeric_obs(model, draws2data_s):
     """
     Parameters
@@ -139,13 +140,15 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
     ## draws2data-specific precision
     precision['time_step'] = .125
 
+    #@TODO integration time as coordinate
     ## data2draws-specific precision
     precision['integration_times'] = np.arange(0, precision['N']) * precision['time_step'] + 0.01 #np.arange(0, precision['N']) * precision['time_step'] + 0.01  # length N is the only constraint
 
+    # @TODO change to number of stocks and reflect in sbc filename
     ## precision for both draws2data and data2draws
     precision['Q'] = len(setting['target_simulated_vector_names'])
 
-    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}R{precision["R"]}'
+    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}R{precision["R"]}_M{precision["M"]}'
 
     # obs vectors match draws2data and data2draws
     numeric_setting = dict(**numeric)
