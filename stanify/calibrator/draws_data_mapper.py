@@ -148,7 +148,7 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
     ## precision for both draws2data and data2draws
     precision['Q'] = len(setting['target_simulated_vector_names'])
 
-    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}R{precision["R"]}_M{precision["M"]}'
+    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}R{precision["R"]}_M{precision["M"]}_ps{numeric["process_noise_scale"]}'
 
     # obs vectors match draws2data and data2draws
     numeric_setting = dict(**numeric)

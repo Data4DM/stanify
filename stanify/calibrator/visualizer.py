@@ -20,7 +20,7 @@ from ..calibrator.identify_gap import ShapeError
 
 def save_fig(model_name, is_draws2data, plot_name):
     plot_path = get_plot_path(model_name)
-    fig_name = f"{plot_path}/{plot_name}"
+    fig_name = f"{plot_path}/{model_name}_{plot_name}"
     if is_draws2data:
         fig_name = fig_name + "_draws2data"
     else:
@@ -32,6 +32,7 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     #sbc = xr.open_dataset(f"{data_path}/sbc.nc")
     sbc = sbc_precision
     figsize = (30, 15)
+    # TODO @Oriol how to replace to_dataframe?  values?
     if precision['R'] > 1:
         sbc.observed_data.to_dataframe()[idata_kwargs['prior_predictive']].plot(by='region', figsize = figsize)
     else:

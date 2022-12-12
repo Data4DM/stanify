@@ -2,8 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-*.vdfx
+**/*.vdfx
 **/*.vmfx
+**/*.nc
 .apps
 *.pkl
 **/*.hpp
