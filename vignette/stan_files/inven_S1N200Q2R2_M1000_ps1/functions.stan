@@ -69,1200 +69,1200 @@ real dataFunc__process_noise_uniform_driving(real time, real time_step){
     real intercept;
 
     if(time <= time_step * 1){
-        intercept = -0.051266915099101196;
+        intercept = -0.3524249174506967;
         real local_time_step = time_step * 1 - time_step * 0;
-        slope = (-0.09682462255043855 - -0.051266915099101196) / local_time_step;
+        slope = (-0.0635850496642526 - -0.3524249174506967) / local_time_step;
         return intercept + slope * (time - time_step * 0);
     }
     else if(time <= time_step * 2){
-        intercept = -0.09682462255043855;
+        intercept = -0.0635850496642526;
         real local_time_step = time_step * 2 - time_step * 1;
-        slope = (-0.45875598263423145 - -0.09682462255043855) / local_time_step;
+        slope = (0.38342695893071965 - -0.0635850496642526) / local_time_step;
         return intercept + slope * (time - time_step * 1);
     }
     else if(time <= time_step * 3){
-        intercept = -0.45875598263423145;
+        intercept = 0.38342695893071965;
         real local_time_step = time_step * 3 - time_step * 2;
-        slope = (-0.09772286550070863 - -0.45875598263423145) / local_time_step;
+        slope = (-0.055591469117968306 - 0.38342695893071965) / local_time_step;
         return intercept + slope * (time - time_step * 2);
     }
     else if(time <= time_step * 4){
-        intercept = -0.09772286550070863;
+        intercept = -0.055591469117968306;
         real local_time_step = time_step * 4 - time_step * 3;
-        slope = (-0.010608181619625956 - -0.09772286550070863) / local_time_step;
+        slope = (-0.10391081327069285 - -0.055591469117968306) / local_time_step;
         return intercept + slope * (time - time_step * 3);
     }
     else if(time <= time_step * 5){
-        intercept = -0.010608181619625956;
+        intercept = -0.10391081327069285;
         real local_time_step = time_step * 5 - time_step * 4;
-        slope = (-0.07947130826249738 - -0.010608181619625956) / local_time_step;
+        slope = (0.20443498775597535 - -0.10391081327069285) / local_time_step;
         return intercept + slope * (time - time_step * 4);
     }
     else if(time <= time_step * 6){
-        intercept = -0.07947130826249738;
+        intercept = 0.20443498775597535;
         real local_time_step = time_step * 6 - time_step * 5;
-        slope = (0.3616113425152937 - -0.07947130826249738) / local_time_step;
+        slope = (0.4537397719879016 - 0.20443498775597535) / local_time_step;
         return intercept + slope * (time - time_step * 5);
     }
     else if(time <= time_step * 7){
-        intercept = 0.3616113425152937;
+        intercept = 0.4537397719879016;
         real local_time_step = time_step * 7 - time_step * 6;
-        slope = (-0.29223206829376946 - 0.3616113425152937) / local_time_step;
+        slope = (0.26668829300508456 - 0.4537397719879016) / local_time_step;
         return intercept + slope * (time - time_step * 6);
     }
     else if(time <= time_step * 8){
-        intercept = -0.29223206829376946;
+        intercept = 0.26668829300508456;
         real local_time_step = time_step * 8 - time_step * 7;
-        slope = (-0.07664102095516057 - -0.29223206829376946) / local_time_step;
+        slope = (0.07703874156973811 - 0.26668829300508456) / local_time_step;
         return intercept + slope * (time - time_step * 7);
     }
     else if(time <= time_step * 9){
-        intercept = -0.07664102095516057;
+        intercept = 0.07703874156973811;
         real local_time_step = time_step * 9 - time_step * 8;
-        slope = (0.06967416112695235 - -0.07664102095516057) / local_time_step;
+        slope = (0.13363251529709164 - 0.07703874156973811) / local_time_step;
         return intercept + slope * (time - time_step * 8);
     }
     else if(time <= time_step * 10){
-        intercept = 0.06967416112695235;
+        intercept = 0.13363251529709164;
         real local_time_step = time_step * 10 - time_step * 9;
-        slope = (-0.1428952800995803 - 0.06967416112695235) / local_time_step;
+        slope = (-0.3188788208543075 - 0.13363251529709164) / local_time_step;
         return intercept + slope * (time - time_step * 9);
     }
     else if(time <= time_step * 11){
-        intercept = -0.1428952800995803;
+        intercept = -0.3188788208543075;
         real local_time_step = time_step * 11 - time_step * 10;
-        slope = (0.13599661491870374 - -0.1428952800995803) / local_time_step;
+        slope = (0.06301144196955422 - -0.3188788208543075) / local_time_step;
         return intercept + slope * (time - time_step * 10);
     }
     else if(time <= time_step * 12){
-        intercept = 0.13599661491870374;
+        intercept = 0.06301144196955422;
         real local_time_step = time_step * 12 - time_step * 11;
-        slope = (-0.03645447729765172 - 0.13599661491870374) / local_time_step;
+        slope = (-0.011796426497156731 - 0.06301144196955422) / local_time_step;
         return intercept + slope * (time - time_step * 11);
     }
     else if(time <= time_step * 13){
-        intercept = -0.03645447729765172;
+        intercept = -0.011796426497156731;
         real local_time_step = time_step * 13 - time_step * 12;
-        slope = (-0.03196786031267651 - -0.03645447729765172) / local_time_step;
+        slope = (-0.21878037396993422 - -0.011796426497156731) / local_time_step;
         return intercept + slope * (time - time_step * 12);
     }
     else if(time <= time_step * 14){
-        intercept = -0.03196786031267651;
+        intercept = -0.21878037396993422;
         real local_time_step = time_step * 14 - time_step * 13;
-        slope = (-0.3424891208847677 - -0.03196786031267651) / local_time_step;
+        slope = (0.18401193839751073 - -0.21878037396993422) / local_time_step;
         return intercept + slope * (time - time_step * 13);
     }
     else if(time <= time_step * 15){
-        intercept = -0.3424891208847677;
+        intercept = 0.18401193839751073;
         real local_time_step = time_step * 15 - time_step * 14;
-        slope = (0.27795377031111335 - -0.3424891208847677) / local_time_step;
+        slope = (-0.46505999570656564 - 0.18401193839751073) / local_time_step;
         return intercept + slope * (time - time_step * 14);
     }
     else if(time <= time_step * 16){
-        intercept = 0.27795377031111335;
+        intercept = -0.46505999570656564;
         real local_time_step = time_step * 16 - time_step * 15;
-        slope = (-0.17257992654742538 - 0.27795377031111335) / local_time_step;
+        slope = (0.3242665644835242 - -0.46505999570656564) / local_time_step;
         return intercept + slope * (time - time_step * 15);
     }
     else if(time <= time_step * 17){
-        intercept = -0.17257992654742538;
+        intercept = 0.3242665644835242;
         real local_time_step = time_step * 17 - time_step * 16;
-        slope = (-0.3211715698679821 - -0.17257992654742538) / local_time_step;
+        slope = (0.14596174107392512 - 0.3242665644835242) / local_time_step;
         return intercept + slope * (time - time_step * 16);
     }
     else if(time <= time_step * 18){
-        intercept = -0.3211715698679821;
+        intercept = 0.14596174107392512;
         real local_time_step = time_step * 18 - time_step * 17;
-        slope = (0.37392815935372714 - -0.3211715698679821) / local_time_step;
+        slope = (0.2206602261213111 - 0.14596174107392512) / local_time_step;
         return intercept + slope * (time - time_step * 17);
     }
     else if(time <= time_step * 19){
-        intercept = 0.37392815935372714;
+        intercept = 0.2206602261213111;
         real local_time_step = time_step * 19 - time_step * 18;
-        slope = (-0.3036919574578386 - 0.37392815935372714) / local_time_step;
+        slope = (0.45169240941926536 - 0.2206602261213111) / local_time_step;
         return intercept + slope * (time - time_step * 18);
     }
     else if(time <= time_step * 20){
-        intercept = -0.3036919574578386;
+        intercept = 0.45169240941926536;
         real local_time_step = time_step * 20 - time_step * 19;
-        slope = (-0.10794595258572992 - -0.3036919574578386) / local_time_step;
+        slope = (0.18994784515649987 - 0.45169240941926536) / local_time_step;
         return intercept + slope * (time - time_step * 19);
     }
     else if(time <= time_step * 21){
-        intercept = -0.10794595258572992;
+        intercept = 0.18994784515649987;
         real local_time_step = time_step * 21 - time_step * 20;
-        slope = (0.45854273241505406 - -0.10794595258572992) / local_time_step;
+        slope = (-0.16590157798112426 - 0.18994784515649987) / local_time_step;
         return intercept + slope * (time - time_step * 20);
     }
     else if(time <= time_step * 22){
-        intercept = 0.45854273241505406;
+        intercept = -0.16590157798112426;
         real local_time_step = time_step * 22 - time_step * 21;
-        slope = (-0.1753852407181281 - 0.45854273241505406) / local_time_step;
+        slope = (0.3343577474497046 - -0.16590157798112426) / local_time_step;
         return intercept + slope * (time - time_step * 21);
     }
     else if(time <= time_step * 23){
-        intercept = -0.1753852407181281;
+        intercept = 0.3343577474497046;
         real local_time_step = time_step * 23 - time_step * 22;
-        slope = (-0.31675819729559096 - -0.1753852407181281) / local_time_step;
+        slope = (0.3028061766382255 - 0.3343577474497046) / local_time_step;
         return intercept + slope * (time - time_step * 22);
     }
     else if(time <= time_step * 24){
-        intercept = -0.31675819729559096;
+        intercept = 0.3028061766382255;
         real local_time_step = time_step * 24 - time_step * 23;
-        slope = (-0.49505373733846525 - -0.31675819729559096) / local_time_step;
+        slope = (-0.32443794538817183 - 0.3028061766382255) / local_time_step;
         return intercept + slope * (time - time_step * 23);
     }
     else if(time <= time_step * 25){
-        intercept = -0.49505373733846525;
+        intercept = -0.32443794538817183;
         real local_time_step = time_step * 25 - time_step * 24;
-        slope = (0.20939811416466036 - -0.49505373733846525) / local_time_step;
+        slope = (0.15657893585147975 - -0.32443794538817183) / local_time_step;
         return intercept + slope * (time - time_step * 24);
     }
     else if(time <= time_step * 26){
-        intercept = 0.20939811416466036;
+        intercept = 0.15657893585147975;
         real local_time_step = time_step * 26 - time_step * 25;
-        slope = (0.1664609213041085 - 0.20939811416466036) / local_time_step;
+        slope = (-0.06354123351753926 - 0.15657893585147975) / local_time_step;
         return intercept + slope * (time - time_step * 25);
     }
     else if(time <= time_step * 27){
-        intercept = 0.1664609213041085;
+        intercept = -0.06354123351753926;
         real local_time_step = time_step * 27 - time_step * 26;
-        slope = (-0.19303494008687916 - 0.1664609213041085) / local_time_step;
+        slope = (0.47009165420536736 - -0.06354123351753926) / local_time_step;
         return intercept + slope * (time - time_step * 26);
     }
     else if(time <= time_step * 28){
-        intercept = -0.19303494008687916;
+        intercept = 0.47009165420536736;
         real local_time_step = time_step * 28 - time_step * 27;
-        slope = (0.4032877653955621 - -0.19303494008687916) / local_time_step;
+        slope = (0.33879567421856105 - 0.47009165420536736) / local_time_step;
         return intercept + slope * (time - time_step * 27);
     }
     else if(time <= time_step * 29){
-        intercept = 0.4032877653955621;
+        intercept = 0.33879567421856105;
         real local_time_step = time_step * 29 - time_step * 28;
-        slope = (-0.36275429929387615 - 0.4032877653955621) / local_time_step;
+        slope = (0.33119219336905814 - 0.33879567421856105) / local_time_step;
         return intercept + slope * (time - time_step * 28);
     }
     else if(time <= time_step * 30){
-        intercept = -0.36275429929387615;
+        intercept = 0.33119219336905814;
         real local_time_step = time_step * 30 - time_step * 29;
-        slope = (-0.3598397708298602 - -0.36275429929387615) / local_time_step;
+        slope = (0.18385895065662972 - 0.33119219336905814) / local_time_step;
         return intercept + slope * (time - time_step * 29);
     }
     else if(time <= time_step * 31){
-        intercept = -0.3598397708298602;
+        intercept = 0.18385895065662972;
         real local_time_step = time_step * 31 - time_step * 30;
-        slope = (-0.3612174649659565 - -0.3598397708298602) / local_time_step;
+        slope = (0.06701154106684448 - 0.18385895065662972) / local_time_step;
         return intercept + slope * (time - time_step * 30);
     }
     else if(time <= time_step * 32){
-        intercept = -0.3612174649659565;
+        intercept = 0.06701154106684448;
         real local_time_step = time_step * 32 - time_step * 31;
-        slope = (0.0733545263058567 - -0.3612174649659565) / local_time_step;
+        slope = (0.04692381008569524 - 0.06701154106684448) / local_time_step;
         return intercept + slope * (time - time_step * 31);
     }
     else if(time <= time_step * 33){
-        intercept = 0.0733545263058567;
+        intercept = 0.04692381008569524;
         real local_time_step = time_step * 33 - time_step * 32;
-        slope = (-0.36107970579441473 - 0.0733545263058567) / local_time_step;
+        slope = (-0.2127928456667919 - 0.04692381008569524) / local_time_step;
         return intercept + slope * (time - time_step * 32);
     }
     else if(time <= time_step * 34){
-        intercept = -0.36107970579441473;
+        intercept = -0.2127928456667919;
         real local_time_step = time_step * 34 - time_step * 33;
-        slope = (-0.12269076209238017 - -0.36107970579441473) / local_time_step;
+        slope = (-0.25996748311970397 - -0.2127928456667919) / local_time_step;
         return intercept + slope * (time - time_step * 33);
     }
     else if(time <= time_step * 35){
-        intercept = -0.12269076209238017;
+        intercept = -0.25996748311970397;
         real local_time_step = time_step * 35 - time_step * 34;
-        slope = (-0.027636933266986796 - -0.12269076209238017) / local_time_step;
+        slope = (-0.3233065744766108 - -0.25996748311970397) / local_time_step;
         return intercept + slope * (time - time_step * 34);
     }
     else if(time <= time_step * 36){
-        intercept = -0.027636933266986796;
+        intercept = -0.3233065744766108;
         real local_time_step = time_step * 36 - time_step * 35;
-        slope = (-0.3477827128873868 - -0.027636933266986796) / local_time_step;
+        slope = (-0.42326507573017214 - -0.3233065744766108) / local_time_step;
         return intercept + slope * (time - time_step * 35);
     }
     else if(time <= time_step * 37){
-        intercept = -0.3477827128873868;
+        intercept = -0.42326507573017214;
         real local_time_step = time_step * 37 - time_step * 36;
-        slope = (-0.46707469437442084 - -0.3477827128873868) / local_time_step;
+        slope = (-0.30893819590717164 - -0.42326507573017214) / local_time_step;
         return intercept + slope * (time - time_step * 36);
     }
     else if(time <= time_step * 38){
-        intercept = -0.46707469437442084;
+        intercept = -0.30893819590717164;
         real local_time_step = time_step * 38 - time_step * 37;
-        slope = (-0.41305220182007296 - -0.46707469437442084) / local_time_step;
+        slope = (0.2466583905048072 - -0.30893819590717164) / local_time_step;
         return intercept + slope * (time - time_step * 37);
     }
     else if(time <= time_step * 39){
-        intercept = -0.41305220182007296;
+        intercept = 0.2466583905048072;
         real local_time_step = time_step * 39 - time_step * 38;
-        slope = (-0.27464077548271415 - -0.41305220182007296) / local_time_step;
+        slope = (-0.34255572277911817 - 0.2466583905048072) / local_time_step;
         return intercept + slope * (time - time_step * 38);
     }
     else if(time <= time_step * 40){
-        intercept = -0.27464077548271415;
+        intercept = -0.34255572277911817;
         real local_time_step = time_step * 40 - time_step * 39;
-        slope = (0.47543976843533364 - -0.27464077548271415) / local_time_step;
+        slope = (0.2210182120084222 - -0.34255572277911817) / local_time_step;
         return intercept + slope * (time - time_step * 39);
     }
     else if(time <= time_step * 41){
-        intercept = 0.47543976843533364;
+        intercept = 0.2210182120084222;
         real local_time_step = time_step * 41 - time_step * 40;
-        slope = (0.17187672031712642 - 0.47543976843533364) / local_time_step;
+        slope = (0.2754271628131554 - 0.2210182120084222) / local_time_step;
         return intercept + slope * (time - time_step * 40);
     }
     else if(time <= time_step * 42){
-        intercept = 0.17187672031712642;
+        intercept = 0.2754271628131554;
         real local_time_step = time_step * 42 - time_step * 41;
-        slope = (0.3700210468238121 - 0.17187672031712642) / local_time_step;
+        slope = (0.10877007844227815 - 0.2754271628131554) / local_time_step;
         return intercept + slope * (time - time_step * 41);
     }
     else if(time <= time_step * 43){
-        intercept = 0.3700210468238121;
+        intercept = 0.10877007844227815;
         real local_time_step = time_step * 43 - time_step * 42;
-        slope = (0.49218739431881386 - 0.3700210468238121) / local_time_step;
+        slope = (-0.35336452498335935 - 0.10877007844227815) / local_time_step;
         return intercept + slope * (time - time_step * 42);
     }
     else if(time <= time_step * 44){
-        intercept = 0.49218739431881386;
+        intercept = -0.35336452498335935;
         real local_time_step = time_step * 44 - time_step * 43;
-        slope = (0.12474259388162412 - 0.49218739431881386) / local_time_step;
+        slope = (-0.0632953540790191 - -0.35336452498335935) / local_time_step;
         return intercept + slope * (time - time_step * 43);
     }
     else if(time <= time_step * 45){
-        intercept = 0.12474259388162412;
+        intercept = -0.0632953540790191;
         real local_time_step = time_step * 45 - time_step * 44;
-        slope = (-0.016348745625328398 - 0.12474259388162412) / local_time_step;
+        slope = (-0.475550849211672 - -0.0632953540790191) / local_time_step;
         return intercept + slope * (time - time_step * 44);
     }
     else if(time <= time_step * 46){
-        intercept = -0.016348745625328398;
+        intercept = -0.475550849211672;
         real local_time_step = time_step * 46 - time_step * 45;
-        slope = (0.3389457242168975 - -0.016348745625328398) / local_time_step;
+        slope = (0.4627282902779154 - -0.475550849211672) / local_time_step;
         return intercept + slope * (time - time_step * 45);
     }
     else if(time <= time_step * 47){
-        intercept = 0.3389457242168975;
+        intercept = 0.4627282902779154;
         real local_time_step = time_step * 47 - time_step * 46;
-        slope = (0.05055295652251712 - 0.3389457242168975) / local_time_step;
+        slope = (0.15617792306123168 - 0.4627282902779154) / local_time_step;
         return intercept + slope * (time - time_step * 46);
     }
     else if(time <= time_step * 48){
-        intercept = 0.05055295652251712;
+        intercept = 0.15617792306123168;
         real local_time_step = time_step * 48 - time_step * 47;
-        slope = (0.21351091835886893 - 0.05055295652251712) / local_time_step;
+        slope = (-0.3135619560870062 - 0.15617792306123168) / local_time_step;
         return intercept + slope * (time - time_step * 47);
     }
     else if(time <= time_step * 49){
-        intercept = 0.21351091835886893;
+        intercept = -0.3135619560870062;
         real local_time_step = time_step * 49 - time_step * 48;
-        slope = (0.39671859672447063 - 0.21351091835886893) / local_time_step;
+        slope = (0.37974911669220446 - -0.3135619560870062) / local_time_step;
         return intercept + slope * (time - time_step * 48);
     }
     else if(time <= time_step * 50){
-        intercept = 0.39671859672447063;
+        intercept = 0.37974911669220446;
         real local_time_step = time_step * 50 - time_step * 49;
-        slope = (-0.021879265284896476 - 0.39671859672447063) / local_time_step;
+        slope = (0.16274108026981504 - 0.37974911669220446) / local_time_step;
         return intercept + slope * (time - time_step * 49);
     }
     else if(time <= time_step * 51){
-        intercept = -0.021879265284896476;
+        intercept = 0.16274108026981504;
         real local_time_step = time_step * 51 - time_step * 50;
-        slope = (0.47009989458366697 - -0.021879265284896476) / local_time_step;
+        slope = (0.09194630620952127 - 0.16274108026981504) / local_time_step;
         return intercept + slope * (time - time_step * 50);
     }
     else if(time <= time_step * 52){
-        intercept = 0.47009989458366697;
+        intercept = 0.09194630620952127;
         real local_time_step = time_step * 52 - time_step * 51;
-        slope = (0.32394865299973397 - 0.47009989458366697) / local_time_step;
+        slope = (-0.13152702686509554 - 0.09194630620952127) / local_time_step;
         return intercept + slope * (time - time_step * 51);
     }
     else if(time <= time_step * 53){
-        intercept = 0.32394865299973397;
+        intercept = -0.13152702686509554;
         real local_time_step = time_step * 53 - time_step * 52;
-        slope = (0.10159790617339826 - 0.32394865299973397) / local_time_step;
+        slope = (-0.032457400448896445 - -0.13152702686509554) / local_time_step;
         return intercept + slope * (time - time_step * 52);
     }
     else if(time <= time_step * 54){
-        intercept = 0.10159790617339826;
+        intercept = -0.032457400448896445;
         real local_time_step = time_step * 54 - time_step * 53;
-        slope = (0.48814620570653955 - 0.10159790617339826) / local_time_step;
+        slope = (-0.0781354421565672 - -0.032457400448896445) / local_time_step;
         return intercept + slope * (time - time_step * 53);
     }
     else if(time <= time_step * 55){
-        intercept = 0.48814620570653955;
+        intercept = -0.0781354421565672;
         real local_time_step = time_step * 55 - time_step * 54;
-        slope = (-0.01964238961625009 - 0.48814620570653955) / local_time_step;
+        slope = (-0.24727677633439205 - -0.0781354421565672) / local_time_step;
         return intercept + slope * (time - time_step * 54);
     }
     else if(time <= time_step * 56){
-        intercept = -0.01964238961625009;
+        intercept = -0.24727677633439205;
         real local_time_step = time_step * 56 - time_step * 55;
-        slope = (0.24108277677835976 - -0.01964238961625009) / local_time_step;
+        slope = (0.13349416963859195 - -0.24727677633439205) / local_time_step;
         return intercept + slope * (time - time_step * 55);
     }
     else if(time <= time_step * 57){
-        intercept = 0.24108277677835976;
+        intercept = 0.13349416963859195;
         real local_time_step = time_step * 57 - time_step * 56;
-        slope = (-0.43088438287411024 - 0.24108277677835976) / local_time_step;
+        slope = (0.3392559782482444 - 0.13349416963859195) / local_time_step;
         return intercept + slope * (time - time_step * 56);
     }
     else if(time <= time_step * 58){
-        intercept = -0.43088438287411024;
+        intercept = 0.3392559782482444;
         real local_time_step = time_step * 58 - time_step * 57;
-        slope = (0.3415307329642244 - -0.43088438287411024) / local_time_step;
+        slope = (-0.008873612538892406 - 0.3392559782482444) / local_time_step;
         return intercept + slope * (time - time_step * 57);
     }
     else if(time <= time_step * 59){
-        intercept = 0.3415307329642244;
+        intercept = -0.008873612538892406;
         real local_time_step = time_step * 59 - time_step * 58;
-        slope = (-0.10484603020161942 - 0.3415307329642244) / local_time_step;
+        slope = (-0.35763224470693333 - -0.008873612538892406) / local_time_step;
         return intercept + slope * (time - time_step * 58);
     }
     else if(time <= time_step * 60){
-        intercept = -0.10484603020161942;
+        intercept = -0.35763224470693333;
         real local_time_step = time_step * 60 - time_step * 59;
-        slope = (0.2951091752060635 - -0.10484603020161942) / local_time_step;
+        slope = (0.3551957084061197 - -0.35763224470693333) / local_time_step;
         return intercept + slope * (time - time_step * 59);
     }
     else if(time <= time_step * 61){
-        intercept = 0.2951091752060635;
+        intercept = 0.3551957084061197;
         real local_time_step = time_step * 61 - time_step * 60;
-        slope = (0.22472494747089267 - 0.2951091752060635) / local_time_step;
+        slope = (-0.4316566458581941 - 0.3551957084061197) / local_time_step;
         return intercept + slope * (time - time_step * 60);
     }
     else if(time <= time_step * 62){
-        intercept = 0.22472494747089267;
+        intercept = -0.4316566458581941;
         real local_time_step = time_step * 62 - time_step * 61;
-        slope = (0.11301885990640015 - 0.22472494747089267) / local_time_step;
+        slope = (0.3626087331420267 - -0.4316566458581941) / local_time_step;
         return intercept + slope * (time - time_step * 61);
     }
     else if(time <= time_step * 63){
-        intercept = 0.11301885990640015;
+        intercept = 0.3626087331420267;
         real local_time_step = time_step * 63 - time_step * 62;
-        slope = (0.3789998975153598 - 0.11301885990640015) / local_time_step;
+        slope = (-0.395948327415368 - 0.3626087331420267) / local_time_step;
         return intercept + slope * (time - time_step * 62);
     }
     else if(time <= time_step * 64){
-        intercept = 0.3789998975153598;
+        intercept = -0.395948327415368;
         real local_time_step = time_step * 64 - time_step * 63;
-        slope = (0.3330072607520673 - 0.3789998975153598) / local_time_step;
+        slope = (-0.32362165956051736 - -0.395948327415368) / local_time_step;
         return intercept + slope * (time - time_step * 63);
     }
     else if(time <= time_step * 65){
-        intercept = 0.3330072607520673;
+        intercept = -0.32362165956051736;
         real local_time_step = time_step * 65 - time_step * 64;
-        slope = (-0.46201323674587846 - 0.3330072607520673) / local_time_step;
+        slope = (-0.3992854473976488 - -0.32362165956051736) / local_time_step;
         return intercept + slope * (time - time_step * 64);
     }
     else if(time <= time_step * 66){
-        intercept = -0.46201323674587846;
+        intercept = -0.3992854473976488;
         real local_time_step = time_step * 66 - time_step * 65;
-        slope = (0.4198705202426355 - -0.46201323674587846) / local_time_step;
+        slope = (-0.3042040344929884 - -0.3992854473976488) / local_time_step;
         return intercept + slope * (time - time_step * 65);
     }
     else if(time <= time_step * 67){
-        intercept = 0.4198705202426355;
+        intercept = -0.3042040344929884;
         real local_time_step = time_step * 67 - time_step * 66;
-        slope = (-0.16046723053484802 - 0.4198705202426355) / local_time_step;
+        slope = (0.24842351585500433 - -0.3042040344929884) / local_time_step;
         return intercept + slope * (time - time_step * 66);
     }
     else if(time <= time_step * 68){
-        intercept = -0.16046723053484802;
+        intercept = 0.24842351585500433;
         real local_time_step = time_step * 68 - time_step * 67;
-        slope = (0.1504646142678443 - -0.16046723053484802) / local_time_step;
+        slope = (-0.4557493761725172 - 0.24842351585500433) / local_time_step;
         return intercept + slope * (time - time_step * 67);
     }
     else if(time <= time_step * 69){
-        intercept = 0.1504646142678443;
+        intercept = -0.4557493761725172;
         real local_time_step = time_step * 69 - time_step * 68;
-        slope = (-0.36265531717116894 - 0.1504646142678443) / local_time_step;
+        slope = (-0.19981820544324214 - -0.4557493761725172) / local_time_step;
         return intercept + slope * (time - time_step * 68);
     }
     else if(time <= time_step * 70){
-        intercept = -0.36265531717116894;
+        intercept = -0.19981820544324214;
         real local_time_step = time_step * 70 - time_step * 69;
-        slope = (0.4374069530230442 - -0.36265531717116894) / local_time_step;
+        slope = (-0.13486874945928173 - -0.19981820544324214) / local_time_step;
         return intercept + slope * (time - time_step * 69);
     }
     else if(time <= time_step * 71){
-        intercept = 0.4374069530230442;
+        intercept = -0.13486874945928173;
         real local_time_step = time_step * 71 - time_step * 70;
-        slope = (0.4773378819126797 - 0.4374069530230442) / local_time_step;
+        slope = (0.05829360121624527 - -0.13486874945928173) / local_time_step;
         return intercept + slope * (time - time_step * 70);
     }
     else if(time <= time_step * 72){
-        intercept = 0.4773378819126797;
+        intercept = 0.05829360121624527;
         real local_time_step = time_step * 72 - time_step * 71;
-        slope = (0.30324057940797833 - 0.4773378819126797) / local_time_step;
+        slope = (-0.059667313820345624 - 0.05829360121624527) / local_time_step;
         return intercept + slope * (time - time_step * 71);
     }
     else if(time <= time_step * 73){
-        intercept = 0.30324057940797833;
+        intercept = -0.059667313820345624;
         real local_time_step = time_step * 73 - time_step * 72;
-        slope = (0.3682677334535305 - 0.30324057940797833) / local_time_step;
+        slope = (-0.4003220294335871 - -0.059667313820345624) / local_time_step;
         return intercept + slope * (time - time_step * 72);
     }
     else if(time <= time_step * 74){
-        intercept = 0.3682677334535305;
+        intercept = -0.4003220294335871;
         real local_time_step = time_step * 74 - time_step * 73;
-        slope = (-0.13743764332810027 - 0.3682677334535305) / local_time_step;
+        slope = (0.11765476800172825 - -0.4003220294335871) / local_time_step;
         return intercept + slope * (time - time_step * 73);
     }
     else if(time <= time_step * 75){
-        intercept = -0.13743764332810027;
+        intercept = 0.11765476800172825;
         real local_time_step = time_step * 75 - time_step * 74;
-        slope = (0.03305630151937067 - -0.13743764332810027) / local_time_step;
+        slope = (-0.17021955309942816 - 0.11765476800172825) / local_time_step;
         return intercept + slope * (time - time_step * 74);
     }
     else if(time <= time_step * 76){
-        intercept = 0.03305630151937067;
+        intercept = -0.17021955309942816;
         real local_time_step = time_step * 76 - time_step * 75;
-        slope = (0.3439386190793755 - 0.03305630151937067) / local_time_step;
+        slope = (-0.24161381007592453 - -0.17021955309942816) / local_time_step;
         return intercept + slope * (time - time_step * 75);
     }
     else if(time <= time_step * 77){
-        intercept = 0.3439386190793755;
+        intercept = -0.24161381007592453;
         real local_time_step = time_step * 77 - time_step * 76;
-        slope = (-0.09439073585188462 - 0.3439386190793755) / local_time_step;
+        slope = (0.4829741825220104 - -0.24161381007592453) / local_time_step;
         return intercept + slope * (time - time_step * 76);
     }
     else if(time <= time_step * 78){
-        intercept = -0.09439073585188462;
+        intercept = 0.4829741825220104;
         real local_time_step = time_step * 78 - time_step * 77;
-        slope = (0.11454329631042082 - -0.09439073585188462) / local_time_step;
+        slope = (0.4069270050050545 - 0.4829741825220104) / local_time_step;
         return intercept + slope * (time - time_step * 77);
     }
     else if(time <= time_step * 79){
-        intercept = 0.11454329631042082;
+        intercept = 0.4069270050050545;
         real local_time_step = time_step * 79 - time_step * 78;
-        slope = (-0.01871312008693793 - 0.11454329631042082) / local_time_step;
+        slope = (0.023361981135399 - 0.4069270050050545) / local_time_step;
         return intercept + slope * (time - time_step * 78);
     }
     else if(time <= time_step * 80){
-        intercept = -0.01871312008693793;
+        intercept = 0.023361981135399;
         real local_time_step = time_step * 80 - time_step * 79;
-        slope = (-0.11585844402642353 - -0.01871312008693793) / local_time_step;
+        slope = (0.3715477916427864 - 0.023361981135399) / local_time_step;
         return intercept + slope * (time - time_step * 79);
     }
     else if(time <= time_step * 81){
-        intercept = -0.11585844402642353;
+        intercept = 0.3715477916427864;
         real local_time_step = time_step * 81 - time_step * 80;
-        slope = (-0.37533501470356634 - -0.11585844402642353) / local_time_step;
+        slope = (0.46519949663993165 - 0.3715477916427864) / local_time_step;
         return intercept + slope * (time - time_step * 80);
     }
     else if(time <= time_step * 82){
-        intercept = -0.37533501470356634;
+        intercept = 0.46519949663993165;
         real local_time_step = time_step * 82 - time_step * 81;
-        slope = (-0.25013397130383175 - -0.37533501470356634) / local_time_step;
+        slope = (0.4949850705767931 - 0.46519949663993165) / local_time_step;
         return intercept + slope * (time - time_step * 81);
     }
     else if(time <= time_step * 83){
-        intercept = -0.25013397130383175;
+        intercept = 0.4949850705767931;
         real local_time_step = time_step * 83 - time_step * 82;
-        slope = (-0.1426449575042369 - -0.25013397130383175) / local_time_step;
+        slope = (0.2668077432699101 - 0.4949850705767931) / local_time_step;
         return intercept + slope * (time - time_step * 82);
     }
     else if(time <= time_step * 84){
-        intercept = -0.1426449575042369;
+        intercept = 0.2668077432699101;
         real local_time_step = time_step * 84 - time_step * 83;
-        slope = (-0.40333415697036457 - -0.1426449575042369) / local_time_step;
+        slope = (0.4292855928476067 - 0.2668077432699101) / local_time_step;
         return intercept + slope * (time - time_step * 83);
     }
     else if(time <= time_step * 85){
-        intercept = -0.40333415697036457;
+        intercept = 0.4292855928476067;
         real local_time_step = time_step * 85 - time_step * 84;
-        slope = (0.08139406634136659 - -0.40333415697036457) / local_time_step;
+        slope = (0.11893844470515846 - 0.4292855928476067) / local_time_step;
         return intercept + slope * (time - time_step * 84);
     }
     else if(time <= time_step * 86){
-        intercept = 0.08139406634136659;
+        intercept = 0.11893844470515846;
         real local_time_step = time_step * 86 - time_step * 85;
-        slope = (0.06078659589265012 - 0.08139406634136659) / local_time_step;
+        slope = (0.35199425441160137 - 0.11893844470515846) / local_time_step;
         return intercept + slope * (time - time_step * 85);
     }
     else if(time <= time_step * 87){
-        intercept = 0.06078659589265012;
+        intercept = 0.35199425441160137;
         real local_time_step = time_step * 87 - time_step * 86;
-        slope = (-0.4716727066820754 - 0.06078659589265012) / local_time_step;
+        slope = (0.02115174153372046 - 0.35199425441160137) / local_time_step;
         return intercept + slope * (time - time_step * 86);
     }
     else if(time <= time_step * 88){
-        intercept = -0.4716727066820754;
+        intercept = 0.02115174153372046;
         real local_time_step = time_step * 88 - time_step * 87;
-        slope = (0.48057672872140544 - -0.4716727066820754) / local_time_step;
+        slope = (0.015419192746649824 - 0.02115174153372046) / local_time_step;
         return intercept + slope * (time - time_step * 87);
     }
     else if(time <= time_step * 89){
-        intercept = 0.48057672872140544;
+        intercept = 0.015419192746649824;
         real local_time_step = time_step * 89 - time_step * 88;
-        slope = (-0.4324368977566825 - 0.48057672872140544) / local_time_step;
+        slope = (0.47253215848156027 - 0.015419192746649824) / local_time_step;
         return intercept + slope * (time - time_step * 88);
     }
     else if(time <= time_step * 90){
-        intercept = -0.4324368977566825;
+        intercept = 0.47253215848156027;
         real local_time_step = time_step * 90 - time_step * 89;
-        slope = (-0.13674927380516344 - -0.4324368977566825) / local_time_step;
+        slope = (0.3426305331861219 - 0.47253215848156027) / local_time_step;
         return intercept + slope * (time - time_step * 89);
     }
     else if(time <= time_step * 91){
-        intercept = -0.13674927380516344;
+        intercept = 0.3426305331861219;
         real local_time_step = time_step * 91 - time_step * 90;
-        slope = (-0.001741333338986073 - -0.13674927380516344) / local_time_step;
+        slope = (0.39680960147733735 - 0.3426305331861219) / local_time_step;
         return intercept + slope * (time - time_step * 90);
     }
     else if(time <= time_step * 92){
-        intercept = -0.001741333338986073;
+        intercept = 0.39680960147733735;
         real local_time_step = time_step * 92 - time_step * 91;
-        slope = (-0.30971530283237125 - -0.001741333338986073) / local_time_step;
+        slope = (-0.34264329966124807 - 0.39680960147733735) / local_time_step;
         return intercept + slope * (time - time_step * 91);
     }
     else if(time <= time_step * 93){
-        intercept = -0.30971530283237125;
+        intercept = -0.34264329966124807;
         real local_time_step = time_step * 93 - time_step * 92;
-        slope = (0.4078234903082175 - -0.30971530283237125) / local_time_step;
+        slope = (0.016640185197565716 - -0.34264329966124807) / local_time_step;
         return intercept + slope * (time - time_step * 92);
     }
     else if(time <= time_step * 94){
-        intercept = 0.4078234903082175;
+        intercept = 0.016640185197565716;
         real local_time_step = time_step * 94 - time_step * 93;
-        slope = (-0.40505667009513957 - 0.4078234903082175) / local_time_step;
+        slope = (0.10241088051917258 - 0.016640185197565716) / local_time_step;
         return intercept + slope * (time - time_step * 93);
     }
     else if(time <= time_step * 95){
-        intercept = -0.40505667009513957;
+        intercept = 0.10241088051917258;
         real local_time_step = time_step * 95 - time_step * 94;
-        slope = (0.3982224282944703 - -0.40505667009513957) / local_time_step;
+        slope = (-0.32231336423295465 - 0.10241088051917258) / local_time_step;
         return intercept + slope * (time - time_step * 94);
     }
     else if(time <= time_step * 96){
-        intercept = 0.3982224282944703;
+        intercept = -0.32231336423295465;
         real local_time_step = time_step * 96 - time_step * 95;
-        slope = (0.35163047805715375 - 0.3982224282944703) / local_time_step;
+        slope = (-0.41035150017236044 - -0.32231336423295465) / local_time_step;
         return intercept + slope * (time - time_step * 95);
     }
     else if(time <= time_step * 97){
-        intercept = 0.35163047805715375;
+        intercept = -0.41035150017236044;
         real local_time_step = time_step * 97 - time_step * 96;
-        slope = (-0.46534047300182346 - 0.35163047805715375) / local_time_step;
+        slope = (-0.14857209763053225 - -0.41035150017236044) / local_time_step;
         return intercept + slope * (time - time_step * 96);
     }
     else if(time <= time_step * 98){
-        intercept = -0.46534047300182346;
+        intercept = -0.14857209763053225;
         real local_time_step = time_step * 98 - time_step * 97;
-        slope = (-0.051147791948078725 - -0.46534047300182346) / local_time_step;
+        slope = (-0.08235709919291656 - -0.14857209763053225) / local_time_step;
         return intercept + slope * (time - time_step * 97);
     }
     else if(time <= time_step * 99){
-        intercept = -0.051147791948078725;
+        intercept = -0.08235709919291656;
         real local_time_step = time_step * 99 - time_step * 98;
-        slope = (-0.13015042943203237 - -0.051147791948078725) / local_time_step;
+        slope = (-0.12423199164035736 - -0.08235709919291656) / local_time_step;
         return intercept + slope * (time - time_step * 98);
     }
     else if(time <= time_step * 100){
-        intercept = -0.13015042943203237;
+        intercept = -0.12423199164035736;
         real local_time_step = time_step * 100 - time_step * 99;
-        slope = (-0.06625478535422258 - -0.13015042943203237) / local_time_step;
+        slope = (0.06361454782841325 - -0.12423199164035736) / local_time_step;
         return intercept + slope * (time - time_step * 99);
     }
     else if(time <= time_step * 101){
-        intercept = -0.06625478535422258;
+        intercept = 0.06361454782841325;
         real local_time_step = time_step * 101 - time_step * 100;
-        slope = (0.19691266335638435 - -0.06625478535422258) / local_time_step;
+        slope = (0.24036840318636532 - 0.06361454782841325) / local_time_step;
         return intercept + slope * (time - time_step * 100);
     }
     else if(time <= time_step * 102){
-        intercept = 0.19691266335638435;
+        intercept = 0.24036840318636532;
         real local_time_step = time_step * 102 - time_step * 101;
-        slope = (0.20577815735617222 - 0.19691266335638435) / local_time_step;
+        slope = (0.06733726861565392 - 0.24036840318636532) / local_time_step;
         return intercept + slope * (time - time_step * 101);
     }
     else if(time <= time_step * 103){
-        intercept = 0.20577815735617222;
+        intercept = 0.06733726861565392;
         real local_time_step = time_step * 103 - time_step * 102;
-        slope = (0.3178559392313999 - 0.20577815735617222) / local_time_step;
+        slope = (0.33053644842682073 - 0.06733726861565392) / local_time_step;
         return intercept + slope * (time - time_step * 102);
     }
     else if(time <= time_step * 104){
-        intercept = 0.3178559392313999;
+        intercept = 0.33053644842682073;
         real local_time_step = time_step * 104 - time_step * 103;
-        slope = (-0.019822968384393902 - 0.3178559392313999) / local_time_step;
+        slope = (0.030988910276066872 - 0.33053644842682073) / local_time_step;
         return intercept + slope * (time - time_step * 103);
     }
     else if(time <= time_step * 105){
-        intercept = -0.019822968384393902;
+        intercept = 0.030988910276066872;
         real local_time_step = time_step * 105 - time_step * 104;
-        slope = (0.3581945955497098 - -0.019822968384393902) / local_time_step;
+        slope = (-0.23957745566426603 - 0.030988910276066872) / local_time_step;
         return intercept + slope * (time - time_step * 104);
     }
     else if(time <= time_step * 106){
-        intercept = 0.3581945955497098;
+        intercept = -0.23957745566426603;
         real local_time_step = time_step * 106 - time_step * 105;
-        slope = (-0.4930161117290376 - 0.3581945955497098) / local_time_step;
+        slope = (-0.39279972544036323 - -0.23957745566426603) / local_time_step;
         return intercept + slope * (time - time_step * 105);
     }
     else if(time <= time_step * 107){
-        intercept = -0.4930161117290376;
+        intercept = -0.39279972544036323;
         real local_time_step = time_step * 107 - time_step * 106;
-        slope = (-0.42071443821935683 - -0.4930161117290376) / local_time_step;
+        slope = (-0.009266867613203722 - -0.39279972544036323) / local_time_step;
         return intercept + slope * (time - time_step * 106);
     }
     else if(time <= time_step * 108){
-        intercept = -0.42071443821935683;
+        intercept = -0.009266867613203722;
         real local_time_step = time_step * 108 - time_step * 107;
-        slope = (-0.012534599748157849 - -0.42071443821935683) / local_time_step;
+        slope = (-0.06345242480681446 - -0.009266867613203722) / local_time_step;
         return intercept + slope * (time - time_step * 107);
     }
     else if(time <= time_step * 109){
-        intercept = -0.012534599748157849;
+        intercept = -0.06345242480681446;
         real local_time_step = time_step * 109 - time_step * 108;
-        slope = (-0.4220898218639594 - -0.012534599748157849) / local_time_step;
+        slope = (0.43319615573074643 - -0.06345242480681446) / local_time_step;
         return intercept + slope * (time - time_step * 108);
     }
     else if(time <= time_step * 110){
-        intercept = -0.4220898218639594;
+        intercept = 0.43319615573074643;
         real local_time_step = time_step * 110 - time_step * 109;
-        slope = (0.38940911091766683 - -0.4220898218639594) / local_time_step;
+        slope = (-0.2686643137226673 - 0.43319615573074643) / local_time_step;
         return intercept + slope * (time - time_step * 109);
     }
     else if(time <= time_step * 111){
-        intercept = 0.38940911091766683;
+        intercept = -0.2686643137226673;
         real local_time_step = time_step * 111 - time_step * 110;
-        slope = (-0.14361795956436563 - 0.38940911091766683) / local_time_step;
+        slope = (-0.02661129580130095 - -0.2686643137226673) / local_time_step;
         return intercept + slope * (time - time_step * 110);
     }
     else if(time <= time_step * 112){
-        intercept = -0.14361795956436563;
+        intercept = -0.02661129580130095;
         real local_time_step = time_step * 112 - time_step * 111;
-        slope = (-0.22538073084108312 - -0.14361795956436563) / local_time_step;
+        slope = (0.2554657480872613 - -0.02661129580130095) / local_time_step;
         return intercept + slope * (time - time_step * 111);
     }
     else if(time <= time_step * 113){
-        intercept = -0.22538073084108312;
+        intercept = 0.2554657480872613;
         real local_time_step = time_step * 113 - time_step * 112;
-        slope = (-0.2810397655356157 - -0.22538073084108312) / local_time_step;
+        slope = (0.3750089302733335 - 0.2554657480872613) / local_time_step;
         return intercept + slope * (time - time_step * 112);
     }
     else if(time <= time_step * 114){
-        intercept = -0.2810397655356157;
+        intercept = 0.3750089302733335;
         real local_time_step = time_step * 114 - time_step * 113;
-        slope = (0.19295311043921348 - -0.2810397655356157) / local_time_step;
+        slope = (0.1115011461573635 - 0.3750089302733335) / local_time_step;
         return intercept + slope * (time - time_step * 113);
     }
     else if(time <= time_step * 115){
-        intercept = 0.19295311043921348;
+        intercept = 0.1115011461573635;
         real local_time_step = time_step * 115 - time_step * 114;
-        slope = (0.180031229577306 - 0.19295311043921348) / local_time_step;
+        slope = (-0.3696088849347292 - 0.1115011461573635) / local_time_step;
         return intercept + slope * (time - time_step * 114);
     }
     else if(time <= time_step * 116){
-        intercept = 0.180031229577306;
+        intercept = -0.3696088849347292;
         real local_time_step = time_step * 116 - time_step * 115;
-        slope = (0.047372219033627205 - 0.180031229577306) / local_time_step;
+        slope = (0.09430214421480432 - -0.3696088849347292) / local_time_step;
         return intercept + slope * (time - time_step * 115);
     }
     else if(time <= time_step * 117){
-        intercept = 0.047372219033627205;
+        intercept = 0.09430214421480432;
         real local_time_step = time_step * 117 - time_step * 116;
-        slope = (0.47339648412204827 - 0.047372219033627205) / local_time_step;
+        slope = (0.30873782873608513 - 0.09430214421480432) / local_time_step;
         return intercept + slope * (time - time_step * 116);
     }
     else if(time <= time_step * 118){
-        intercept = 0.47339648412204827;
+        intercept = 0.30873782873608513;
         real local_time_step = time_step * 118 - time_step * 117;
-        slope = (0.47174379986509996 - 0.47339648412204827) / local_time_step;
+        slope = (0.16684494761160518 - 0.30873782873608513) / local_time_step;
         return intercept + slope * (time - time_step * 117);
     }
     else if(time <= time_step * 119){
-        intercept = 0.47174379986509996;
+        intercept = 0.16684494761160518;
         real local_time_step = time_step * 119 - time_step * 118;
-        slope = (-0.11070013752791918 - 0.47174379986509996) / local_time_step;
+        slope = (-0.0003088843102746486 - 0.16684494761160518) / local_time_step;
         return intercept + slope * (time - time_step * 118);
     }
     else if(time <= time_step * 120){
-        intercept = -0.11070013752791918;
+        intercept = -0.0003088843102746486;
         real local_time_step = time_step * 120 - time_step * 119;
-        slope = (-0.08305641459358581 - -0.11070013752791918) / local_time_step;
+        slope = (-0.2998223097662238 - -0.0003088843102746486) / local_time_step;
         return intercept + slope * (time - time_step * 119);
     }
     else if(time <= time_step * 121){
-        intercept = -0.08305641459358581;
+        intercept = -0.2998223097662238;
         real local_time_step = time_step * 121 - time_step * 120;
-        slope = (0.16724889373774265 - -0.08305641459358581) / local_time_step;
+        slope = (-0.18048832602717568 - -0.2998223097662238) / local_time_step;
         return intercept + slope * (time - time_step * 120);
     }
     else if(time <= time_step * 122){
-        intercept = 0.16724889373774265;
+        intercept = -0.18048832602717568;
         real local_time_step = time_step * 122 - time_step * 121;
-        slope = (0.31562432997069956 - 0.16724889373774265) / local_time_step;
+        slope = (-0.450318892818918 - -0.18048832602717568) / local_time_step;
         return intercept + slope * (time - time_step * 121);
     }
     else if(time <= time_step * 123){
-        intercept = 0.31562432997069956;
+        intercept = -0.450318892818918;
         real local_time_step = time_step * 123 - time_step * 122;
-        slope = (0.2790937304738509 - 0.31562432997069956) / local_time_step;
+        slope = (-0.4882327647494953 - -0.450318892818918) / local_time_step;
         return intercept + slope * (time - time_step * 122);
     }
     else if(time <= time_step * 124){
-        intercept = 0.2790937304738509;
+        intercept = -0.4882327647494953;
         real local_time_step = time_step * 124 - time_step * 123;
-        slope = (-0.2468014603518457 - 0.2790937304738509) / local_time_step;
+        slope = (-0.02724100537914753 - -0.4882327647494953) / local_time_step;
         return intercept + slope * (time - time_step * 123);
     }
     else if(time <= time_step * 125){
-        intercept = -0.2468014603518457;
+        intercept = -0.02724100537914753;
         real local_time_step = time_step * 125 - time_step * 124;
-        slope = (0.4187110846802595 - -0.2468014603518457) / local_time_step;
+        slope = (-0.026345153793157716 - -0.02724100537914753) / local_time_step;
         return intercept + slope * (time - time_step * 124);
     }
     else if(time <= time_step * 126){
-        intercept = 0.4187110846802595;
+        intercept = -0.026345153793157716;
         real local_time_step = time_step * 126 - time_step * 125;
-        slope = (-0.2501618338578592 - 0.4187110846802595) / local_time_step;
+        slope = (0.26219933037025633 - -0.026345153793157716) / local_time_step;
         return intercept + slope * (time - time_step * 125);
     }
     else if(time <= time_step * 127){
-        intercept = -0.2501618338578592;
+        intercept = 0.26219933037025633;
         real local_time_step = time_step * 127 - time_step * 126;
-        slope = (0.24582735417374146 - -0.2501618338578592) / local_time_step;
+        slope = (0.19612556910587753 - 0.26219933037025633) / local_time_step;
         return intercept + slope * (time - time_step * 126);
     }
     else if(time <= time_step * 128){
-        intercept = 0.24582735417374146;
+        intercept = 0.19612556910587753;
         real local_time_step = time_step * 128 - time_step * 127;
-        slope = (0.014888560407610996 - 0.24582735417374146) / local_time_step;
+        slope = (-0.4852044099496525 - 0.19612556910587753) / local_time_step;
         return intercept + slope * (time - time_step * 127);
     }
     else if(time <= time_step * 129){
-        intercept = 0.014888560407610996;
+        intercept = -0.4852044099496525;
         real local_time_step = time_step * 129 - time_step * 128;
-        slope = (-0.24208275523967837 - 0.014888560407610996) / local_time_step;
+        slope = (-0.21170079001547404 - -0.4852044099496525) / local_time_step;
         return intercept + slope * (time - time_step * 128);
     }
     else if(time <= time_step * 130){
-        intercept = -0.24208275523967837;
+        intercept = -0.21170079001547404;
         real local_time_step = time_step * 130 - time_step * 129;
-        slope = (-0.1582312696810455 - -0.24208275523967837) / local_time_step;
+        slope = (-0.2448213812140928 - -0.21170079001547404) / local_time_step;
         return intercept + slope * (time - time_step * 129);
     }
     else if(time <= time_step * 131){
-        intercept = -0.1582312696810455;
+        intercept = -0.2448213812140928;
         real local_time_step = time_step * 131 - time_step * 130;
-        slope = (0.39995097616233244 - -0.1582312696810455) / local_time_step;
+        slope = (-0.4981776221130789 - -0.2448213812140928) / local_time_step;
         return intercept + slope * (time - time_step * 130);
     }
     else if(time <= time_step * 132){
-        intercept = 0.39995097616233244;
+        intercept = -0.4981776221130789;
         real local_time_step = time_step * 132 - time_step * 131;
-        slope = (0.27323576003915384 - 0.39995097616233244) / local_time_step;
+        slope = (0.28529555626445946 - -0.4981776221130789) / local_time_step;
         return intercept + slope * (time - time_step * 131);
     }
     else if(time <= time_step * 133){
-        intercept = 0.27323576003915384;
+        intercept = 0.28529555626445946;
         real local_time_step = time_step * 133 - time_step * 132;
-        slope = (0.3246532160270815 - 0.27323576003915384) / local_time_step;
+        slope = (-0.11184372208713222 - 0.28529555626445946) / local_time_step;
         return intercept + slope * (time - time_step * 132);
     }
     else if(time <= time_step * 134){
-        intercept = 0.3246532160270815;
+        intercept = -0.11184372208713222;
         real local_time_step = time_step * 134 - time_step * 133;
-        slope = (0.2614944293132998 - 0.3246532160270815) / local_time_step;
+        slope = (0.1691898141370436 - -0.11184372208713222) / local_time_step;
         return intercept + slope * (time - time_step * 133);
     }
     else if(time <= time_step * 135){
-        intercept = 0.2614944293132998;
+        intercept = 0.1691898141370436;
         real local_time_step = time_step * 135 - time_step * 134;
-        slope = (-0.10172630457261378 - 0.2614944293132998) / local_time_step;
+        slope = (0.49367407585730705 - 0.1691898141370436) / local_time_step;
         return intercept + slope * (time - time_step * 134);
     }
     else if(time <= time_step * 136){
-        intercept = -0.10172630457261378;
+        intercept = 0.49367407585730705;
         real local_time_step = time_step * 136 - time_step * 135;
-        slope = (-0.38565655105407515 - -0.10172630457261378) / local_time_step;
+        slope = (0.013154902803341861 - 0.49367407585730705) / local_time_step;
         return intercept + slope * (time - time_step * 135);
     }
     else if(time <= time_step * 137){
-        intercept = -0.38565655105407515;
+        intercept = 0.013154902803341861;
         real local_time_step = time_step * 137 - time_step * 136;
-        slope = (0.31451052651377387 - -0.38565655105407515) / local_time_step;
+        slope = (0.4105743759227444 - 0.013154902803341861) / local_time_step;
         return intercept + slope * (time - time_step * 136);
     }
     else if(time <= time_step * 138){
-        intercept = 0.31451052651377387;
+        intercept = 0.4105743759227444;
         real local_time_step = time_step * 138 - time_step * 137;
-        slope = (-0.05550058968935556 - 0.31451052651377387) / local_time_step;
+        slope = (0.47339073328984915 - 0.4105743759227444) / local_time_step;
         return intercept + slope * (time - time_step * 137);
     }
     else if(time <= time_step * 139){
-        intercept = -0.05550058968935556;
+        intercept = 0.47339073328984915;
         real local_time_step = time_step * 139 - time_step * 138;
-        slope = (0.3147855092374804 - -0.05550058968935556) / local_time_step;
+        slope = (-0.11997122802118332 - 0.47339073328984915) / local_time_step;
         return intercept + slope * (time - time_step * 138);
     }
     else if(time <= time_step * 140){
-        intercept = 0.3147855092374804;
+        intercept = -0.11997122802118332;
         real local_time_step = time_step * 140 - time_step * 139;
-        slope = (-0.19460840735369034 - 0.3147855092374804) / local_time_step;
+        slope = (-0.18838656610085425 - -0.11997122802118332) / local_time_step;
         return intercept + slope * (time - time_step * 139);
     }
     else if(time <= time_step * 141){
-        intercept = -0.19460840735369034;
+        intercept = -0.18838656610085425;
         real local_time_step = time_step * 141 - time_step * 140;
-        slope = (0.011803786598001298 - -0.19460840735369034) / local_time_step;
+        slope = (-0.11048365313797226 - -0.18838656610085425) / local_time_step;
         return intercept + slope * (time - time_step * 140);
     }
     else if(time <= time_step * 142){
-        intercept = 0.011803786598001298;
+        intercept = -0.11048365313797226;
         real local_time_step = time_step * 142 - time_step * 141;
-        slope = (0.2490222927840069 - 0.011803786598001298) / local_time_step;
+        slope = (0.3107729554164589 - -0.11048365313797226) / local_time_step;
         return intercept + slope * (time - time_step * 141);
     }
     else if(time <= time_step * 143){
-        intercept = 0.2490222927840069;
+        intercept = 0.3107729554164589;
         real local_time_step = time_step * 143 - time_step * 142;
-        slope = (-0.03782918285239978 - 0.2490222927840069) / local_time_step;
+        slope = (-0.35717067324593166 - 0.3107729554164589) / local_time_step;
         return intercept + slope * (time - time_step * 142);
     }
     else if(time <= time_step * 144){
-        intercept = -0.03782918285239978;
+        intercept = -0.35717067324593166;
         real local_time_step = time_step * 144 - time_step * 143;
-        slope = (0.2906974502721038 - -0.03782918285239978) / local_time_step;
+        slope = (-0.16257854751009548 - -0.35717067324593166) / local_time_step;
         return intercept + slope * (time - time_step * 143);
     }
     else if(time <= time_step * 145){
-        intercept = 0.2906974502721038;
+        intercept = -0.16257854751009548;
         real local_time_step = time_step * 145 - time_step * 144;
-        slope = (0.293734864690519 - 0.2906974502721038) / local_time_step;
+        slope = (-0.13988896244138338 - -0.16257854751009548) / local_time_step;
         return intercept + slope * (time - time_step * 144);
     }
     else if(time <= time_step * 146){
-        intercept = 0.293734864690519;
+        intercept = -0.13988896244138338;
         real local_time_step = time_step * 146 - time_step * 145;
-        slope = (-0.22141409434176829 - 0.293734864690519) / local_time_step;
+        slope = (0.15744069887634338 - -0.13988896244138338) / local_time_step;
         return intercept + slope * (time - time_step * 145);
     }
     else if(time <= time_step * 147){
-        intercept = -0.22141409434176829;
+        intercept = 0.15744069887634338;
         real local_time_step = time_step * 147 - time_step * 146;
-        slope = (0.36670458553407237 - -0.22141409434176829) / local_time_step;
+        slope = (-0.1056677967099181 - 0.15744069887634338) / local_time_step;
         return intercept + slope * (time - time_step * 146);
     }
     else if(time <= time_step * 148){
-        intercept = 0.36670458553407237;
+        intercept = -0.1056677967099181;
         real local_time_step = time_step * 148 - time_step * 147;
-        slope = (0.04146221343165657 - 0.36670458553407237) / local_time_step;
+        slope = (0.2734360800868275 - -0.1056677967099181) / local_time_step;
         return intercept + slope * (time - time_step * 147);
     }
     else if(time <= time_step * 149){
-        intercept = 0.04146221343165657;
+        intercept = 0.2734360800868275;
         real local_time_step = time_step * 149 - time_step * 148;
-        slope = (-0.3975780949568265 - 0.04146221343165657) / local_time_step;
+        slope = (0.49198550865470925 - 0.2734360800868275) / local_time_step;
         return intercept + slope * (time - time_step * 148);
     }
     else if(time <= time_step * 150){
-        intercept = -0.3975780949568265;
+        intercept = 0.49198550865470925;
         real local_time_step = time_step * 150 - time_step * 149;
-        slope = (-0.09772110307747439 - -0.3975780949568265) / local_time_step;
+        slope = (0.2472183633762659 - 0.49198550865470925) / local_time_step;
         return intercept + slope * (time - time_step * 149);
     }
     else if(time <= time_step * 151){
-        intercept = -0.09772110307747439;
+        intercept = 0.2472183633762659;
         real local_time_step = time_step * 151 - time_step * 150;
-        slope = (0.03511260984177755 - -0.09772110307747439) / local_time_step;
+        slope = (-0.47481260192318975 - 0.2472183633762659) / local_time_step;
         return intercept + slope * (time - time_step * 150);
     }
     else if(time <= time_step * 152){
-        intercept = 0.03511260984177755;
+        intercept = -0.47481260192318975;
         real local_time_step = time_step * 152 - time_step * 151;
-        slope = (-0.18453230368401852 - 0.03511260984177755) / local_time_step;
+        slope = (0.3579590157745357 - -0.47481260192318975) / local_time_step;
         return intercept + slope * (time - time_step * 151);
     }
     else if(time <= time_step * 153){
-        intercept = -0.18453230368401852;
+        intercept = 0.3579590157745357;
         real local_time_step = time_step * 153 - time_step * 152;
-        slope = (0.18975428060065125 - -0.18453230368401852) / local_time_step;
+        slope = (-0.18942894117546882 - 0.3579590157745357) / local_time_step;
         return intercept + slope * (time - time_step * 152);
     }
     else if(time <= time_step * 154){
-        intercept = 0.18975428060065125;
+        intercept = -0.18942894117546882;
         real local_time_step = time_step * 154 - time_step * 153;
-        slope = (0.3586968299667417 - 0.18975428060065125) / local_time_step;
+        slope = (-0.29318375654844986 - -0.18942894117546882) / local_time_step;
         return intercept + slope * (time - time_step * 153);
     }
     else if(time <= time_step * 155){
-        intercept = 0.3586968299667417;
+        intercept = -0.29318375654844986;
         real local_time_step = time_step * 155 - time_step * 154;
-        slope = (-0.18509305128222087 - 0.3586968299667417) / local_time_step;
+        slope = (0.3886871334764367 - -0.29318375654844986) / local_time_step;
         return intercept + slope * (time - time_step * 154);
     }
     else if(time <= time_step * 156){
-        intercept = -0.18509305128222087;
+        intercept = 0.3886871334764367;
         real local_time_step = time_step * 156 - time_step * 155;
-        slope = (0.0316811099586668 - -0.18509305128222087) / local_time_step;
+        slope = (0.28159004631289275 - 0.3886871334764367) / local_time_step;
         return intercept + slope * (time - time_step * 155);
     }
     else if(time <= time_step * 157){
-        intercept = 0.0316811099586668;
+        intercept = 0.28159004631289275;
         real local_time_step = time_step * 157 - time_step * 156;
-        slope = (0.4167266415971509 - 0.0316811099586668) / local_time_step;
+        slope = (0.12061837656052798 - 0.28159004631289275) / local_time_step;
         return intercept + slope * (time - time_step * 156);
     }
     else if(time <= time_step * 158){
-        intercept = 0.4167266415971509;
+        intercept = 0.12061837656052798;
         real local_time_step = time_step * 158 - time_step * 157;
-        slope = (-0.20065863223802827 - 0.4167266415971509) / local_time_step;
+        slope = (-0.10524823830525587 - 0.12061837656052798) / local_time_step;
         return intercept + slope * (time - time_step * 157);
     }
     else if(time <= time_step * 159){
-        intercept = -0.20065863223802827;
+        intercept = -0.10524823830525587;
         real local_time_step = time_step * 159 - time_step * 158;
-        slope = (0.4440923516971802 - -0.20065863223802827) / local_time_step;
+        slope = (0.4112128863926421 - -0.10524823830525587) / local_time_step;
         return intercept + slope * (time - time_step * 158);
     }
     else if(time <= time_step * 160){
-        intercept = 0.4440923516971802;
+        intercept = 0.4112128863926421;
         real local_time_step = time_step * 160 - time_step * 159;
-        slope = (-0.480771544132651 - 0.4440923516971802) / local_time_step;
+        slope = (0.22140217610456514 - 0.4112128863926421) / local_time_step;
         return intercept + slope * (time - time_step * 159);
     }
     else if(time <= time_step * 161){
-        intercept = -0.480771544132651;
+        intercept = 0.22140217610456514;
         real local_time_step = time_step * 161 - time_step * 160;
-        slope = (-0.14461611866343538 - -0.480771544132651) / local_time_step;
+        slope = (-0.047529334496034026 - 0.22140217610456514) / local_time_step;
         return intercept + slope * (time - time_step * 160);
     }
     else if(time <= time_step * 162){
-        intercept = -0.14461611866343538;
+        intercept = -0.047529334496034026;
         real local_time_step = time_step * 162 - time_step * 161;
-        slope = (0.33344513464979797 - -0.14461611866343538) / local_time_step;
+        slope = (-0.278080183962532 - -0.047529334496034026) / local_time_step;
         return intercept + slope * (time - time_step * 161);
     }
     else if(time <= time_step * 163){
-        intercept = 0.33344513464979797;
+        intercept = -0.278080183962532;
         real local_time_step = time_step * 163 - time_step * 162;
-        slope = (0.3750609814892858 - 0.33344513464979797) / local_time_step;
+        slope = (-0.2565028182688931 - -0.278080183962532) / local_time_step;
         return intercept + slope * (time - time_step * 162);
     }
     else if(time <= time_step * 164){
-        intercept = 0.3750609814892858;
+        intercept = -0.2565028182688931;
         real local_time_step = time_step * 164 - time_step * 163;
-        slope = (-0.3903591341341175 - 0.3750609814892858) / local_time_step;
+        slope = (-0.42832993809573505 - -0.2565028182688931) / local_time_step;
         return intercept + slope * (time - time_step * 163);
     }
     else if(time <= time_step * 165){
-        intercept = -0.3903591341341175;
+        intercept = -0.42832993809573505;
         real local_time_step = time_step * 165 - time_step * 164;
-        slope = (0.2867977161170201 - -0.3903591341341175) / local_time_step;
+        slope = (0.07438187479299452 - -0.42832993809573505) / local_time_step;
         return intercept + slope * (time - time_step * 164);
     }
     else if(time <= time_step * 166){
-        intercept = 0.2867977161170201;
+        intercept = 0.07438187479299452;
         real local_time_step = time_step * 166 - time_step * 165;
-        slope = (0.3904860708692186 - 0.2867977161170201) / local_time_step;
+        slope = (-0.10007866814929212 - 0.07438187479299452) / local_time_step;
         return intercept + slope * (time - time_step * 165);
     }
     else if(time <= time_step * 167){
-        intercept = 0.3904860708692186;
+        intercept = -0.10007866814929212;
         real local_time_step = time_step * 167 - time_step * 166;
-        slope = (-0.2390383963808378 - 0.3904860708692186) / local_time_step;
+        slope = (0.24091030193134688 - -0.10007866814929212) / local_time_step;
         return intercept + slope * (time - time_step * 166);
     }
     else if(time <= time_step * 168){
-        intercept = -0.2390383963808378;
+        intercept = 0.24091030193134688;
         real local_time_step = time_step * 168 - time_step * 167;
-        slope = (0.34686771332884325 - -0.2390383963808378) / local_time_step;
+        slope = (-0.15262967953610873 - 0.24091030193134688) / local_time_step;
         return intercept + slope * (time - time_step * 167);
     }
     else if(time <= time_step * 169){
-        intercept = 0.34686771332884325;
+        intercept = -0.15262967953610873;
         real local_time_step = time_step * 169 - time_step * 168;
-        slope = (-0.18770947438052976 - 0.34686771332884325) / local_time_step;
+        slope = (-0.41871749999321495 - -0.15262967953610873) / local_time_step;
         return intercept + slope * (time - time_step * 168);
     }
     else if(time <= time_step * 170){
-        intercept = -0.18770947438052976;
+        intercept = -0.41871749999321495;
         real local_time_step = time_step * 170 - time_step * 169;
-        slope = (-0.21638238061386583 - -0.18770947438052976) / local_time_step;
+        slope = (-0.08198794145907251 - -0.41871749999321495) / local_time_step;
         return intercept + slope * (time - time_step * 169);
     }
     else if(time <= time_step * 171){
-        intercept = -0.21638238061386583;
+        intercept = -0.08198794145907251;
         real local_time_step = time_step * 171 - time_step * 170;
-        slope = (-0.04782356757219397 - -0.21638238061386583) / local_time_step;
+        slope = (-0.41103071447071815 - -0.08198794145907251) / local_time_step;
         return intercept + slope * (time - time_step * 170);
     }
     else if(time <= time_step * 172){
-        intercept = -0.04782356757219397;
+        intercept = -0.41103071447071815;
         real local_time_step = time_step * 172 - time_step * 171;
-        slope = (0.42847071720014795 - -0.04782356757219397) / local_time_step;
+        slope = (-0.22448080874558685 - -0.41103071447071815) / local_time_step;
         return intercept + slope * (time - time_step * 171);
     }
     else if(time <= time_step * 173){
-        intercept = 0.42847071720014795;
+        intercept = -0.22448080874558685;
         real local_time_step = time_step * 173 - time_step * 172;
-        slope = (0.29889007578262683 - 0.42847071720014795) / local_time_step;
+        slope = (-0.08094930876972417 - -0.22448080874558685) / local_time_step;
         return intercept + slope * (time - time_step * 172);
     }
     else if(time <= time_step * 174){
-        intercept = 0.29889007578262683;
+        intercept = -0.08094930876972417;
         real local_time_step = time_step * 174 - time_step * 173;
-        slope = (-0.05529431664555329 - 0.29889007578262683) / local_time_step;
+        slope = (-0.2702832322381731 - -0.08094930876972417) / local_time_step;
         return intercept + slope * (time - time_step * 173);
     }
     else if(time <= time_step * 175){
-        intercept = -0.05529431664555329;
+        intercept = -0.2702832322381731;
         real local_time_step = time_step * 175 - time_step * 174;
-        slope = (-0.09292085315835241 - -0.05529431664555329) / local_time_step;
+        slope = (-0.058761022873332514 - -0.2702832322381731) / local_time_step;
         return intercept + slope * (time - time_step * 174);
     }
     else if(time <= time_step * 176){
-        intercept = -0.09292085315835241;
+        intercept = -0.058761022873332514;
         real local_time_step = time_step * 176 - time_step * 175;
-        slope = (-0.024161592720083336 - -0.09292085315835241) / local_time_step;
+        slope = (0.14453488912507284 - -0.058761022873332514) / local_time_step;
         return intercept + slope * (time - time_step * 175);
     }
     else if(time <= time_step * 177){
-        intercept = -0.024161592720083336;
+        intercept = 0.14453488912507284;
         real local_time_step = time_step * 177 - time_step * 176;
-        slope = (-0.2277224979735033 - -0.024161592720083336) / local_time_step;
+        slope = (0.23998453663833852 - 0.14453488912507284) / local_time_step;
         return intercept + slope * (time - time_step * 176);
     }
     else if(time <= time_step * 178){
-        intercept = -0.2277224979735033;
+        intercept = 0.23998453663833852;
         real local_time_step = time_step * 178 - time_step * 177;
-        slope = (-0.2667508917620388 - -0.2277224979735033) / local_time_step;
+        slope = (-0.4923411396427211 - 0.23998453663833852) / local_time_step;
         return intercept + slope * (time - time_step * 177);
     }
     else if(time <= time_step * 179){
-        intercept = -0.2667508917620388;
+        intercept = -0.4923411396427211;
         real local_time_step = time_step * 179 - time_step * 178;
-        slope = (-0.30837622314784185 - -0.2667508917620388) / local_time_step;
+        slope = (0.3093631995612566 - -0.4923411396427211) / local_time_step;
         return intercept + slope * (time - time_step * 178);
     }
     else if(time <= time_step * 180){
-        intercept = -0.30837622314784185;
+        intercept = 0.3093631995612566;
         real local_time_step = time_step * 180 - time_step * 179;
-        slope = (0.09832297579898575 - -0.30837622314784185) / local_time_step;
+        slope = (0.3313002543857235 - 0.3093631995612566) / local_time_step;
         return intercept + slope * (time - time_step * 179);
     }
     else if(time <= time_step * 181){
-        intercept = 0.09832297579898575;
+        intercept = 0.3313002543857235;
         real local_time_step = time_step * 181 - time_step * 180;
-        slope = (-0.41850195856693695 - 0.09832297579898575) / local_time_step;
+        slope = (0.2767955941498882 - 0.3313002543857235) / local_time_step;
         return intercept + slope * (time - time_step * 180);
     }
     else if(time <= time_step * 182){
-        intercept = -0.41850195856693695;
+        intercept = 0.2767955941498882;
         real local_time_step = time_step * 182 - time_step * 181;
-        slope = (-0.43465483158106677 - -0.41850195856693695) / local_time_step;
+        slope = (0.2989730143957703 - 0.2767955941498882) / local_time_step;
         return intercept + slope * (time - time_step * 181);
     }
     else if(time <= time_step * 183){
-        intercept = -0.43465483158106677;
+        intercept = 0.2989730143957703;
         real local_time_step = time_step * 183 - time_step * 182;
-        slope = (-0.35475105131142814 - -0.43465483158106677) / local_time_step;
+        slope = (-0.3452387405071494 - 0.2989730143957703) / local_time_step;
         return intercept + slope * (time - time_step * 182);
     }
     else if(time <= time_step * 184){
-        intercept = -0.35475105131142814;
+        intercept = -0.3452387405071494;
         real local_time_step = time_step * 184 - time_step * 183;
-        slope = (-0.31875113932005195 - -0.35475105131142814) / local_time_step;
+        slope = (-0.3331637188027404 - -0.3452387405071494) / local_time_step;
         return intercept + slope * (time - time_step * 183);
     }
     else if(time <= time_step * 185){
-        intercept = -0.31875113932005195;
+        intercept = -0.3331637188027404;
         real local_time_step = time_step * 185 - time_step * 184;
-        slope = (0.3080820162163356 - -0.31875113932005195) / local_time_step;
+        slope = (0.072837982154767 - -0.3331637188027404) / local_time_step;
         return intercept + slope * (time - time_step * 184);
     }
     else if(time <= time_step * 186){
-        intercept = 0.3080820162163356;
+        intercept = 0.072837982154767;
         real local_time_step = time_step * 186 - time_step * 185;
-        slope = (-0.3687804258820083 - 0.3080820162163356) / local_time_step;
+        slope = (-0.4596369585396989 - 0.072837982154767) / local_time_step;
         return intercept + slope * (time - time_step * 185);
     }
     else if(time <= time_step * 187){
-        intercept = -0.3687804258820083;
+        intercept = -0.4596369585396989;
         real local_time_step = time_step * 187 - time_step * 186;
-        slope = (-0.18098036984000998 - -0.3687804258820083) / local_time_step;
+        slope = (0.40056257142203555 - -0.4596369585396989) / local_time_step;
         return intercept + slope * (time - time_step * 186);
     }
     else if(time <= time_step * 188){
-        intercept = -0.18098036984000998;
+        intercept = 0.40056257142203555;
         real local_time_step = time_step * 188 - time_step * 187;
-        slope = (0.4580275031195452 - -0.18098036984000998) / local_time_step;
+        slope = (-0.21130340404454873 - 0.40056257142203555) / local_time_step;
         return intercept + slope * (time - time_step * 187);
     }
     else if(time <= time_step * 189){
-        intercept = 0.4580275031195452;
+        intercept = -0.21130340404454873;
         real local_time_step = time_step * 189 - time_step * 188;
-        slope = (-0.23993158709497875 - 0.4580275031195452) / local_time_step;
+        slope = (-0.45352289782871236 - -0.21130340404454873) / local_time_step;
         return intercept + slope * (time - time_step * 188);
     }
     else if(time <= time_step * 190){
-        intercept = -0.23993158709497875;
+        intercept = -0.45352289782871236;
         real local_time_step = time_step * 190 - time_step * 189;
-        slope = (0.13422065754189305 - -0.23993158709497875) / local_time_step;
+        slope = (0.20510986777194706 - -0.45352289782871236) / local_time_step;
         return intercept + slope * (time - time_step * 189);
     }
     else if(time <= time_step * 191){
-        intercept = 0.13422065754189305;
+        intercept = 0.20510986777194706;
         real local_time_step = time_step * 191 - time_step * 190;
-        slope = (-0.31310230949659 - 0.13422065754189305) / local_time_step;
+        slope = (-0.4215283888714162 - 0.20510986777194706) / local_time_step;
         return intercept + slope * (time - time_step * 190);
     }
     else if(time <= time_step * 192){
-        intercept = -0.31310230949659;
+        intercept = -0.4215283888714162;
         real local_time_step = time_step * 192 - time_step * 191;
-        slope = (0.25583242010272844 - -0.31310230949659) / local_time_step;
+        slope = (-0.07266643282915286 - -0.4215283888714162) / local_time_step;
         return intercept + slope * (time - time_step * 191);
     }
     else if(time <= time_step * 193){
-        intercept = 0.25583242010272844;
+        intercept = -0.07266643282915286;
         real local_time_step = time_step * 193 - time_step * 192;
-        slope = (-0.2505905299191785 - 0.25583242010272844) / local_time_step;
+        slope = (0.4947052030240955 - -0.07266643282915286) / local_time_step;
         return intercept + slope * (time - time_step * 192);
     }
     else if(time <= time_step * 194){
-        intercept = -0.2505905299191785;
+        intercept = 0.4947052030240955;
         real local_time_step = time_step * 194 - time_step * 193;
-        slope = (0.45316512203005643 - -0.2505905299191785) / local_time_step;
+        slope = (0.4915040355093281 - 0.4947052030240955) / local_time_step;
         return intercept + slope * (time - time_step * 193);
     }
     else if(time <= time_step * 195){
-        intercept = 0.45316512203005643;
+        intercept = 0.4915040355093281;
         real local_time_step = time_step * 195 - time_step * 194;
-        slope = (0.4359633968665736 - 0.45316512203005643) / local_time_step;
+        slope = (0.4904436172634915 - 0.4915040355093281) / local_time_step;
         return intercept + slope * (time - time_step * 194);
     }
     else if(time <= time_step * 196){
-        intercept = 0.4359633968665736;
+        intercept = 0.4904436172634915;
         real local_time_step = time_step * 196 - time_step * 195;
-        slope = (-0.29498751332567763 - 0.4359633968665736) / local_time_step;
+        slope = (-0.24004427892257685 - 0.4904436172634915) / local_time_step;
         return intercept + slope * (time - time_step * 195);
     }
     else if(time <= time_step * 197){
-        intercept = -0.29498751332567763;
+        intercept = -0.24004427892257685;
         real local_time_step = time_step * 197 - time_step * 196;
-        slope = (0.38311647556153594 - -0.29498751332567763) / local_time_step;
+        slope = (0.42571371620434906 - -0.24004427892257685) / local_time_step;
         return intercept + slope * (time - time_step * 196);
     }
     else if(time <= time_step * 198){
-        intercept = 0.38311647556153594;
+        intercept = 0.42571371620434906;
         real local_time_step = time_step * 198 - time_step * 197;
-        slope = (-0.46003373305174644 - 0.38311647556153594) / local_time_step;
+        slope = (-0.06007915075667081 - 0.42571371620434906) / local_time_step;
         return intercept + slope * (time - time_step * 197);
     }
     else if(time <= time_step * 199){
-        intercept = -0.46003373305174644;
+        intercept = -0.06007915075667081;
         real local_time_step = time_step * 199 - time_step * 198;
-        slope = (-0.09084408370980102 - -0.46003373305174644) / local_time_step;
+        slope = (0.38614017925979005 - -0.06007915075667081) / local_time_step;
         return intercept + slope * (time - time_step * 198);
     }
-    return -0.09084408370980102;
+    return 0.38614017925979005;
 }
 
 real dataFunc__customer_order_rate(real time, real time_step){
@@ -2467,7 +2467,7 @@ real dataFunc__customer_order_rate(real time, real time_step){
     return 56.752543698738336;
 }
 
-vector vensim_ode_func(real time, vector outcome, real time_step, real process_noise_scale){
+vector vensim_ode_func(real time, vector outcome, real process_noise_scale, real time_step){
     vector[7] dydt;  // Return vector of the ODE function
 
     // State variables
@@ -2479,44 +2479,44 @@ vector vensim_ode_func(real time, vector outcome, real time_step, real process_n
     real production_start_rate_stocked = outcome[6];
     real work_in_process_inventory = outcome[7];
 
-    real fractional_wip_adjustment = 1 / 2;
-    real manufacturing_cycle_time = 8;
+    real target_delivery_delay = 2;
+    real fractional_inventory_adjustment = 1 / 8;
     real safety_stock_coverage = 2;
     real minimum_order_processing_time = 2;
     real desired_inventory_coverage = minimum_order_processing_time + safety_stock_coverage;
     real desired_inventory = desired_inventory_coverage * expected_order_rate;
-    real fractional_inventory_adjustment = 1 / 8;
     real adjustment_from_inventory = (desired_inventory - inventory) * fractional_inventory_adjustment;
     real desired_production = fmax(0, expected_order_rate + adjustment_from_inventory);
+    real manufacturing_cycle_time = 8;
     real desired_wip = manufacturing_cycle_time * desired_production;
+    real fractional_wip_adjustment = 1 / 2;
     real adjustment_for_wip = (desired_wip - work_in_process_inventory) * fractional_wip_adjustment;
     real desired_production_start_rate = fmax(0, desired_production + adjustment_for_wip);
     real production_start_rate = fmax(0, desired_production_start_rate);
     real desired_minus_shadow_psr = production_start_rate - production_start_rate_stocked;
     real production_start_rate_stocked_change_rate = desired_minus_shadow_psr / time_step;
-    real production_start_rate_stocked_dydt = production_start_rate + production_start_rate_stocked_change_rate;
-    real production_rate = work_in_process_inventory / manufacturing_cycle_time * fmax(0, 1 + process_noise);
-    real desired_minus_shadow_pr = production_rate - production_rate_stocked;
-    real production_rate_stocked_change_rate = desired_minus_shadow_pr / time_step;
-    real target_delivery_delay = 2;
-    real desired_shipment_rate = backlog / target_delivery_delay;
-    real maximum_shipment_rate = inventory / minimum_order_processing_time;
-    real order_fulfillment_ratio = lookupFunc__table_for_order_fulfillment(maximum_shipment_rate / desired_shipment_rate);
-    real shipment_rate = desired_shipment_rate * order_fulfillment_ratio;
-    real inventory_dydt = production_rate - shipment_rate;
-    real order_fulfillment_rate = shipment_rate;
-    real corr_time_over_time_step = 100;
-    real white_noise = 4.89 * corr_time_over_time_step ^ 0.5 * dataFunc__process_noise_uniform_driving(time, time_step) * process_noise_scale;
-    real corr_time = corr_time_over_time_step * time_step;
-    real process_noise_in = (white_noise - process_noise) / corr_time;
     real time_to_average_order_rate = 8;
     real change_in_exp_orders = (dataFunc__customer_order_rate(time, time_step) - expected_order_rate) / time_to_average_order_rate;
-    real work_in_process_inventory_dydt = production_start_rate - production_rate;
-    real order_rate = dataFunc__customer_order_rate(time, time_step);
-    real backlog_dydt = order_rate - order_fulfillment_rate;
     real expected_order_rate_dydt = change_in_exp_orders;
+    real order_rate = dataFunc__customer_order_rate(time, time_step);
+    real maximum_shipment_rate = inventory / minimum_order_processing_time;
+    real desired_shipment_rate = backlog / target_delivery_delay;
+    real order_fulfillment_ratio = lookupFunc__table_for_order_fulfillment(maximum_shipment_rate / desired_shipment_rate);
+    real shipment_rate = desired_shipment_rate * order_fulfillment_ratio;
+    real order_fulfillment_rate = shipment_rate;
+    real backlog_dydt = order_rate - order_fulfillment_rate;
+    real corr_time_over_time_step = 100;
+    real corr_time = corr_time_over_time_step * time_step;
+    real white_noise = 4.89 * corr_time_over_time_step ^ 0.5 * dataFunc__process_noise_uniform_driving(time, time_step) * process_noise_scale;
+    real process_noise_in = (white_noise - process_noise) / corr_time;
     real process_noise_dydt = process_noise_in;
+    real production_start_rate_stocked_dydt = production_start_rate + production_start_rate_stocked_change_rate;
+    real production_rate = work_in_process_inventory / manufacturing_cycle_time * fmax(0, 1 + process_noise);
+    real inventory_dydt = production_rate - shipment_rate;
+    real desired_minus_shadow_pr = production_rate - production_rate_stocked;
+    real production_rate_stocked_change_rate = desired_minus_shadow_pr / time_step;
     real production_rate_stocked_dydt = production_rate + production_rate_stocked_change_rate;
+    real work_in_process_inventory_dydt = production_start_rate - production_rate;
 
     dydt[1] = backlog_dydt;
     dydt[2] = expected_order_rate_dydt;

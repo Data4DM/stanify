@@ -87,8 +87,8 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
             **numeric, # driving data (don't use model.numeric which is precision + numeric)
             **precision
         }
-        if 'process_noise_scale' in numeric.keys():
-            draws2data_s['process_noise_scale'] = 0.0
+        # if 'process_noise_scale' in numeric.keys():
+        #     draws2data_s['process_noise_scale'] = 0.0
         data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
         sbc_list.append(data2draws_idata_s)
 

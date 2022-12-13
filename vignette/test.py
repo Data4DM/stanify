@@ -21,17 +21,17 @@ precision ={
 
 setting = {
     "est_param_names" : ["fractional_wip_adjustment_time", "fractional_inventory_adjustment_time"],
-    "hier_est_param_names": [ "fractional_wip_adjustment_time", "fractional_inventory_adjustment_time"],
+    "hier_est_param_names": [ "fractional_wip_adjustment_time"],
     "target_simulated_vector_names" : ["production_rate_stocked", "production_start_rate_stocked"],
     "driving_vector_names" : ["customer_order_rate", "process_noise_uniform_driving"],
-    "model_name": "inven"
+    "model_name": "inven_allpn"
 }
 init_order = 100
 # driving data
 numeric = {
         "customer_order_rate": np.sin(np.arange(0, precision['N'])*1000) * init_order * .5 + init_order,
         "process_noise_uniform_driving": np.random.uniform(low=-.5, high=.5, size=precision['N']),
-        'process_noise_scale': 1
+        'process_noise_scale': 10
 }
 
 prior = {
