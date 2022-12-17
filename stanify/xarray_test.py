@@ -102,8 +102,8 @@ precision ={
     "N": 2, # # of observation
     "Q": 3, # # of target_simulated_stock
     "R": 3, # # of subgroups for hierarchical Bayes
-    "time_step": .03,
-    "integration_times": np.arange(0, 200) * .03 + 0.01,  # initial_time < integration_times, .03 need not be time_step, but length should be N
+    "time_saveper": .03,
+    "integration_times": np.arange(0, 200) * .03 + 0.01,  # initial_time < integration_times, .03 need not be time_saveper, but length should be N
 }
 
 idata_kwargs = dict(

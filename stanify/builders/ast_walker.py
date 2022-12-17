@@ -132,7 +132,7 @@ class DataStructureCodegenWalker(BaseNodeWaler):
             except KeyError:
                 raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
 
-            # if node_name == "time_step":
+            # if node_name == "time_saveper":
             #     self.code += f"real cum_time (real time, data vector times){{\n"
             #     self.code.indent_level += 1
             #     # Enter function body
@@ -150,15 +150,15 @@ class DataStructureCodegenWalker(BaseNodeWaler):
             #         self.code.indent_level += 1
             #         # enter conditional body
             #         self.code += f"intercept = {data_vector[time_index - 1]};\n"
-            #         self.code += f"real time_step = times[{time_index}] - times[{time_index-1}];\n"
-            #         self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_step;\n"
+            #         self.code += f"real time_saveper = times[{time_index}] - times[{time_index-1}];\n"
+            #         self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_saveper;\n"
             #         self.code += f"return intercept + slope * (time - times[{time_index-1}]);\n"
             #         self.code.indent_level -= 1
             #         # exit conditional body
             #         self.code += "}\n"
 
             # else:
-            self.code += f"real {function_name}(real time, real time_step){{\n"
+            self.code += f"real {function_name}(real time, real time_saveper){{\n"
             self.code.indent_level += 1
             # Enter function body
             self.code += f"// DataStructure for variable {node_name}\n"
@@ -168,16 +168,16 @@ class DataStructureCodegenWalker(BaseNodeWaler):
                 if time_index == 0:
                     continue
                 if time_index == 1:
-                    self.code += f"if(time <= time_step * {time_index}){{\n"
+                    self.code += f"if(time <= time_saveper * {time_index}){{\n"
                 else:
-                    self.code += f"else if(time <= time_step * {time_index}){{\n"
+                    self.code += f"else if(time <= time_saveper * {time_index}){{\n"
 
                 self.code.indent_level += 1
                 # enter conditional body
                 self.code += f"intercept = {data_vector[time_index - 1]};\n"
-                self.code += f"real local_time_step = time_step * {time_index} - time_step * {time_index-1};\n"
-                self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / local_time_step;\n"
-                self.code += f"return intercept + slope * (time - time_step * {time_index-1});\n"
+                self.code += f"real local_time_saveper = time_saveper * {time_index} - time_saveper * {time_index-1};\n"
+                self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / local_time_saveper;\n"
+                self.code += f"return intercept + slope * (time - time_saveper * {time_index-1});\n"
                 self.code.indent_level -= 1
                 # exit conditional body
                 self.code += "}\n"
@@ -280,7 +280,7 @@ class BlockCodegenWalker(BaseNodeWaler):
             # Subscripts are ignored for now
             if vensim_name_to_identifier(ast_node.reference) in self.datastructure_function_names:
                 # Reference to input data needs to be mapped back into data functions
-                return f"{DataStructureCodegenWalker.get_function_name(ast_node.reference)}(time, time_step)"
+                return f"{DataStructureCodegenWalker.get_function_name(ast_node.reference)}(time, time_saveper)"
             elif ast_node.reference in self.lookup_function_names:
                 return self.lookup_function_names[ast_node.reference]
 
@@ -361,7 +361,7 @@ class InitialValueCodegenWalker(BlockCodegenWalker):
 
         elif isinstance(ast_node, ReferenceStructure):
             if ast_node.reference in self.datastructure_function_names:
-                return f'{DataStructureCodegenWalker.get_function_name(ast_node.reference)}(0, time_step)'
+                return f'{DataStructureCodegenWalker.get_function_name(ast_node.reference)}(0, time_saveper)'
             elif ast_node.reference in self.variable_ast_dict:
                 return self.walk(self.variable_ast_dict[ast_node.reference])
                 #f'{self.walk(self.variable_ast_dict[ast_node.reference])}'

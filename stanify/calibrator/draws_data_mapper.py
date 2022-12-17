@@ -60,7 +60,7 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
         higher the number, the more precise approximation the model is to continuous model
         S: number of draws from prior; prior samples are dim: stored in sbc_xr as [S * M] n_prior_draws
         M: number of draws from posterior; posterior samples are stored in sbc_xr as [S * M]
-        N: length of matching timeseries vectors (final time - initial time (0)) / time_step
+        N: length of matching timeseries vectors (final time - initial time (0)) / time_saveper
     numeric: driving data
     prior: dictionary-like container for estimated parameters (default point mass for assumed parameters)
     """
@@ -87,20 +87,20 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
             **numeric, # driving data (don't use model.numeric which is precision + numeric)
             **precision
         }
-        # if 'process_noise_scale' in numeric.keys():
-        #     draws2data_s['process_noise_scale'] = 0.0
+        if 'process_noise_scale' in numeric.keys():
+            draws2data_s['process_noise_scale'] = 0.0
         data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
         sbc_list.append(data2draws_idata_s)
 
-    post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draws")
-    post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draws")
-    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset)
+    post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draw")
+    post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draw")
+    loglik = xr.concat((data2draws_idata_s.log_likelihood for data2draws_idata_s in sbc_list), dim="prior_draw")
+    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik)
 
-    # idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_{prior['m_noise_scale']}_{numeric['process_noise_scale']}.nc", idata_orig)
     if 'process_noise_scale' in numeric.keys():
-        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise{numeric['process_noise_scale']}.nc", idata_orig)
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata_orig)
     else:
-        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_mnoise0.nc", idata_orig)
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise0.nc", idata_orig)
     plot_qoi(idata_orig, setting, precision, idata_kwargs, model.model_name)
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
@@ -133,22 +133,22 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
         higher the number, the more precise approximation the model is to continuous model
         S: number of draws from prior; prior samples are dim: stored in sbc_xr as [S * M] n_prior_draws
         M: number of draws from posterior; posterior samples are stored in sbc_xr as [S * M]
-        N: length of matching timeseries vectors (final time - initial time (0)) / time_step
+        N: length of matching timeseries vectors (final time - initial time (0)) / time_saveper
     numeric: driving data
     prior: dictionary-like container for estimated parameters (default point mass for assumed parameters)
     """
     ## draws2data-specific precision
-    precision['time_step'] = .125
+    precision['time_saveper'] = .125
 
     #@TODO integration time as coordinate
     ## data2draws-specific precision
-    precision['integration_times'] = np.arange(0, precision['N']) * precision['time_step'] + 0.01 #np.arange(0, precision['N']) * precision['time_step'] + 0.01  # length N is the only constraint
+    precision['integration_times'] = np.arange(0, precision['N']) * precision['time_saveper'] + 0.01 #np.arange(0, precision['N']) * precision['time_saveper'] + 0.01  # length N is the only constraint
 
     # @TODO change to number of stocks and reflect in sbc filename
     ## precision for both draws2data and data2draws
     precision['Q'] = len(setting['target_simulated_vector_names'])
 
-    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}R{precision["R"]}_M{precision["M"]}_ps{numeric["process_noise_scale"]}'
+    setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}P{len(setting["est_param_names"])}H{len(setting["hier_est_param_names"])}R{precision["R"]}_M{precision["M"]}_ps{numeric["process_noise_scale"]}'
 
     # obs vectors match draws2data and data2draws
     numeric_setting = dict(**numeric)
@@ -170,7 +170,7 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
         model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
 
     idata_kwargs = hier(precision, setting, output_format)
-    idata_kwargs['coords']['time'] =  np.arange(0, precision['N']) * precision['time_step'] + 0.01 #precision['integration_times']
+    idata_kwargs['coords']['time'] =  np.arange(0, precision['N']) * precision['time_saveper'] + 0.01 #precision['integration_times']
     idata_kwargs["coords"]["stock"] =  model.vensim_model_context.integ_outcome_vector_names
     #idata_kwargs["coords"]["obsereved_data"] = model.get_obs_vector_names()
     return model

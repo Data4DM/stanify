@@ -227,7 +227,7 @@ class Draws2DataStanDataBuilder(StanDataBuilder):
         code += "int <lower=0> N;  // # of observation\n"
         code += "int <lower=0> Q;  // # of target_simulated_stock and obs_vectors \n"
         code += "int <lower=0> R;  // # of subgroups for hierarchical Bayes \n"
-        code += "real <lower=0> time_step;\n"
+        code += "real <lower=0> time_saveper;\n"
         code += "array[N] real integration_times;\n"
         for _, entry in self.stan_model_context.stan_data.items():
             if entry.data_name in stan_params:
@@ -252,7 +252,7 @@ class Data2DrawsStanDataBuilder(StanDataBuilder): #TODO @Dashadower I copied sup
         code += "int <lower=0> N;  // # of observation\n"
         code += "int <lower=0> Q;  // # of target_simulated_stock and obs_vectors \n"
         code += "int <lower=0> R;  // # of subgroups for hierarchical Bayes \n"
-        code += "real <lower=0> time_step;\n"
+        code += "real <lower=0> time_saveper;\n"
         code += "array[N] real integration_times;\n"
         # TODO @Dashadower
         #  Q1. where code intentions could be logged (answer to theses qs) e.g. reason for filtering out stan_param is to leave _obs

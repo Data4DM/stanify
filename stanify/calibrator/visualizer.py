@@ -32,15 +32,6 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     #sbc = xr.open_dataset(f"{data_path}/sbc.nc")
     sbc = sbc_precision
     figsize = (30, 15)
-    # TODO @Oriol how to replace to_dataframe?  values?
-    if precision['R'] > 1:
-        sbc.observed_data.to_dataframe()[idata_kwargs['prior_predictive']].plot(by='region', figsize = figsize)
-    else:
-        sbc.observed_data.to_dataframe()[idata_kwargs['prior_predictive']].plot(figsize = figsize)
-
-    save_fig(model_name, True, "data_obs")
-    plt.clf()
-
     est_param_names = setting['est_param_names']
 
     az.plot_posterior(sbc, var_names=est_param_names, figsize = figsize)
@@ -50,11 +41,25 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     az.plot_trace(sbc, var_names=est_param_names, divergences=True, compact=True, figsize = figsize)
     save_fig(model_name, False, "trace")
     plt.clf()
+    if precision['R'] > 1:
+        for obs_name in idata_kwargs['prior_predictive']:
+            fig, axes = plt.subplots(precision['R'], 1, figsize=(30, 20))
+            for r, ax in zip(range(precision['R']), axes):
+                sbc_aux = sbc.sel(region=r)
+                sbc_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=.3)
+                sbc_aux.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time', ax=ax,
+                                                                                       alpha=.6, linestyle='dotted')
+            save_fig(model_name, False, f"{obs_name}_ppc")
+            plt.clf()
+    else:
+        for obs_name in idata_kwargs['prior_predictive']:
+            sbc.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=.3, figsize = figsize)
+            sbc.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time',
+                                                                                       alpha=.6, linestyle='dotted', figsize = figsize)
+            save_fig(model_name, False, f"{obs_name}_ppc")
+            plt.clf()
 
-    data_pairs = dict()
-    for obs_name in idata_kwargs['prior_predictive']:
-        data_pairs[obs_name] = f'{obs_name}_post'
-    az.plot_ppc(sbc, data_pairs=data_pairs, figsize = figsize)
+    # sbc plot loglik
 
     # joint: pair plot
     az.plot_pair(sbc, var_names=est_param_names, divergences=True, figsize = figsize)
@@ -67,34 +72,6 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     save_fig(model_name, False, "rank")
     plt.clf()
     return
-
-
-def loglik_diagnostic(posterior, data_df, hierarchy):
-    if hierarchy:
-        cmdstanpy_data = az.from_cmdstanpy(
-            posterior=posterior,
-            posterior_predictive= ["prey_obs_new", "predator_obs_new"],
-            observed_data={"prey_obs": data_df["prey"], "predator_obs": data_df["predator"] },
-            log_likelihood="log_lik",
-        )
-    else:
-        cmdstanpy_data = az.from_cmdstanpy(
-            posterior=posterior,
-            posterior_predictive= ["prey_obs_new", "predator_obs_new"],
-            observed_data={"prey_obs": data_df["prey"], "predator_obs": data_df["predator"] },
-            log_likelihood="log_lik",
-            coords={"group": np.arange(n_g)},
-            dims={
-                "alpha": ["group"],
-                "y": ["group"],
-                "log_lik": ["group"],
-                "y_new": ["group"],
-                "alpha_tilde": ["group"],
-            },
-        )
-
-    return
-
 
 
 def plot_recovery(post_samples, prior_samples, point_agg=np.median, uncertainty_agg=median_abs_deviation,
@@ -407,12 +384,13 @@ def plot_sbc_histograms(post_samples, prior_samples, param_names=None, fig_size=
     ShapeError
         If there is a deviation form the expected shapes of `post_samples` and `prior_samples`.
     """
-
+    #################################
     # Sanity check
     check_posterior_prior_shapes(post_samples, prior_samples)
 
     # Determine the ratio of simulations to prior draws
     n_sim, n_draws, n_params = post_samples.shape
+
     ratio = int(n_sim / n_draws)
 
     # Log a warning if N/B ratio recommended by Talts et al. (2018) < 20
@@ -452,7 +430,7 @@ def plot_sbc_histograms(post_samples, prior_samples, param_names=None, fig_size=
     # p = 1 / num_bins that a rank lands in that bin
     endpoints = binom.interval(binomial_interval, N, 1 / num_bins)
     mean = N / num_bins  # corresponds to binom.mean(N, 1 / num_bins)
-
+#################################
     # Plot marginal histograms in a loop
     if n_row > 1:
         ax = axarr.flat

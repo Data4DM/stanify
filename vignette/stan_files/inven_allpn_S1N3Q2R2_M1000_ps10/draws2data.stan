@@ -39,9 +39,9 @@ transformed data {
 }
 
 generated quantities{
-    real fractional_wip_adjustment_time[R] =  normal_rng(rep_vector(0.5, R), 0.05);
-    real m_noise_scale = normal_rng(10.0, 1.0);
     real fractional_inventory_adjustment_time = normal_rng(0.125, 0.0125);
+    real m_noise_scale = normal_rng(10.0, 1.0);
+    real fractional_wip_adjustment_time[R] =  normal_rng(rep_vector(0.5, R), 0.05);
 
     // Define integ_outcome (sytax), target simulated (semantic) vector
     array[N] vector[R] backlog; 
@@ -54,7 +54,7 @@ generated quantities{
 
     // Generate integration approximation 
     for (r in 1:R){
-        array[N] vector[7] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, time_step, process_noise_scale);
+        array[N] vector[7] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, time_step);
 
         // Assign target simulated to latent stock vectors
         backlog[:, r] = integrated_result[:, 1];

@@ -41,9 +41,9 @@ transformed data {
 }
 
 parameters{
-    array[R] real<lower=0> fractional_wip_adjustment_time;
-    real<lower=0> m_noise_scale;
     real<lower=0> fractional_inventory_adjustment_time;
+    real<lower=0> m_noise_scale;
+    array[R] real<lower=0> fractional_wip_adjustment_time;
 }
 
 transformed parameters {
@@ -58,7 +58,7 @@ transformed parameters {
 
     // Generate integration approximation 
     for (r in 1:R){
-        array[N] vector[7] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, time_step, process_noise_scale);
+        array[N] vector[7] integrated_result = ode_rk45(vensim_ode_func, initial_outcome, initial_time, integration_times, process_noise_scale, time_step);
 
         // Assign target simulated to latent stock vectors
         backlog[:, r] = integrated_result[:, 1];
@@ -72,9 +72,9 @@ transformed parameters {
 }
 
 model{
-    fractional_wip_adjustment_time ~ normal(rep_vector(0.5, R), 0.05);
-    m_noise_scale ~ normal(10.0, 1.0);
     fractional_inventory_adjustment_time ~ normal(0.125, 0.0125);
+    m_noise_scale ~ normal(10.0, 1.0);
+    fractional_wip_adjustment_time ~ normal(rep_vector(0.5, R), 0.05);
     for (r in 1:R)
         production_rate_stocked_obs[:, r] ~ normal(production_rate_stocked[:, r], m_noise_scale);
     for (r in 1:R)
