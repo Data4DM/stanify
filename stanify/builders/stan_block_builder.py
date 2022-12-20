@@ -255,7 +255,6 @@ class Data2DrawsStanDataBuilder(StanDataBuilder): #TODO @Dashadower I copied sup
         code += "real <lower=0> time_saveper;\n"
         code += "array[N] real integration_times;\n"
         # TODO @Dashadower
-        #  Q1. where code intentions could be logged (answer to theses qs) e.g. reason for filtering out stan_param is to leave _obs
         #  Q2. using `stan_type`, could hierarchy arrays of vector coding be improved?
         #  Q3. which code is better btw R ==1 (excluding to leave _obs) vs else part (including _obs)?
 

@@ -46,16 +46,16 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
             fig, axes = plt.subplots(precision['R'], 1, figsize=(30, 20))
             for r, ax in zip(range(precision['R']), axes):
                 sbc_aux = sbc.sel(region=r)
-                sbc_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=.3)
+                sbc_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=.6, figsize = figsize)
                 sbc_aux.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time', ax=ax,
-                                                                                       alpha=.6, linestyle='dotted')
+                                                                                       alpha=.8, linestyle='dotted', figsize = figsize)
             save_fig(model_name, False, f"{obs_name}_ppc")
             plt.clf()
     else:
         for obs_name in idata_kwargs['prior_predictive']:
-            sbc.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=.3, figsize = figsize)
+            sbc.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=.6, figsize = figsize)
             sbc.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time',
-                                                                                       alpha=.6, linestyle='dotted', figsize = figsize)
+                                                                                       alpha=1, linestyle='dotted', figsize = figsize)
             save_fig(model_name, False, f"{obs_name}_ppc")
             plt.clf()
 

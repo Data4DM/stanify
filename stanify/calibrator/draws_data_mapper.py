@@ -7,7 +7,9 @@ import numpy as np
 import xarray as xr
 xr.set_options(display_expand_attrs = False)
 import arviz as az
-
+import typing
+if typing.TYPE_CHECKING:
+    import stanify.stan_model
 def trunc4StanNegBinom(real_series):
     """
     DataArray type real series
@@ -16,7 +18,7 @@ def trunc4StanNegBinom(real_series):
     return int_series
 
 
-def draws2data(model, idata_kwargs, data_dict):
+def draws2data(model, idata_kwargs, data_dict) -> az.InferenceData:
     """
     Parameters
     ----------
@@ -34,7 +36,7 @@ def draws2data(model, idata_kwargs, data_dict):
 
     return draws2data_idata
 
-def data2draws(model, idata_kwargs, data_dict):
+def data2draws(model, idata_kwargs, data_dict) -> az.InferenceData:
     """
     Parameters
     ----------
@@ -49,10 +51,9 @@ def data2draws(model, idata_kwargs, data_dict):
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
     data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = observed_data, **idata_kwargs)
-
     return data2draws_idata
 
-def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs):
+def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -> typing.Tuple[az.InferenceData, "stanify.stan_model.vensim2stan"]:
     """
     vensim: vensim filepath which provides structral assumption
     setting: modeler's selection of which parameter to estimate

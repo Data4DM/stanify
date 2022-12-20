@@ -15,13 +15,13 @@ warnings.filterwarnings('ignore')
 precision ={
     "S": 1, # # of draws from prior
     "M": 1000, # # of draws from posterior (# of chains * # of draws from each chain)
-    "N": 100, # # of observation
+    "N": 40, # # of observation
     "R": 1 # # of subgroups for hierarchical Bayes
 }
 
 setting = {
-    "est_param_names" : ["adj_mat_push_frac1", "adj_mat_push_frac2", "adj_mat_pull_frac3", "ss2p_frac4"],
-    "hier_est_param_names": [],
+    "est_param_names" : ["adj_mat_push_frac1", "adj_mat_push_frac2","adj_mat_pull_frac3"],# "ss2p_frac4"
+    "hier_est_param_names": [], #["adj_mat_push_frac1", "adj_mat_push_frac2"],
     "target_simulated_vector_names" : ["ss", "s"],
     "driving_vector_names" : ["exog_demand", "process_noise_uniform_driving"],
     "model_name": "2hier_s_asy_osc"
@@ -36,10 +36,10 @@ numeric = {
 # TODO auto real dataFunc__exog_demand(0, time_saveper) * (1 / 1 / 3 + 1 / 1 / 2)
 # TODO design checks or automatically turning on prior only included in the setting (compare on server, makefile?)
 prior = {
-    ("adj_mat_pull_frac3", "normal", .5 , .5 *.1, 0),
     ("adj_mat_push_frac1", "normal", .25, .25 *.1, 0),
     ("adj_mat_push_frac2", "normal", .125,.125 *.1, 0),
-    ("ss2p_frac4", "normal", .2, .2 *.1, 0),
+    ("adj_mat_pull_frac3", "normal", .5 , .5 *.1, 0),
+    #("ss2p_frac4", "normal", .2, .2 *.1, 0),
     ("m_noise_scale", "normal", init_order * .1, init_order * .01, 0)
 }
 
