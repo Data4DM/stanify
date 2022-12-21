@@ -64,16 +64,19 @@ class LookupCodegenWalker(BaseNodeWaler):
         )
 
     def walk(self, ast_node, node_name: str) -> None:
+        """
+        Only a single lookup function will be created for a given node name
+        """
         if isinstance(ast_node, InlineLookupsStructure):
             self.walk(ast_node.lookups, node_name)
         elif isinstance(ast_node, LookupsStructure):
             assert (
                 ast_node.type == "interpolate"
             ), "Type of Lookup must be 'interpolate'"
+            if node_name in self.generated_lookup_function_names:
+                raise Exception(f"Lookup funciton with node name {node_name} already has been created")
             function_name = f"lookupFunc__{node_name}"
-            self.generated_lookup_function_names[
-                node_name
-            ] = function_name
+            self.generated_lookup_function_names[node_name] = function_name
             self.n_lookups += 1
             self.code += f"real {function_name}(real x){{\n"
             self.code.indent_level += 1
