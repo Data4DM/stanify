@@ -96,7 +96,10 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
     post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draw")
     post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draw")
     loglik = xr.concat((data2draws_idata_s.log_likelihood for data2draws_idata_s in sbc_list), dim="prior_draw")
-    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik)
+    sample_stats = xr.concat((data2draws_idata_s.sample_stats for data2draws_idata_s in sbc_list), dim="prior_draw")
+    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik, sample_stats=sample_stats)
+
+    compute_loglik_sbc(idata_orig, setting, precision)
 
     if 'process_noise_scale' in numeric.keys():
         idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata_orig)
@@ -106,6 +109,37 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
     return idata_orig, model
+
+
+def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_index=0):
+    from scipy.stats import norm
+    import matplotlib.pyplot as plt
+    sbc_results = {}
+    for data_var_name in setting["target_simulated_vector_names"]:
+        sbc_results[data_var_name] = []
+        for s in range(precision["S"]):
+            theta_tilde_mean = inference_data.prior[data_var_name].sel(prior_draw=s).values
+            theta_tilde_sd = inference_data.prior["m_noise_scale"].sel(prior_draw=s).values
+            data_tilde_vector = inference_data.prior_predictive[f"{data_var_name}_obs"].sel(prior_draw=s).values
+            tilde_loglik = norm.logpdf(data_tilde_vector, theta_tilde_mean, theta_tilde_sd)[data_index]
+
+            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s, chain=chain_index).values[:, data_index]
+            theta_tilde_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s, chain=chain_index).values[data_index]
+            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s, chain=chain_index).values[:, data_index]
+            post_loglik = norm.logpdf(data, theta_mean, theta_tilde_sd)
+
+            sbc_results[data_var_name].append(sum(post_loglik < tilde_loglik))
+
+        x = list(range(precision["S"]))
+        plt.bar(x, sbc_results[data_var_name], width=1.0)
+        plt.title(f"SBC - {data_var_name}")
+        plt.show()
+
+    return sbc_results
+
+
+
+
 def update_numeric_obs(model, draws2data_s):
     """
     Parameters
@@ -165,7 +199,8 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
 
     # perception (brain, flow)
     for est_param in prior:
-        model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
+        #model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
+        model.set_prior(est_param[0], est_param[1], *est_param[2:-1], lower=est_param[-1])
 
     for latent in model.get_latent_vector_names():
         model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
