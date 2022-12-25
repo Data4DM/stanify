@@ -175,14 +175,16 @@ class vensim2stan:
                     # We're using the python parser here, which might be problematic
                     used_variable_names = [vensim_name_to_identifier(node.id.strip()) for node in ast.walk(ast.parse(arg)) if isinstance(node, ast.Name)]
                     for name in used_variable_names:
-                        if vensim_name_to_identifier(name) not in set(self.vensim_model_context.variable_names).union(set(self.stan_model_context.all_stan_variables)):
-                            sample_string = f"{variable_name} ~ {distribution_type}({', '.join(args)})"
+                        if vensim_name_to_identifier(name) not in set(self.vensim_model_context.variable_names).union(self.stan_model_context.all_stan_variables):
+                            sample_string = f"{variable_name} ~ {distribution_type}({', '.join([str(arg) for arg in args])})"
                             raise Exception(f"{sample_string} : '{name}' doesn't exist in the Vensim model or the Stan model!")
                         if name in self.vensim_model_context.variable_names and name not in self.vensim_model_context.integ_outcome_vector_names:
                             self.stan_model_context.exposed_parameters.update(used_variable_names)
 
             if variable_name in self.vensim_model_context.variable_names and variable_name not in self.vensim_model_context.integ_outcome_vector_names:
                 self.stan_model_context.exposed_parameters.add(variable_name)
+
+
             self.stan_model_context.sample_statements.append(SamplingStatement(variable_name, distribution_type, *args, lower=lower, upper=upper, init_state=init_state))
 
 
