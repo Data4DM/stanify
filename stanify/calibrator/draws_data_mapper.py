@@ -130,8 +130,9 @@ def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_i
 
             sbc_results[data_var_name].append(sum(post_loglik < tilde_loglik))
 
-        x = list(range(precision["S"]))
-        plt.bar(x, sbc_results[data_var_name], width=1.0)
+        #x = list(range(precision["S"]))
+        #plt.bar(x, sbc_results[data_var_name], width=1.0)
+        plt.hist(sbc_results[data_var_name])
         plt.title(f"SBC - {data_var_name}")
         plt.show()
 
