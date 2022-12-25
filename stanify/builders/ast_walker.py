@@ -64,16 +64,19 @@ class LookupCodegenWalker(BaseNodeWaler):
         )
 
     def walk(self, ast_node, node_name: str) -> None:
+        """
+        Only a single lookup function will be created for a given node name
+        """
         if isinstance(ast_node, InlineLookupsStructure):
             self.walk(ast_node.lookups, node_name)
         elif isinstance(ast_node, LookupsStructure):
             assert (
                 ast_node.type == "interpolate"
             ), "Type of Lookup must be 'interpolate'"
+            if node_name in self.generated_lookup_function_names:
+                raise Exception(f"Lookup funciton with node name {node_name} already has been created")
             function_name = f"lookupFunc__{node_name}"
-            self.generated_lookup_function_names[
-                node_name
-            ] = function_name
+            self.generated_lookup_function_names[node_name] = function_name
             self.n_lookups += 1
             self.code += f"real {function_name}(real x){{\n"
             self.code.indent_level += 1
@@ -251,7 +254,7 @@ class BlockCodegenWalker(BaseNodeWaler):
             # Find the maximum precedence value of the operators
             max_precedence = max([self.operator_precedence[op] for op in ast_node.operators])
 
-            if max_precedence > current_precedence:
+            if max_precedence >= current_precedence:
                 output_string += "("
 
             for index, argument in enumerate(ast_node.arguments):
@@ -264,14 +267,21 @@ class BlockCodegenWalker(BaseNodeWaler):
                     operators_to_check = [ast_node.operators[index - 1], ast_node.operators[index]]
 
                 # Pass the minimum precedence level
-                output_string += self.walk(argument, min([self.operator_precedence[op] for op in operators_to_check]))
+                operand_text = self.walk(argument, min([self.operator_precedence[op] for op in operators_to_check]))
+
+                # If one of the operators is division, and the operand is an integer, convert the integer to a float string representation
+                if operand_text.isdigit():
+                    if '/' in operators_to_check:
+                        operand_text = str(float(operand_text))
+
+                output_string += operand_text
 
                 if index < last_argument_index:
                     output_string += " "
                     output_string += ast_node.operators[index]
                     output_string += " "
 
-            if max_precedence > current_precedence:
+            if max_precedence >= current_precedence:
                 output_string += ")"
             return output_string
 

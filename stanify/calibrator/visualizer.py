@@ -11,7 +11,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import logging
-
+from typing import Callable, Tuple
 from ..builders.utilities import get_data_path, get_plot_path
 from ..calibrator.identify_gap import ShapeError
 
@@ -59,7 +59,6 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
             save_fig(model_name, False, f"{obs_name}_ppc")
             plt.clf()
 
-    # sbc plot loglik
 
     # joint: pair plot
     az.plot_pair(sbc, var_names=est_param_names, divergences=True, figsize = figsize)
@@ -73,6 +72,8 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
     plt.clf()
     return
 
+def plot_loglik_sbc(sbc_precision, data_variable_name: str, logpdf_func: Callable, model_name: str):
+    ranks = []
 
 def plot_recovery(post_samples, prior_samples, point_agg=np.median, uncertainty_agg=median_abs_deviation,
                   param_names=None, fig_size=None, label_fontsize=14, title_fontsize=16,
