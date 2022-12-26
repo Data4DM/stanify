@@ -10,9 +10,12 @@ import arviz as az
 import typing
 if typing.TYPE_CHECKING:
     import stanify.stan_model
-def trunc4StanNegBinom(real_series):
+
+def trunc4StanNegBinom(real_series) -> list:
     """
     DataArray type real series
+        truncate outcomes to use as parameter for negative binomial likelihood
+
     """
     int_series = [math.trunc(i) for i in real_series]
     return int_series
@@ -23,12 +26,12 @@ def draws2data(model, idata_kwargs, data_dict) -> az.InferenceData:
     Parameters
     ----------
     model: model with constructed function and draws2data stanfile
-    idata_kwargs: dims, coord or new sbc inferencedata
-        chains: number of different explorations in posterior space
-        iter_sampling: number of sample after HMC warmup (= effective MCMC sample)
+    idata_kwargs: output format supplied from users, containing group, group's dims, coord, data var
+    data_dict: data to be used for generator stan data block
+
     Returns
     -------
-    matching_data: InferenceData type with shape (chain: 1, (prior_)draw: S, (regional_)group: R)
+    draws2data_idata: InferenceData type which acts as backbone for concating data2draws idatas (along dim = prior_group)
     """
     draws2data_fit = model.stanify_draws2data().sample(data=data_dict, fixed_param=True, chains = 1, iter_sampling=model.precision_context.S)
     draws2data_idata_bf = az.from_cmdstanpy(prior=draws2data_fit, **idata_kwargs)
@@ -40,7 +43,7 @@ def data2draws(model, idata_kwargs, data_dict) -> az.InferenceData:
     """
     Parameters
     ----------
-    model: configuration combination of structural, setting, numeric
+    model: configuration combination of structural, setting, numeric; model with constructed function and draws2data stanfile
     Returns
     -------
     InferenceData type
@@ -174,11 +177,11 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
     prior: dictionary-like container for estimated parameters (default point mass for assumed parameters)
     """
     ## draws2data-specific precision
-    precision['time_saveper'] = .125
+    precision['time_saveper'] = .5
 
     #@TODO integration time as coordinate
     ## data2draws-specific precision
-    precision['integration_times'] = np.arange(0, precision['N']) * precision['time_saveper'] + 0.01 #np.arange(0, precision['N']) * precision['time_saveper'] + 0.01  # length N is the only constraint
+    precision['integration_times'] = np.arange(0, precision['N']) * precision['time_saveper'] + 0.1 #np.arange(0, precision['N']) * precision['time_saveper'] + 0.01  # length N is the only constraint
 
     # @TODO change to number of stocks and reflect in sbc filename
     ## precision for both draws2data and data2draws

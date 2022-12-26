@@ -48,14 +48,14 @@ def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
                 sbc_aux = sbc.sel(region=r)
                 sbc_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=.6, figsize = figsize)
                 sbc_aux.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time', ax=ax,
-                                                                                       alpha=.8, linestyle='dotted', figsize = figsize)
+                                                                                       alpha=.8, linestyle='dotted')
             save_fig(model_name, False, f"{obs_name}_ppc")
             plt.clf()
     else:
         for obs_name in idata_kwargs['prior_predictive']:
             sbc.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=.6, figsize = figsize)
             sbc.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time',
-                                                                                       alpha=1, linestyle='dotted', figsize = figsize)
+                                                                                       alpha=1, linestyle='dotted')
             save_fig(model_name, False, f"{obs_name}_ppc")
             plt.clf()
 
