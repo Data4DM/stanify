@@ -14,11 +14,11 @@ precision ={
 }
 
 setting = {
-    "est_param_names" : ["adj_frac1_loc","adj_frac2_loc", "adj_frac3_loc","ss2p_frac4_loc", "adj_frac1", "adj_frac2","adj_frac3", "ss2p_frac4"],# "ss2p_frac4"
-    "hier_est_param_names": ["adj_frac1", "adj_frac2", "adj_frac3", "ss2p_frac4"],
+    "est_param_names" : ["adj_frac1_loc","adj_frac2_loc", "adj_frac3_loc", "adj_frac1", "adj_frac2","adj_frac3"],# "ss2p_frac4"],# "ss2p_frac4"
+    "hier_est_param_names": ["adj_frac1", "adj_frac2", "adj_frac3"],# "ss2p_frac4"],
     "target_simulated_vector_names" : ["ss", "s"],
     "driving_vector_names" : ["exog_demand", "process_noise_normal_driving"],
-    "model_name": "2hier_s_lgnorm_1"
+    "model_name": "2hier_s_lgnorm_100"
 }
 init_order = 100
 # driving data
@@ -28,17 +28,17 @@ numeric = {
         'process_noise_scale': .1 #.1
 }
 # TODO auto real dataFunc__exog_demand(0, time_saveper) * (1 / 1 / 3 + 1 / 1 / 2)
-# TODO design checks or automatically turning on prior only included in the setting (compare on server, makefile?)
+
 prior = {
     ("adj_frac1_loc", "normal", .25, .25* .1, 0), # order
     ("adj_frac2_loc", "normal", .125, .125* .1, 0),
     ("adj_frac3_loc", "normal", .5, .5* .1, 0),
-    ("ss2p_frac4_loc", "normal", .2, .2* .1, 0),
+    #("ss2p_frac4_loc", "normal", .2, .2* .1, 0),
     ("adj_frac1", "normal", "adj_frac1_loc", .25 *.1, 0),
     ("adj_frac2", "normal", "adj_frac2_loc",.125 *.1, 0),
     ("adj_frac3", "normal", "adj_frac3_loc", .5 *.1, 0),
-    ("ss2p_frac4", "normal", "ss2p_frac4_loc", .2 *.1, 0),
-    ("m_noise_scale", "lognormal", np.log(1), 1, 0) # "normal", init_order * .1, init_order * .01, 0) #
+    #("ss2p_frac4", "normal", "ss2p_frac4_loc", .2 *.1, 0),
+    ("m_noise_scale", "lognormal", np.log(1), 100, 0) # "normal", init_order * .1, init_order * .01, 0) #
 }
 # setting = {
 #     "est_param_names" : [ "adj_frac1"], # "adj_frac2"],#,"adj_frac3"],# "ss2p_frac4"

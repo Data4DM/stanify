@@ -48,7 +48,7 @@ def data2draws(model, idata_kwargs, data_dict) -> az.InferenceData:
     -------
     InferenceData type
     """
-    chains = 4
+    chains = 2
     data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains))
 
     # add observed_data to idata_kwargs
@@ -126,9 +126,9 @@ def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_i
             data_tilde_vector = inference_data.prior_predictive[f"{data_var_name}_obs"].sel(prior_draw=s).values
             tilde_loglik = norm.logpdf(data_tilde_vector, theta_tilde_mean, theta_tilde_sd)[data_index]
 
-            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s, chain=chain_index).values[:, data_index]
-            theta_tilde_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s, chain=chain_index).values[data_index]
-            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s, chain=chain_index).values[:, data_index]
+            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s, chain=chain_index).values[:, data_index] #
+            theta_tilde_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s, chain=chain_index).values[data_index] #, chain=chain_index
+            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s, chain=chain_index).values[:, data_index] # chain=chain_index)
             post_loglik = norm.logpdf(data, theta_mean, theta_tilde_sd)
 
             sbc_results[data_var_name].append(sum(post_loglik < tilde_loglik))
@@ -203,8 +203,7 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
 
     # perception (brain, flow)
     for est_param in prior:
-        #model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
-        model.set_prior(est_param[0], est_param[1], *est_param[2:-1], lower=est_param[-1])
+        model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
 
     for latent in model.get_latent_vector_names():
         model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
