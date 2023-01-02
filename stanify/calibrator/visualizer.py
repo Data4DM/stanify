@@ -1,6 +1,8 @@
+import arviz
 import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
+from scipy.stats import lognorm
 import arviz as az
 from scipy.stats import binom, median_abs_deviation
 from sklearn.metrics import r2_score
@@ -26,54 +28,88 @@ def save_fig(model_name, is_draws2data, plot_name):
     else:
         fig_name = fig_name + "_data2draws"
     plt.savefig(f"{fig_name}.png")
+    plt.clf()
     return
-def plot_qoi(sbc_precision, setting, precision, idata_kwargs, model_name):
-    data_path = get_data_path(model_name)
-    #sbc = xr.open_dataset(f"{data_path}/sbc.nc")
-    sbc = sbc_precision
-    figsize = (30, 15)
+
+def plot_qoi(idata, setting, precision, idata_kwargs, model_name):
+    data_path = get_data_path(model_name) #idata = xr.open_dataset(f"{data_path}/sbc.nc")
+    figsize = (40, 30)
     est_param_names = setting['est_param_names']
 
-    az.plot_posterior(sbc, var_names=est_param_names, figsize = figsize)
+    az.plot_posterior(idata, var_names=est_param_names, figsize = figsize)
     save_fig(model_name, False, "posterior")
-    plt.clf()
 
-    az.plot_trace(sbc, var_names=est_param_names, divergences=True, compact=True, figsize = figsize)
+    az.plot_trace(idata, var_names=est_param_names, divergences=True, compact=True, figsize = figsize)
     save_fig(model_name, False, "trace")
-    plt.clf()
+
     if precision['R'] > 1:
         for obs_name in idata_kwargs['prior_predictive']:
-            fig, axes = plt.subplots(precision['R'], 1, figsize=(30, 20))
+            fig, axes = plt.subplots(precision['R'], 1, figsize=figsize)
             for r, ax in zip(range(precision['R']), axes):
-                sbc_aux = sbc.sel(region=r)
-                sbc_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=.6)
-                sbc_aux.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time', ax=ax,
-                                                                                       alpha=.8, linestyle='dotted')
+                idata_aux = idata.sel(region=r)
+                idata_aux.observed_data[obs_name].plot(hue='prior_draw', x='time', ax=ax, alpha=1)
+                idata_aux.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time', ax=ax,
+                                                                                       alpha=.7, linestyle='dotted')
             save_fig(model_name, False, f"{obs_name}_ppc")
-            plt.clf()
+
     else:
         for obs_name in idata_kwargs['prior_predictive']:
-            sbc.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=.6, figsize = figsize)
-            sbc.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time',
-                                                                                       alpha=1, linestyle='dotted')
+            idata.observed_data[obs_name].plot(hue='prior_draw', x='time',  alpha=1, figsize = figsize)
+            idata.posterior_predictive[f'{obs_name}_post'].mean(['draw', 'chain']).plot(hue='prior_draw', x='time',
+                                                                                       alpha=.7, linestyle='dotted')
             save_fig(model_name, False, f"{obs_name}_ppc")
-            plt.clf()
+
 
 
     # joint: pair plot
-    az.plot_pair(sbc, var_names=est_param_names, divergences=True, figsize = figsize)
+    az.plot_pair(idata, var_names=est_param_names, divergences=True, figsize = figsize)
     save_fig(model_name, False, "pair")
     plt.clf()
 
-    # rank plot with loglik
+    # arviz rank plot
     fig, axes = plt.subplots(1, len(est_param_names))
-    az.plot_rank(sbc, var_names=est_param_names, ax=axes, figsize = figsize)
+    az.plot_rank(idata, var_names=est_param_names, ax=axes, figsize = figsize)
     save_fig(model_name, False, "rank")
     plt.clf()
+
+    fig, axes = plt.subplots(1, len(setting['target_sim_vector_names']) + 1)
+    #TODO @Oriol how to do this with xarray better?
+
+    loglik_prior = []
+    loglik_post = []
+    for target_sim_vector_name in setting['target_sim_vector_names']:
+        rank, loglik_prior_q, loglik_post_q = compute_loglik_rank(idata.prior[target_sim_vector_name], idata.prior["m_noise_scale"],
+                    idata.observed_data[f'{target_sim_vector_name}_obs'], idata.posterior[target_sim_vector_name], idata.posterior["m_noise_scale"], precision['S'])
+        plot_sbc_rank(rank, target_sim_vector_name)
+        loglik_prior = [sum(i) for i in zip(loglik_prior, loglik_prior_q)]
+        loglik_post = [sum(i) for i in zip(loglik_post, loglik_post_q)]
+    sbc_rank = sum([i<j for i,j in zip(loglik_prior, loglik_post)])
+    compute_loglik_rank(sbc_rank, "all")
     return
 
-def plot_loglik_sbc(sbc_precision, data_variable_name: str, logpdf_func: Callable, model_name: str):
+def compute_loglik_rank(target_sim_vector_prior:xr.DataArray, m_noise_scale_prior: np.ndarray, observed_data,
+                        target_sim_vector_post:xr.DataArray, m_noise_scale_post:np.ndarray, S:int): #, data_index=0, chain_index=0):
+    sbc_rank = []
+    loglik_prior = []
+    loglik_post = []
+    for s in range(S):
+        loglik_prior = lognorm.logpdf(observed_data, m_noise_scale_prior.sel(prior_draw=s).values,
+                                      target_sim_vector_prior.sel(prior_draw=s).values)
+        loglik_post  = lognorm.logpdf(observed_data, m_noise_scale_post.sel(prior_draw=s).values,
+                                      target_sim_vector_post.sel(prior_draw=s).values)
+
+        sbc_rank.append(sum(loglik_post < loglik_prior))
+        loglik_prior.append(loglik_prior) # length S [.1, .3, .4]
+        loglik_post.append(loglik_post) # length S [0, .2, .4]
+    return sbc_rank, loglik_prior, loglik_post
+
+def plot_sbc_rank(sbc_rank:list, target_sim_vector_name: str, model_name: str):
     ranks = []
+    plt.hist(sbc_rank)
+    plt.title(f"SBC - {target_sim_vector_name}")
+    save_fig(model_name, False, "sbc_rank")
+    plt.clf()
+
 
 def plot_recovery(post_samples, prior_samples, point_agg=np.median, uncertainty_agg=median_abs_deviation,
                   param_names=None, fig_size=None, label_fontsize=14, title_fontsize=16,

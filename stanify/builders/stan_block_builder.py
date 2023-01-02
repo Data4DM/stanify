@@ -482,24 +482,18 @@ class StanModelBuilder:
         if self.precision_context.R == 1:
             for statement in self.stan_model_context.sample_statements:
                 if statement.distribution_type != statement.assignment_dist:
-                    code += f"{statement.lhs_expr} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+                    code += f"{adj_expr(statement)};\n"
         else:
             for statement in self.stan_model_context.sample_statements:
-                param_name = statement.lhs_expr
-                if param_name in hier_est_param_names:
+                if statement.lhs_expr in hier_est_param_names:
                     dist_code = "rep_vector(" + f'{statement.distribution_args[0]}, R), ' + f"{', '.join(statement.distribution_args[1:])}"
-                    code += f"{param_name} ~ {statement.distribution_type}({dist_code});\n"
+                    code += f"{statement.lhs_expr} ~ {statement.distribution_type}({dist_code});\n"
 
-                elif param_name in self.stan_model_context.obs_integ_outcome_vector_names:
-                    code += "for (r in 1:R)\n"
-                    code.indent_level += 1
-                    dist_code = f'{param_name}'[:-4] + "[:, r], " + f"{', '.join(statement.distribution_args[1:])}"
-                    code += f"{param_name}[:, r] ~ {statement.distribution_type}({dist_code});\n"
-                    code.indent_level -= 1
-
+                elif statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
+                    code += f"{adj_expr(statement, is_hier=True)};\n"
                 else:
                     if statement.distribution_type != statement.assignment_dist:
-                        code += f"{param_name} ~ {statement.distribution_type}({', '.join([str(arg) for arg in statement.distribution_args])});\n"
+                        code += f"{adj_expr(statement)};\n"
         code.indent_level -= 1
         code += "}\n"
         #TODO @Dashadower what is the diff btw classes that has its own code vs not (self.code VS return str(code))
@@ -511,25 +505,25 @@ class Draws2DataStanGQBuilder():
         self.precision_context = precision_context
         self.stan_model_context = stan_model_context
         self.vensim_model_context = vensim_model_context
-        # TODO @Dashadower how to write message, if some target_simulated_vector_names is not in vensim_integ_outcome (inconsistency btw user-defined and vensim syntax)
+        # TODO @Dashadower how to write message, if some target_sim_vector_names is not in vensim_integ_outcome (inconsistency btw user-defined and vensim syntax)
         integ_outcome_vector_names = set(self.stan_model_context.target_integ_outcome_vector_names) & set(self.vensim_model_context.integ_outcome_vector_names)
 
     def build_block(self, hier_est_param_names, transformed_parameters_code: str = ""):
         self.code = IndentedString()
         self.code += "generated quantities{\n"
         self.code.indent_level += 1
-        self.build_param_rng_functions(hier_est_param_names)
+        self.build_param_pri_pred_functions(hier_est_param_names)
         self.code += "\n"
         self.code.add_raw(transformed_parameters_code, ignore_indent=True)
         self.code += "\n"
-        self.build_obs_rng_functions()
+        self.build_data_pri_pred_functions()
         self.code.indent_level -= 1
         self.code += "}\n"
 
         return str(self.code)
 
 
-    def build_param_rng_functions(self, hier_est_param_names):
+    def build_param_pri_pred_functions(self, hier_est_param_names):
 
         ignored_variables = set(self.stan_model_context.stan_data.keys()).union(
             set(self.vensim_model_context.integ_outcome_vector_names))
@@ -557,22 +551,18 @@ class Draws2DataStanGQBuilder():
                     if statement.init_state:
                         param_name = param_name + "__init"
                     if param_name in hier_est_param_names:
-
-
                         dist_code = "rep_vector(" + f'{statement.distribution_args[0]}, R), ' + f"{', '.join(statement.distribution_args[1:])}"
                         self.code += f"real {param_name}[R] =  {statement.distribution_type}_rng({dist_code});\n"
                     else:
-                        self.code += f"real {param_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                        self.code += f"real {adj_expr(statement, is_pri_pred=True)};\n"
                     processed_statements.add(statement)
 
-    def build_obs_rng_functions(self):
+    def build_data_pri_pred_functions(self):
         if self.precision_context.R == 1:
             self.code += "// Define and assign generated value to observed vector (matching vector)\n"
-
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    vec_name = statement.lhs_expr
-                    self.code += f"array [N] real {vec_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                    self.code += f"array [N] real {adj_expr(statement, is_pri_pred=True)};\n"
         else:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:
@@ -580,17 +570,10 @@ class Draws2DataStanGQBuilder():
                     self.code += f"array[N] vector[R] {statement.lhs_expr};\n"
 
             self.code += "// Assign generated value to observed vector (matching vector)\n"
-            self.code += "for (r in 1:R){\n"
-            self.code.indent_level += 1
             for statement in self.stan_model_context.sample_statements:
-                #TODO @Dashadower statement.lhs_variable vs .lhs_expr
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    vec_name = statement.lhs_expr
-                    dist_code = f'{vec_name}'[:-4] + "[:, r], " + f"{', '.join(statement.distribution_args[1:])}"
-                    self.code += f"{vec_name}[:, r] = {statement.distribution_type}_rng({dist_code});\n"
+                    self.code += f"{adj_expr(statement, is_pri_pred=True, is_hier=True)};\n"
             # link(alpha) ~ N(0,1); link(alpha) is expr, alpha is var
-            self.code.indent_level -= 1
-            self.code += "}\n"
 
 class Data2DrawsStanGQBuilder():
     def __init__(self, precision_context: "PrecisionContext", stan_model_context: "StanModelContext", vensim_model_context: "VensimModelContext"):
@@ -599,75 +582,58 @@ class Data2DrawsStanGQBuilder():
         self.vensim_model_context = vensim_model_context
 
 
-    def build_block(self):
+    def build_block(self, hier_est_param_names):
         self.code = IndentedString()
         self.code += "generated quantities{\n"
         self.code.indent_level += 1
         self.build_post_pred_rng_functions()
         self.code += "\n"
-        self.build_loglik_functions()
+        self.build_loglik_functions(hier_est_param_names)
         self.code.indent_level -= 1
         self.code += "}\n"
 
         return str(self.code)
 
-    def build_loglik_functions(self):
+    def build_loglik_functions(self, hier_est_param_names):
         self.code += "real loglik;\n"
+        self.code += "real loglik_prior;\n"
+        for tn in self.stan_model_context.target_integ_outcome_vector_names:
+            self.code += f"real loglik_{tn};\n"
 
-        if self.precision_context.R == 1:
-            for statement in self.stan_model_context.sample_statements:
-                if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    param_name = statement.lhs_expr
-                    loc = statement.distribution_args[0]
-                    scale = statement.distribution_args[1]
-                    if statement.distribution_type in ["normal", "lognormal"]:
-                        self.code += f"loglik += {statement.distribution_type}_lpdf({param_name}|{loc}, {scale});\n"
-                    elif statement.distribution_type in ["neg_binom_2"]:
-                        self.code += f"loglik += {statement.distribution_type}_lpmf({param_name}|{loc}, {scale});\n"
-        else:
-            self.code += "for (r in 1:R){\n"
-            self.code.indent_level += 1
-            for statement in self.stan_model_context.sample_statements:
-                if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    obs_vec_name = statement.lhs_expr
-                    target_vec_name = obs_vec_name[:-4]
-                    scale = statement.distribution_args[1]
-                    if statement.distribution_type in ["normal", "lognormal"]:
-                        self.code += f"loglik += {statement.distribution_type}_lpdf({obs_vec_name}[:, r]|{target_vec_name}[:, r], {scale});\n"
-                    elif statement.distribution_type in ["neg_binom_2"]:
-                        self.code += f"loglik += {statement.distribution_type}_lpmf({obs_vec_name}[:, r]|{target_vec_name}[:, r], {scale});\n"
-            self.code.indent_level -= 1
-            self.code += "}\n"
+        # add loglik for "matter ~ form"
+        # self.stan_model_context.all_stan_variables include "matter"
+        # 1. parameter draw ~ prior distribution
+        # X. target_sim = parameter draw
+        # 2. observed data ~ likelihood distribution (target_sim)
+
+        #is_lp_pq=True: component-wise (P for estimated parameter, Q for target_simulated)
+        for statement in self.stan_model_context.sample_statements:
+            if statement.lhs_expr in list(self.stan_model_context.all_stan_variables): #['adj_frac1[R]', 'adj_frac2', 'm_noise_scale', 'stocked_pping_obs[R]', 'stocked_ping_obs[R]']
+                # lp contribution from prior function and realized estimated parameter value
+                if statement.lhs_expr in hier_est_param_names:
+                    self.code += f"{adj_expr(statement, is_lp_tot=True, is_hier=True)};\n" #
+                    self.code += f"{adj_expr(statement, is_lp_prior=True, is_hier=True)};\n"
+
+                # lp contribution from likelihood function and observed data
+                elif statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
+                    self.code += f"{adj_expr(statement, is_lp_tot=True, is_hier=(self.precision_context.R > 1))};\n"
+                    self.code += f"{adj_expr(statement, is_lp_q=True, is_hier=(self.precision_context.R > 1))};\n"
+
 
     def build_post_pred_rng_functions(self):
-
         if self.precision_context.R == 1:
             self.code += "// Define and assign generated value to posterior predictive vector\n"
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    # TODO @Dashadower how to use the following in the future?
-                    #  stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type #     stan_type = self.stan_model_context.stan_data[statement.lhs_expr].stan_type KeyError: 'prey_obs'
-                    scale = statement.distribution_args[1]
-                    # if stan_type.startswith("vector"):
-                    #     self.code += f"{stan_type} {statement.lhs_expr}_post = to_vector({statement.distribution_type}_rng({', '.join(statement.distribution_args)}));\n"
-                    # else:
-                    #     self.code += f"{stan_type} {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
-                    self.code += f"array[N] real {statement.lhs_expr}_post = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
-        else:
+                    self.code += f"array[N] real {adj_expr(statement, is_post_pred=True)};\n"
+
+        elif self.precision_context.R > 1:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
                     self.code += f"array[N] vector[R] {statement.lhs_expr}_post;\n"
 
             self.code += "// Assign generated value to observed vector (matching vector)\n"
-            self.code += "for (r in 1:R){\n"
-            self.code.indent_level += 1
             for statement in self.stan_model_context.sample_statements:
-                #TODO @Dashadower statement.lhs_variable vs .lhs_expr, obs_integ_outcome_vector_names is list VS target_// is tuple so the latter doesn't work
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
-                    scale = statement.distribution_args[1]
-                   #TODO {', '.join(statement.distribution_args)} is better; posterior predictive remove _obs?? (w.o. loc, scale)
-                    self.code += f"{statement.lhs_expr}_post[:, r] = {statement.distribution_type}_rng({statement.lhs_expr[:-4]}[:, r], {scale});\n"
-            self.code.indent_level -= 1
-            self.code += "}\n"
-
+                    self.code += f"{adj_expr(statement, is_post_pred=True, is_hier=True)};\n"

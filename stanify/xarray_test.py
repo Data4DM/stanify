@@ -129,7 +129,7 @@ idata_kwargs = dict(
 setting = {
     "est_param_names": ("prey_birth_frac", "pred_birth_frac"),
     "hier_est_param_names": ("pred_birth_frac", ), #need ,) to be list downstream  # chosen among "est_param_names"
-    "target_simulated_vector_names": ("prey", "predator"),
+    "target_sim_vector_names": ("prey", "predator"),
     "driving_vector_names": ("process_noise_uniform_driving"),
     "model_name": "S3R4",
 }

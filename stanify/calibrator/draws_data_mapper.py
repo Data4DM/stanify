@@ -2,11 +2,15 @@ import math
 import cmdstanpy
 from ..builders.utilities import get_data_path, idata2netcdf4store, get_structure, hier, diagnose
 from ..builders.stan_model import vensim2stan
+from ..calibrator.calib_util import extract, get_metric, get_stepsize
 from ..calibrator.visualizer import plot_qoi
 import numpy as np
+
 import xarray as xr
 xr.set_options(display_expand_attrs = False)
 import arviz as az
+import numpy as np
+from typing import Optional
 import typing
 if typing.TYPE_CHECKING:
     import stanify.stan_model
@@ -39,21 +43,33 @@ def draws2data(model, idata_kwargs, data_dict) -> az.InferenceData:
 
     return draws2data_idata
 
-def data2draws(model, idata_kwargs, data_dict) -> az.InferenceData:
+def data2draws(s, model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, metric=None) -> az.InferenceData:
     """
     Parameters
     ----------
+    s: index for the prior draw i.e. synthetic dataset index
     model: configuration combination of structural, setting, numeric; model with constructed function and draws2data stanfile
+    data_dict: dictionary of observed data to fit
+    init_draws_dict: initialize each data2drawss chain from ground truth, that is prior draws
+    step_size: HMC sampling step_size; first SBC fit (s=0) uses .01, then adapted step_size from the previous fit is used
+    metric: HMC sampling adapted metric from the previous fit from the second fit
     Returns
     -------
     InferenceData type
     """
-    chains = 2
-    data2draws_data = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains))
+    chains = 1
+    #print("init_draws_dict: ", init_draws_dict)
+    if s == 0: # adaptive step
+        data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains),
+                         inits = init_draws_dict, step_size=.1, seed = 10) #iter_warmup=0 gives RuntimeError: Error during sampling
+        return data2draws_fit
+
+    data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling=int(model.precision_context.M / chains),
+                         inits=init_draws_dict, step_size=step_size, iter_warmup=1, seed=10) #metric = metric,
 
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
-    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_data, observed_data = observed_data, **idata_kwargs)
+    data2draws_idata = az.from_cmdstanpy(posterior=data2draws_fit, observed_data = observed_data, **idata_kwargs)
     return data2draws_idata
 
 def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -> typing.Tuple[az.InferenceData, "stanify.stan_model.vensim2stan"]:
@@ -77,69 +93,55 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
         **model.numeric,
         **precision
     }
-    idata_orig = draws2data(model, idata_kwargs, data_dict)
-
-    draws2data_dataset = idata_orig.prior_predictive
+    idata = draws2data(model, idata_kwargs, data_dict)
+    draws2data_dataset = idata.prior_predictive
+    draws2data_draws = idata.prior
 
     # prepare gathering posterior
     sbc_list = []
+    if 'process_noise_scale' in numeric.keys():
+        numeric['process_noise_scale'] = 0.0
 
     for s in range(model.precision_context.S):
         draws2data_s = draws2data_dataset.isel(prior_draw=s)
+        draws_s = draws2data_draws.isel(prior_draw=s)
+
         data_dict = {
             **draws2data_s[model.get_obs_vector_names()], # specific to s th synthetic data (obs)
             **numeric, # driving data (don't use model.numeric which is precision + numeric)
             **precision
         }
-        if 'process_noise_scale' in numeric.keys():
-            draws2data_s['process_noise_scale'] = 0.0
-        data2draws_idata_s = data2draws(model, idata_kwargs, data_dict)
+
+        init_draws_dict = {
+            **draws_s[model.est_param_names]
+        }
+
+        if s == 0:
+            fit_0 = data2draws(s, model, idata_kwargs, data_dict, init_draws_dict, step_size=.1)
+            step_size = get_stepsize(fit_0)
+            #metric = get_metric(s, fit_0, checkpoint_name="metric_checkpoint")
+            init_draws_dict = extract(fit_0)
+
+        #print("step_size", step_size)
+        data2draws_idata_s = data2draws(s, model, idata_kwargs, data_dict, init_draws_dict, step_size= step_size) #, metric = metric
         sbc_list.append(data2draws_idata_s)
 
     post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draw")
     post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draw")
     loglik = xr.concat((data2draws_idata_s.log_likelihood for data2draws_idata_s in sbc_list), dim="prior_draw")
     sample_stats = xr.concat((data2draws_idata_s.sample_stats for data2draws_idata_s in sbc_list), dim="prior_draw")
-    idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik, sample_stats=sample_stats)
-
-    compute_loglik_sbc(idata_orig, setting, precision)
+    idata.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik, sample_stats=sample_stats)
 
     if 'process_noise_scale' in numeric.keys():
-        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata_orig)
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata)
     else:
-        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise0.nc", idata_orig)
-    plot_qoi(idata_orig, setting, precision, idata_kwargs, model.model_name)
+        idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise0.nc", idata)
+    
+    plot_qoi(idata, setting, precision, idata_kwargs, model.model_name)
     #     test_q_lst = ['loglik']
     #     return diagnose(sbc_idata, test_q_lst)
-    return idata_orig, model
+    return idata, model
 
-
-def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_index=0):
-    from scipy.stats import norm
-    import matplotlib.pyplot as plt
-    sbc_results = {}
-    for data_var_name in setting["target_simulated_vector_names"]:
-        sbc_results[data_var_name] = []
-        for s in range(precision["S"]):
-            theta_tilde_mean = inference_data.prior[data_var_name].sel(prior_draw=s).values
-            theta_tilde_sd = inference_data.prior["m_noise_scale"].sel(prior_draw=s).values
-            data_tilde_vector = inference_data.prior_predictive[f"{data_var_name}_obs"].sel(prior_draw=s).values
-            tilde_loglik = norm.logpdf(data_tilde_vector, theta_tilde_mean, theta_tilde_sd)[data_index]
-
-            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s, chain=chain_index).values[:, data_index] #
-            theta_tilde_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s, chain=chain_index).values[data_index] #, chain=chain_index
-            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s, chain=chain_index).values[:, data_index] # chain=chain_index)
-            post_loglik = norm.logpdf(data, theta_mean, theta_tilde_sd)
-
-            sbc_results[data_var_name].append(sum(post_loglik < tilde_loglik))
-
-        #x = list(range(precision["S"]))
-        #plt.bar(x, sbc_results[data_var_name], width=1.0)
-        plt.hist(sbc_results[data_var_name])
-        plt.title(f"SBC - {data_var_name}")
-        plt.show()
-
-    return sbc_results
 
 
 
@@ -185,14 +187,14 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
 
     # @TODO change to number of stocks and reflect in sbc filename
     ## precision for both draws2data and data2draws
-    precision['Q'] = len(setting['target_simulated_vector_names'])
+    precision['Q'] = len(setting['target_sim_vector_names'])
 
     setting['model_name'] = setting['model_name'] + f'_S{precision["S"]}N{precision["N"]}Q{precision["Q"]}P{len(setting["est_param_names"])}H{len(setting["hier_est_param_names"])}R{precision["R"]}_M{precision["M"]}_ps{numeric["process_noise_scale"]}'
 
     # obs vectors match draws2data and data2draws
     numeric_setting = dict(**numeric)
     #TODO @Dashadower below is very error-prone
-    for target in setting['target_simulated_vector_names']:
+    for target in setting['target_sim_vector_names']:
         numeric_setting[f"{target}_obs"] = [0] * precision['N']
 
     # set five model components: structure, numeric_[precision_scalar, vector], type, prior
@@ -206,10 +208,11 @@ def transform_input(vensim, setting, precision, numeric, prior, output_format):
         model.set_prior(est_param[0], est_param[1], est_param[2], est_param[3], lower = est_param[4])
 
     for latent in model.get_latent_vector_names():
-        model.set_prior(f"{latent}_obs", "normal", f"{latent}", "m_noise_scale")
+        model.set_prior(f"{latent}_obs", "lognormal", f"{latent}", "m_noise_scale")
 
     idata_kwargs = hier(precision, setting, output_format)
     idata_kwargs['coords']['time'] =  np.arange(0, precision['N']) * precision['time_saveper'] + 0.01 #precision['integration_times']
     idata_kwargs["coords"]["stock"] =  model.vensim_model_context.integ_outcome_vector_names
     #idata_kwargs["coords"]["obsereved_data"] = model.get_obs_vector_names()
     return model
+
