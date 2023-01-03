@@ -4,15 +4,11 @@ import arviz as az
 import cmdstanpy
 from pysd.translators.vensim.vensim_file import VensimFile
 import numpy as np
-<<<<<<< HEAD
 import pickle
 from hashlib import sha256
 import cmdstanpy
 import tempfile
-=======
 import textwrap
-textwrap.indent
->>>>>>> refs/remotes/origin/main
 
 class IndentedString:
     def __init__(self, indent_level=0):
