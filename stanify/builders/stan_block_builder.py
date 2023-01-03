@@ -512,6 +512,7 @@ class Draws2DataStanGQBuilder():
         self.code = IndentedString()
         self.code += "generated quantities{\n"
         self.code.indent_level += 1
+        self.code += "real loglik = 0;\n"
         self.build_param_pri_pred_functions(hier_est_param_names)
         self.code += "\n"
         self.code.add_raw(transformed_parameters_code, ignore_indent=True)
@@ -554,9 +555,10 @@ class Draws2DataStanGQBuilder():
                         dist_code = "rep_vector(" + f'{statement.distribution_args[0]}, R), ' + f"{', '.join(statement.distribution_args[1:])}"
 
                         self.code += f"real {param_name}[R] =  {statement.distribution_type}_rng({dist_code});\n"
-                        self.code += f"draws2data_lp += {statement.distribution_type}_lpdf({param_name} | {dist_code});\n\n"
+                        self.code += f"loglik += {statement.distribution_type}_lpdf({param_name} | {dist_code});\n\n"
                     else:
                         self.code += f"real {adj_expr(statement, is_pri_pred=True)};\n"
+                        self.code += f"{adj_expr(statement, is_lp_tot=True)};\n\n"
                     processed_statements.add(statement)
 
     def build_data_pri_pred_functions(self):
