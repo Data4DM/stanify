@@ -1,6 +1,5 @@
 from typing import Type
-import ast, glob, re
-import numpy as np
+import ast, pathlib
 
 from .stan_block_builder import *
 from .utilities import vensim_name_to_identifier
@@ -8,8 +7,8 @@ from pysd.translators.structures.abstract_expressions import *
 import cmdstanpy
 from stanify.builders.utilities import get_stanfiles_path
 
+
 class SamplingStatement:
-    lhs_expr: str
     lhs_variable: str
     rhs_variables: Set[str]
     distribution_type: str
@@ -19,11 +18,8 @@ class SamplingStatement:
     upper: float
     init_state: bool
 
-    def __init__(self, lhs_expr, distribution_type, *distribution_args, lower=float("-inf"), upper=float("inf"), init_state=False):
-        self.lhs_expr = lhs_expr
-        lhs_variables = [node.id for node in ast.walk(ast.parse(lhs_expr)) if isinstance(node, ast.Name)]
-        assert len(lhs_variables) == 1, "The LHS expression for prior specification must contain just 1 parameter name"
-        self.lhs_variable = lhs_variables[0]
+    def __init__(self, lhs_variable, distribution_type, *distribution_args, lower=float("-inf"), upper=float("inf"), init_state=False):
+        self.lhs_variable = lhs_variable
         self.distribution_type = distribution_type
         self.distribution_args = tuple(str(x) for x in distribution_args)
         self.rhs_variables = set()
@@ -48,15 +44,17 @@ class StanDataEntry:
 
 @dataclass
 class StanModelContext:
-    initial_time: float
-    integration_times: Iterable[float]
+    initial_time: float = field(init=True)
+    integration_times: Iterable[float] = field(init=True)
     stan_data: Dict[str, StanDataEntry] = field(default_factory=dict) # dictionary is obj, lambda function (not obj butc lass)
     sample_statements: List[SamplingStatement] = field(default_factory=list)
-    exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function (include both hier, nonhier)
+    odefunc_exposed_parameters: Set[str] = field(default_factory=set)  # stan variables to be passed to the ODE function (include both hier, nonhier)
     all_stan_variables: Set[str] = field(default_factory=set)  # set of all stan variables
     target_integ_outcome_vector_names : Set[str] = field(default_factory=set)
     obs_integ_outcome_vector_names: Set[str] = field(default_factory=set) # vector connecting draws2data, data2draws
 
+    def __post_init__(self):
+        assert self.initial_time not in self.integration_times, "Initial time value shouldn't be within the integration time vector."
 
     def identify_stan_data_types(self, numeric):
         def get_dims(obj):
@@ -92,8 +90,6 @@ class StanModelContext:
                 elif len(dims) == 2:
                     self.stan_data[key] = StanDataEntry(key, f"array[{dims[0]}] vector[{dims[1]}]")
 
-
-
 @dataclass
 class PrecisionContext:
     S: int
@@ -101,6 +97,8 @@ class PrecisionContext:
     N: int
     Q: int
     R: int
+
+
 class VensimModelContext:
     def  __init__(self, abstract_model):
         self.variable_names = set()  # stanified
@@ -142,15 +140,22 @@ class VensimModelContext:
             print(x[0].ljust(max_length) + x[1].ljust(max_length) + ("V" if x[2] else ""))
 
 
-class vensim2stan:
-    def __init__(self, abstract_model):
+class Vensim2Stan:
+    def __init__(self, abstract_model: AbstractModel, model_name: str, initial_time: float = 0.0, integration_times: Iterable[Number] = (),
+                 n_fits: int = 1, n_draws: int = 100, stan_files_base_directory: str = ""):
         self.abstract_model = abstract_model
+        self.model_name = model_name
         self.vensim_model_context = VensimModelContext(self.abstract_model)
-        self.init_variable_regex = re.compile(".+?(?=__init$)")
-        # This regex is to match all preceding characters that come before '__init' at the end of the string.
-        # So something like stock_var_init__init would match into stock_var__init.
-        # This is used to parse out the corresponding stock names for init parameters.
+        self.stan_model_context: StanModelContext = StanModelContext(initial_time=initial_time, integration_times=integration_times)
+        self.n_fits = n_fits
+        self.n_draws = n_draws
+        if not stan_files_base_directory:
+            stan_files_base_directory = Path.cwd().joinpath("stan_files")
+        else:
+            stan_files_base_directory = pathlib.Path(stan_files_base_directory).expanduser()
 
+        self.model_stan_files_directory = stan_files_base_directory.joinpath(self.model_name.replace(" ", "_"))
+        self.model_stan_files_directory.mkdir(exist_ok=True, parents=True)
 
     def print_info(self):
         print("- Vensim model information:")
@@ -158,7 +163,6 @@ class vensim2stan:
         print("*" * 10)
         print("- Stan model information:")
 
-    #TODO @Dash how to set prior value summary as filename?
     def set_prior(self, variable_name: str, distribution_type: str, *args, lower=float("-inf"), upper=float("inf"), init_state=False):
         if init_state:
             # This means the initial value of the ODE state variable.
@@ -179,89 +183,15 @@ class vensim2stan:
                             sample_string = f"{variable_name} ~ {distribution_type}({', '.join([str(arg) for arg in args])})"
                             raise Exception(f"{sample_string} : '{name}' doesn't exist in the Vensim model or the Stan model!")
                         if name in self.vensim_model_context.variable_names and name not in self.vensim_model_context.integ_outcome_vector_names:
-                            self.stan_model_context.exposed_parameters.update(used_variable_names)
+                            self.stan_model_context.odefunc_exposed_parameters.update(used_variable_names)
 
             if (variable_name in self.vensim_model_context.variable_names) and (variable_name not in self.vensim_model_context.integ_outcome_vector_names):
-                #  adj_frac1_loc is excluded as it is not defined in vensim
-                self.stan_model_context.exposed_parameters.add(variable_name)
-
+                self.stan_model_context.odefunc_exposed_parameters.add(variable_name)
 
             self.stan_model_context.sample_statements.append(SamplingStatement(variable_name, distribution_type, *args, lower=lower, upper=upper, init_state=init_state))
 
 
-    def set_type(self, est_param_names: list, hier_est_param_names: list, target_sim_vector_names: list, driving_vector_names: list, model_name: str):
-        self.est_param_names = est_param_names
-        self.hier_est_param_names = hier_est_param_names
-        # TODO @Dashadower how to make target_sim_vector_names and integ_outcome_vector_names consistent? make class TypeContext? related to lin
-        self.stan_model_context.target_integ_outcome_vector_names = target_sim_vector_names
-        self.stan_model_context.obs_integ_outcome_vector_names = [f'{name}_obs' for name in self.stan_model_context.target_integ_outcome_vector_names]
-        self.driving_vector_names = driving_vector_names
-        self.model_name = model_name
-
-    #TODO @dashadower for external refernce of target_sim_vector_names
-    # is it better to use model.target_sim_vector_names or define function for consistency?
-    def get_latent_vector_names(self):
-        return [f'{target}' for target in self.stan_model_context.target_integ_outcome_vector_names]
-
-    def get_obs_vector_names(self):
-        return [f'{target}_obs' for target in self.stan_model_context.target_integ_outcome_vector_names]
-
-    #TODO @dashadower; is right faster than the left (for consistency left is better)
-    # below vs self.stan_model_context.target_integ_outcome_vector_names + return [f'{target}_obs' for target in self.stan_model_context.target_integ_outcome_vector_names]
-    def get_latent_obs_vector_names(self):
-        return self.get_latent_vector_names() + self.get_obs_vector_names()
-
-
-    def update_setting(self, est_param_names: list, target_sim_vector_names: list, driving_vector_names: list, model_name: str):
-        self.est_param_names = est_param_names
-        self.stan_model_context.target_integ_outcome_vector_names = target_sim_vector_names
-        self.driving_vector_names = driving_vector_names
-        self.model_name = model_name
-        # if self.initial_time in self.integration_times:
-        #     raise Exception("initial_time shouldn't be present in integration_times")
-
-
-    def set_numeric(self, precision: list, numeric: list,):
-        """
-        Parameters
-        ----------
-        precision: settings affecting precision SMNPQ (assumed_scalar)
-        numeric: driving data
-        -------
-
-        """
-        # clamp context
-        self.precision_context = PrecisionContext(precision['S'], precision['M'], precision['N'],precision['Q'],precision['R'])
-        self.stan_model_context = StanModelContext(0.0, precision['integration_times'])
-
-        # clamp driving data
-        self.numeric = {vensim_name_to_identifier(name): value for name, value in numeric.items()}
-
-        self.stan_model_context.identify_stan_data_types(self.numeric)
-        self.stan_model_context.exposed_parameters.update(["time_saveper"])
-        if 'process_noise_scale' in numeric.keys():
-            self.stan_model_context.exposed_parameters.update(["process_noise_scale"])
-
-
-
-
-    def update_numeric(self, updated_numeric: list):
-        """
-
-        Parameters
-        ----------
-        numeric
-        usage: model.update_numeric({'prey_obs': prior_pred_obs['prey_obs'], 'predator_obs': prior_pred_obs['predator_obs'],'process_noise_scale': 0.0 })
-        Returns
-        -------
-
-        """
-        updated_data = {vensim_name_to_identifier(name): value for name, value in updated_numeric.items()}
-        self.numeric.update(updated_data)
-        self.stan_model_context.identify_stan_data_types(updated_data)
-
-
-    def stanify_ode_function(self):
+    def stanify_ode_function(self, ):
         """
         We build the stan file that holds the ODE function. From the sample statements that the user have provided,
         we identify which variables within the ODE model should be treated as stan parameters instead if variables within
@@ -271,28 +201,16 @@ class vensim2stan:
         -------
 
         """
-        stan_function_path = f"{get_stanfiles_path(self.model_name)}/functions.stan"
-        self.function_builder = StanFunctionBuilder(self.abstract_model, self.numeric)
-        function_code = self.function_builder.build_functions(self.stan_model_context.exposed_parameters, self.hier_est_param_names, self.vensim_model_context.integ_outcome_vector_names)
 
+        self.function_builder = StanFunctionBuilder(self.abstract_model)
+        function_code = self.function_builder.build_functions(self.stan_model_context.odefunc_exposed_parameters, self.hier_est_param_names, self.vensim_model_context.integ_outcome_vector_names)
 
-        # if glob.glob(stan_function_path):
-        #     with open(stan_function_path, "r") as f:
-        #         if f.read().rstrip() == function_code.rstrip():
-        #             return
-        #         else:
-        #             if input(f"{self.model_name}_functions.stan already exists in the current working directory. Overwrite? (y/n):").lower() != "y":
-        #                 raise Exception("Code generation aborted by user")
-        # else:
-        #     with open(stan_function_path, "w") as f:
-        #         f.write(function_code)
-        if os.path.exists(stan_function_path):
-            os.remove(stan_function_path)
+        stan_function_path = self.model_stan_files_directory.joinpath("functions.stan")
         with open(stan_function_path, "w") as f:
             f.write(function_code)
 
     def get_draws2data_stanfile_path(self):
-        return f"{ get_stanfiles_path(self.model_name)}/draws2data.stan"
+        return self.model_stan_files_directory.joinpath("draws2data.stan")
 
     def stanify_draws2data(self):
         stan_draws2data_path = self.get_draws2data_stanfile_path()
@@ -332,7 +250,7 @@ class vensim2stan:
 
             transformed_params_builder = StanTransformedParametersBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context)
             transformed_params_builder.code = IndentedString(indent_level=1)
-            transformed_params_builder.write_block(self.stan_model_context.exposed_parameters,
+            transformed_params_builder.write_block(self.stan_model_context.odefunc_exposed_parameters,
                                                    self.hier_est_param_names,
                                                    self.vensim_model_context.integ_outcome_vector_names,
                                                    self.function_builder.ode_function_name,
@@ -348,7 +266,7 @@ class vensim2stan:
 
 
     def get_data2draws_stanfile_path(self):
-        return f"{get_stanfiles_path(self.model_name)}/data2draws.stan"
+        return self.model_stan_files_directory.joinpath("data2draws.stan")
 
     def stanify_data2draws(self):
         stan_data2draws_path = self.get_data2draws_stanfile_path()
@@ -383,7 +301,7 @@ class vensim2stan:
 
             transformed_params_builder = StanTransformedParametersBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context)
 
-            f.write(transformed_params_builder.build_block(self.stan_model_context.exposed_parameters,
+            f.write(transformed_params_builder.build_block(self.stan_model_context.odefunc_exposed_parameters,
                                                            self.hier_est_param_names,
                                                            self.vensim_model_context.integ_outcome_vector_names,
                                                            self.function_builder.ode_function_name,
