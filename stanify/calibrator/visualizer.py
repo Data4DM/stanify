@@ -77,14 +77,8 @@ def plot_qoi(idata, setting, precision, idata_kwargs, model_name):
 
     loglik_prior = []
     loglik_post = []
-    for target_sim_vector_name in setting['target_sim_vector_names']:
-        rank, loglik_prior_q, loglik_post_q = compute_loglik_rank(idata.prior[target_sim_vector_name], idata.prior["m_noise_scale"],
-                    idata.observed_data[f'{target_sim_vector_name}_obs'], idata.posterior[target_sim_vector_name], idata.posterior["m_noise_scale"], precision['S'])
-        plot_sbc_rank(rank, target_sim_vector_name)
-        loglik_prior = [sum(i) for i in zip(loglik_prior, loglik_prior_q)]
-        loglik_post = [sum(i) for i in zip(loglik_post, loglik_post_q)]
-    sbc_rank = sum([i<j for i,j in zip(loglik_prior, loglik_post)])
-    compute_loglik_rank(sbc_rank, "all")
+    rank, loglik_prior_q, loglik_post_q = compute_loglik_rank(idata)
+    plot_sbc_rank(rank, "loglik", model_name)
     return
 
 def compute_loglik_rank(inference_data): #, data_index=0, chain_index=0):
