@@ -4,10 +4,15 @@ import arviz as az
 import cmdstanpy
 from pysd.translators.vensim.vensim_file import VensimFile
 import numpy as np
+<<<<<<< HEAD
 import pickle
 from hashlib import sha256
 import cmdstanpy
 import tempfile
+=======
+import textwrap
+textwrap.indent
+>>>>>>> refs/remotes/origin/main
 
 class IndentedString:
     def __init__(self, indent_level=0):
@@ -108,7 +113,7 @@ def StanModel_cache(model_code, model_name=None, **kwargs):
         sm = pickle.load(open(cache_fn, 'rb'))
     except:
         tmp_file = tempfile.NamedTemporaryFile("w", suffix=".stan", delete=False)
-        print(f"Writing stan code to temporary directory {f.name}")
+        print(f"Writing stan code to temporary directory {tmp_file.name}")
         tmp_file.write(model_code)
         tmp_file.close()
         sm = cmdstanpy.CmdStanModel(stan_file=tmp_file.name)
@@ -152,8 +157,85 @@ def compare(a, b):
 def hier(precision, setting, idata_kwargs):
     if precision['R'] > 1:
         idata_kwargs['coords']['region'] = [r for r in range(precision['R'])]
-        for vector in setting['target_simulated_vector_names']:
+        for vector in setting['target_sim_vector_names']:
             idata_kwargs['dims'][f'{vector}_obs'] = ["time", "region"]
             idata_kwargs['dims'][f'{vector}_obs_post'] = ["time", "region"]
 
     return idata_kwargs
+
+#TODO is is_lp, is_lp_pq exclusive better?
+def adj_expr(statement, is_hier = False, is_pri_pred = False, is_post_pred = False, is_lp_tot = False, is_lp_prior = False, is_lp_q = False):
+    # LHS EXPR
+    lhs_expr =""
+    if is_hier: # only called for `observed_data` vectors
+        lhs_expr += "for (r in 1:R) "
+
+
+    if is_lp_tot:
+        lhs_expr += "loglik"
+    elif is_lp_q: #target_sim_vector component-wise logposterior
+        lhs_expr += f'loglik_{statement.lhs_expr[:-4]}' #compute only from target_simulated loglik_{statement.lhs_expr[:-4]}
+    elif is_lp_prior:
+        lhs_expr += "loglik_prior"
+    else:
+        lhs_expr += statement.lhs_expr
+
+        # TODO more explicit to get target_sim_vector names and add _obs for is_pri_pred, is_post_pred
+        if is_post_pred:
+            lhs_expr += "_post"
+
+        if is_hier:
+            if statement.lhs_expr.endswith('_obs'):
+                lhs_expr += "[:, r]"
+            else:
+                lhs_expr += "[r]"
+
+    # MID EXPR
+    if (is_pri_pred or is_post_pred):
+        mid_expr = "="
+    elif (is_lp_tot or is_lp_prior or is_lp_q) :
+        mid_expr = "+="
+    else:
+        mid_expr = "~"
+
+    # RHS EXPR
+    if is_hier: # only called for `observed_data` vectors
+        if statement.lhs_expr.endswith('_obs'):
+            loc = f'{statement.lhs_expr[:-4]}[:,r]' # deeper layer, [:-4] removes _obs
+        else:
+            loc = f'{statement.lhs_expr}[r]'  # deeper layer, [:-4] removes _obs
+    else:
+        loc = f'{statement.distribution_args[0]}'
+
+    non_loc = f"{', '.join(statement.distribution_args[1:])}"  # assume scale
+
+    if statement.distribution_type == "lognormal":
+        rhs_expr_arg = f'log({loc}),' + non_loc
+    else:
+        rhs_expr_arg = f'{loc},' + non_loc
+
+    if (is_pri_pred or is_post_pred):
+        rhs_expr = f'{statement.distribution_type}_rng({rhs_expr_arg})'
+    elif (is_lp_tot or is_lp_prior or is_lp_q):
+        var = statement.lhs_expr
+        if is_hier:
+            if var.endswith('_obs'):
+                var += "[:, r]"
+            else:
+                var += "[r]"
+        if statement.distribution_type in ["normal", "lognormal"]:
+            rhs_expr = f'{statement.distribution_type}_lpdf({var}|{rhs_expr_arg})'#lupdf is only supported in model and user-defined block
+        elif statement.distribution_type in ["neg_binom", "neg_binom_2"]:
+            rhs_expr = f'{statement.distribution_type}_lpmf({var}|{rhs_expr_arg})' # we use https://mc-stan.org/docs/functions-reference/nbalt.html
+    else:
+        rhs_expr = f'{statement.distribution_type}({rhs_expr_arg})'
+
+    return lhs_expr + mid_expr + rhs_expr
+
+
+def build_hier(body:str) -> str:
+    code = "\n"
+    code += "for (r in 1:R){\n"
+    code += body
+    code += "}\n"
+    return code

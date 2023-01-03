@@ -181,24 +181,25 @@ class vensim2stan:
                         if name in self.vensim_model_context.variable_names and name not in self.vensim_model_context.integ_outcome_vector_names:
                             self.stan_model_context.exposed_parameters.update(used_variable_names)
 
-            if variable_name in self.vensim_model_context.variable_names and variable_name not in self.vensim_model_context.integ_outcome_vector_names:
+            if (variable_name in self.vensim_model_context.variable_names) and (variable_name not in self.vensim_model_context.integ_outcome_vector_names):
+                #  adj_frac1_loc is excluded as it is not defined in vensim
                 self.stan_model_context.exposed_parameters.add(variable_name)
 
 
             self.stan_model_context.sample_statements.append(SamplingStatement(variable_name, distribution_type, *args, lower=lower, upper=upper, init_state=init_state))
 
 
-    def set_type(self, est_param_names: list, hier_est_param_names: list, target_simulated_vector_names: list, driving_vector_names: list, model_name: str):
+    def set_type(self, est_param_names: list, hier_est_param_names: list, target_sim_vector_names: list, driving_vector_names: list, model_name: str):
         self.est_param_names = est_param_names
         self.hier_est_param_names = hier_est_param_names
-        # TODO @Dashadower how to make target_simulated_vector_names and integ_outcome_vector_names consistent? make class TypeContext? related to lin
-        self.stan_model_context.target_integ_outcome_vector_names = target_simulated_vector_names
+        # TODO @Dashadower how to make target_sim_vector_names and integ_outcome_vector_names consistent? make class TypeContext? related to lin
+        self.stan_model_context.target_integ_outcome_vector_names = target_sim_vector_names
         self.stan_model_context.obs_integ_outcome_vector_names = [f'{name}_obs' for name in self.stan_model_context.target_integ_outcome_vector_names]
         self.driving_vector_names = driving_vector_names
         self.model_name = model_name
 
-    #TODO @dashadower for external refernce of target_simulated_vector_names
-    # is it better to use model.target_simulated_vector_names or define function for consistency?
+    #TODO @dashadower for external refernce of target_sim_vector_names
+    # is it better to use model.target_sim_vector_names or define function for consistency?
     def get_latent_vector_names(self):
         return [f'{target}' for target in self.stan_model_context.target_integ_outcome_vector_names]
 
@@ -211,9 +212,9 @@ class vensim2stan:
         return self.get_latent_vector_names() + self.get_obs_vector_names()
 
 
-    def update_setting(self, est_param_names: list, target_simulated_vector_names: list, driving_vector_names: list, model_name: str):
+    def update_setting(self, est_param_names: list, target_sim_vector_names: list, driving_vector_names: list, model_name: str):
         self.est_param_names = est_param_names
-        self.stan_model_context.target_integ_outcome_vector_names = target_simulated_vector_names
+        self.stan_model_context.target_integ_outcome_vector_names = target_sim_vector_names
         self.driving_vector_names = driving_vector_names
         self.model_name = model_name
         # if self.initial_time in self.integration_times:
@@ -392,7 +393,7 @@ class vensim2stan:
             f.write(StanModelBuilder(self.precision_context, self.stan_model_context).build_block(self.hier_est_param_names))
             f.write("\n")
 
-            f.write(Data2DrawsStanGQBuilder(self.precision_context,self.stan_model_context, self.vensim_model_context,).build_block())
+            f.write(Data2DrawsStanGQBuilder(self.precision_context,self.stan_model_context, self.vensim_model_context,).build_block(self.hier_est_param_names))
 
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path, cpp_options={'STAN_THREADS':'true'})
         return stan_model
