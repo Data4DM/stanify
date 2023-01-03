@@ -597,10 +597,10 @@ class Data2DrawsStanGQBuilder():
         return str(self.code)
 
     def build_loglik_functions(self, hier_est_param_names):
-        self.code += "real loglik;\n"
-        self.code += "real loglik_prior;\n"
+        self.code += "real loglik = 0;\n"
+        self.code += "real loglik_prior = 0;\n"
         for tn in self.stan_model_context.target_integ_outcome_vector_names:
-            self.code += f"real loglik_{tn};\n"
+            self.code += f"real loglik_{tn} = 0;\n"
 
         # add loglik for "matter ~ form"
         # self.stan_model_context.all_stan_variables include "matter"
