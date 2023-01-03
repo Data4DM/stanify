@@ -87,18 +87,19 @@ def compute_loglik_rank(inference_data): #, data_index=0, chain_index=0):
     loglik_post = []
     S = inference_data.posterior.dims["prior_draw"]
     for s in range(S):
-        loglik_prior = inference_data.prior["loglik"].sel(prior_draw=0).values
-        loglik_post = inference_data.posterior["loglik"].sel(prior_draw=0).values[:, :]  # [chain, draw]
+        loglik_prior_vals = inference_data.prior["loglik"].sel(prior_draw=0).values
+        loglik_post_vals = inference_data.log_likelihood["loglik"].sel(prior_draw=0).values.flatten()  # [chain, draw]
 
-        sbc_rank.append(np.sum(loglik_post < loglik_prior))
-        loglik_prior.append(loglik_prior) # length S [.1, .3, .4]
-        loglik_post.append(loglik_post) # length S [0, .2, .4]
+        sbc_rank.append(np.sum(loglik_post_vals < loglik_prior_vals))
+        loglik_prior.append(loglik_prior_vals) # length S [.1, .3, .4]
+        loglik_post.append(loglik_post_vals) # length S [0, .2, .4]
     return sbc_rank, loglik_prior, loglik_post
 
 def plot_sbc_rank(sbc_rank:list, target_sim_vector_name: str, model_name: str):
     ranks = []
     plt.hist(sbc_rank)
     plt.title(f"SBC - {target_sim_vector_name}")
+    plt.show()
     save_fig(model_name, False, "sbc_rank")
     plt.clf()
 

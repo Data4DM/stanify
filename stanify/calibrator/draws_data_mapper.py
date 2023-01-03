@@ -65,11 +65,11 @@ def data2draws(model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, 
     #print("init_draws_dict: ", init_draws_dict)
     if is_adapt_fit: # adaptive step
         data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains),
-                         inits = init_draws_dict, step_size=.1, seed = 10) #iter_warmup=0 gives RuntimeError: Error during sampling
+                         inits = init_draws_dict, step_size=.1) #iter_warmup=0 gives RuntimeError: Error during sampling
         return data2draws_fit
 
     data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling=int(model.precision_context.M / chains),
-                         inits=init_draws_dict, step_size=step_size, iter_warmup=1, seed=10) #metric = metric,
+                         inits=init_draws_dict, step_size=step_size, iter_warmup=1) #metric = metric,
 
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
