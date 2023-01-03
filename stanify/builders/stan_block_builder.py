@@ -518,6 +518,7 @@ class Draws2DataStanGQBuilder():
         self.code = IndentedString()
         self.code += "generated quantities{\n"
         self.code.indent_level += 1
+        self.code += "real draws2data_lp = 0;\n"
         self.build_param_rng_functions(hier_est_param_names)
         self.code += "\n"
         self.code.add_raw(transformed_parameters_code, ignore_indent=True)
@@ -558,11 +559,14 @@ class Draws2DataStanGQBuilder():
                         param_name = param_name + "__init"
                     if param_name in hier_est_param_names:
 
-
+                        # TODO: Check whether rep_vector is necessary
                         dist_code = "rep_vector(" + f'{statement.distribution_args[0]}, R), ' + f"{', '.join(statement.distribution_args[1:])}"
+
                         self.code += f"real {param_name}[R] =  {statement.distribution_type}_rng({dist_code});\n"
+                        self.code += f"draws2data_lp += {statement.distribution_type}_lpdf({param_name} | {dist_code});\n\n"
                     else:
                         self.code += f"real {param_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                        self.code += f"draws2data_lp += {statement.distribution_type}_lpdf({param_name} | {', '.join(statement.distribution_args)});\n\n"
                     processed_statements.add(statement)
 
     def build_obs_rng_functions(self):
@@ -573,6 +577,7 @@ class Draws2DataStanGQBuilder():
                 if statement.lhs_expr in self.stan_model_context.obs_integ_outcome_vector_names:
                     vec_name = statement.lhs_expr
                     self.code += f"array [N] real {vec_name} = {statement.distribution_type}_rng({', '.join(statement.distribution_args)});\n"
+                    self.code += f"draws2data_lp += {statement.distribution_type}_lpdf({vec_name} | {', '.join(statement.distribution_args)});\n\n"
         else:
             self.code += "// Define observed vector (matching vector)\n"
             for statement in self.stan_model_context.sample_statements:
@@ -588,6 +593,7 @@ class Draws2DataStanGQBuilder():
                     vec_name = statement.lhs_expr
                     dist_code = f'{vec_name}'[:-4] + "[:, r], " + f"{', '.join(statement.distribution_args[1:])}"
                     self.code += f"{vec_name}[:, r] = {statement.distribution_type}_rng({dist_code});\n"
+                    self.code += f"draws2data_lp += {statement.distribution_type}_lpdf({vec_name}[:, r] | {dist_code});\n\n"
             # link(alpha) ~ N(0,1); link(alpha) is expr, alpha is var
             self.code.indent_level -= 1
             self.code += "}\n"

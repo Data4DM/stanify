@@ -1,8 +1,13 @@
 from collections import defaultdict
 import os
 import arviz as az
+import cmdstanpy
 from pysd.translators.vensim.vensim_file import VensimFile
 import numpy as np
+import pickle
+from hashlib import sha256
+import cmdstanpy
+import tempfile
 
 class IndentedString:
     def __init__(self, indent_level=0):
@@ -94,7 +99,7 @@ def get_stanfiles_path(model_name):
 # TODO @Dashadower caching
 def StanModel_cache(model_code, model_name=None, **kwargs):
     """Use just as you would `stan`"""
-    code_hash = md5(model_code.encode('ascii')).hexdigest()
+    code_hash = sha256(model_code.encode('ascii')).hexdigest()
     if model_name is None:
         cache_fn = 'cached-model-{}.pkl'.format(code_hash)
     else:
@@ -102,9 +107,15 @@ def StanModel_cache(model_code, model_name=None, **kwargs):
     try:
         sm = pickle.load(open(cache_fn, 'rb'))
     except:
-        sm = pystan.StanModel(model_code=model_code)
+        tmp_file = tempfile.NamedTemporaryFile("w", suffix=".stan", delete=False)
+        print(f"Writing stan code to temporary directory {f.name}")
+        tmp_file.write(model_code)
+        tmp_file.close()
+        sm = cmdstanpy.CmdStanModel(stan_file=tmp_file.name)
         with open(cache_fn, 'wb') as f:
             pickle.dump(sm, f)
+
+        os.remove(tmp_file.name)
     else:
         print("Using cached StanModel")
     return sm

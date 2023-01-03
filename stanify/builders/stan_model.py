@@ -289,8 +289,12 @@ class vensim2stan:
             os.remove(stan_function_path)
         with open(stan_function_path, "w") as f:
             f.write(function_code)
+
+    def get_draws2data_stanfile_path(self):
+        return f"{ get_stanfiles_path(self.model_name)}/draws2data.stan"
+
     def stanify_draws2data(self):
-        stan_draws2data_path = f"{ get_stanfiles_path(self.model_name)}/draws2data.stan"
+        stan_draws2data_path = self.get_draws2data_stanfile_path()
 
         # Find sampling statements for init
         stock_initials = {}
@@ -342,9 +346,11 @@ class vensim2stan:
         return stan_model
 
 
+    def get_data2draws_stanfile_path(self):
+        return f"{get_stanfiles_path(self.model_name)}/data2draws.stan"
 
     def stanify_data2draws(self):
-        stan_data2draws_path = f"{get_stanfiles_path(self.model_name)}/data2draws.stan"
+        stan_data2draws_path = self.get_data2draws_stanfile_path()
 
         # Find sampling statements for init
         stock_initials = {}

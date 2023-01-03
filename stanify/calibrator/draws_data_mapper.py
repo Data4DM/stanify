@@ -7,7 +7,11 @@ import numpy as np
 import xarray as xr
 xr.set_options(display_expand_attrs = False)
 import arviz as az
+import bridgestan
 import typing
+import json
+import tempfile
+from numbers import Number
 if typing.TYPE_CHECKING:
     import stanify.stan_model
 
@@ -102,7 +106,8 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
     sample_stats = xr.concat((data2draws_idata_s.sample_stats for data2draws_idata_s in sbc_list), dim="prior_draw")
     idata_orig.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik, sample_stats=sample_stats)
 
-    compute_loglik_sbc(idata_orig, setting, precision)
+    compute_loglik_sbc(model, idata_orig, setting, precision)
+    compute_lp_sbc(idata_orig, precision)
 
     if 'process_noise_scale' in numeric.keys():
         idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata_orig)
@@ -114,24 +119,49 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
     return idata_orig, model
 
 
-def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_index=0):
+def compute_loglik_sbc(model, inference_data, setting, precision, data_index=0):
     from scipy.stats import norm
     import matplotlib.pyplot as plt
     sbc_results = {}
+
+    n_chains = inference_data.posterior.dims["draw"]
+    n_draws = inference_data.posterior.dims["chain"]
+
     for data_var_name in setting["target_simulated_vector_names"]:
         sbc_results[data_var_name] = []
         for s in range(precision["S"]):
+            tilde_lp = 0
+            post_lp = np.zeros(inference_data.posterior.dims["draw"] * n_chains)
             theta_tilde_mean = inference_data.prior[data_var_name].sel(prior_draw=s).values
             theta_tilde_sd = inference_data.prior["m_noise_scale"].sel(prior_draw=s).values
             data_tilde_vector = inference_data.prior_predictive[f"{data_var_name}_obs"].sel(prior_draw=s).values
-            tilde_loglik = norm.logpdf(data_tilde_vector, theta_tilde_mean, theta_tilde_sd)[data_index]
+            tilde_lp += norm.logpdf(data_tilde_vector, theta_tilde_mean, theta_tilde_sd)[data_index]
+            for prior in model.stan_model_context.sample_statements:
+                if prior.lhs_variable in data_var_name:
+                    continue
 
-            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s, chain=chain_index).values[:, data_index] #
-            theta_tilde_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s, chain=chain_index).values[data_index] #, chain=chain_index
-            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s, chain=chain_index).values[:, data_index] # chain=chain_index)
-            post_loglik = norm.logpdf(data, theta_mean, theta_tilde_sd)
+                assert prior.distribution_type == "normal", "SBC for likelihood currently supports only normal distributions"
+                tilde_args = []
+                post_args = []
+                for arg in prior.distribution_args:
+                    if isinstance(arg, Number):
+                        tilde_args.append(arg)
+                        post_args.append(np.tile(arg, [n_chains, n_draws]))
+                    else:
+                        tilde_args.append(inference_data.prior[arg].sel(prior_draw=s).values)
+                        post_args.append(inference_data.poster[arg].sel(prior_draw=s).values)
 
-            sbc_results[data_var_name].append(sum(post_loglik < tilde_loglik))
+                tilde_lp += norm.logpdf(inference_data.prior[prior.lhs_variable].sel(prior_draws=s).values, *tilde_args)
+                post_lp += norm.logpdf(inference_data.posterior[prior.lhs_variable].sel(prior_draws=s).values, *post_args)
+
+
+            theta_mean = inference_data.posterior[data_var_name].sel(prior_draw=s).values[:, :, data_index]
+            theta_sd = inference_data.posterior["m_noise_scale"].sel(prior_draw=s).values[:, :, data_index]
+            data = inference_data.posterior_predictive[f"{data_var_name}_obs_post"].sel(prior_draw=s).values[0, :, :, data_index]
+            post_lp += norm.logpdf(data, theta_mean, theta_sd)
+
+
+            sbc_results[data_var_name].append(sum(post_lp.flatten() < tilde_lp))
 
         #x = list(range(precision["S"]))
         #plt.bar(x, sbc_results[data_var_name], width=1.0)
@@ -141,7 +171,23 @@ def compute_loglik_sbc(inference_data, setting, precision, data_index=0, chain_i
 
     return sbc_results
 
+def compute_lp_sbc(inference_data, precision):
+    import matplotlib.pyplot as plt
+    sbc_results = []
+    for s in range(precision["S"]):
+        tilde_lp = inference_data.prior["draws2data_lp"].sel(prior_draw=s).values
 
+        theta_lp = inference_data.sample_stats["lp"].sel(prior_draw=s).values.flatten()
+
+        sbc_results.append(sum(theta_lp < tilde_lp))
+
+    # x = list(range(precision["S"]))
+    # plt.bar(x, sbc_results[data_var_name], width=1.0)
+    plt.hist(sbc_results)
+    plt.title(f"SBC - lp__")
+    plt.show()
+
+    return sbc_results
 
 
 def update_numeric_obs(model, draws2data_s):
