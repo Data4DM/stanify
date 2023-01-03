@@ -47,7 +47,7 @@ def draws2data(model, idata_kwargs, data_dict) -> az.InferenceData:
 
     return draws2data_idata
 
-def data2draws(model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, is_adapt_fit=False, metric=None) -> az.InferenceData:
+def data2draws(model, idata_kwargs, data_dict, step_size, is_adapt_fit=False, metric=None) -> az.InferenceData:
     """
     Parameters
     ----------
@@ -65,11 +65,11 @@ def data2draws(model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, 
     #print("init_draws_dict: ", init_draws_dict)
     if is_adapt_fit: # adaptive step
         data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains),
-                         inits = init_draws_dict, step_size=.1) #iter_warmup=0 gives RuntimeError: Error during sampling
+                          step_size=.1) #iter_warmup=0 gives RuntimeError: Error during sampling
         return data2draws_fit
 
     data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling=int(model.precision_context.M / chains),
-                         inits=init_draws_dict, step_size=step_size, iter_warmup=1) #metric = metric,
+                          step_size=step_size, iter_warmup=1) #metric = metric,
 
     # add observed_data to idata_kwargs
     observed_data = {k: v for k, v in data_dict.items() if k in model.get_obs_vector_names()}
@@ -121,13 +121,13 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
         }
 
         if s == 0:
-            fit_0 = data2draws(model, idata_kwargs, data_dict, init_draws_dict, is_adapt_fit=True, step_size=.1)
+            fit_0 = data2draws(model, idata_kwargs, data_dict, is_adapt_fit=True, step_size=.1)
             step_size = get_stepsize(fit_0)
             #metric = get_metric(s, fit_0, checkpoint_name="metric_checkpoint")
             init_draws_dict = extract(fit_0)
 
         #print("step_size", step_size)
-        data2draws_idata_s = data2draws(model, idata_kwargs, data_dict, init_draws_dict, step_size= step_size) #, metric = metric
+        data2draws_idata_s = data2draws(model, idata_kwargs, data_dict, step_size= step_size) #, metric = metric
         sbc_list.append(data2draws_idata_s)
 
     post = xr.concat((postfit.posterior for postfit in sbc_list), dim="prior_draw")
