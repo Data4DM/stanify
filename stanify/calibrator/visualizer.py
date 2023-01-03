@@ -87,18 +87,16 @@ def plot_qoi(idata, setting, precision, idata_kwargs, model_name):
     compute_loglik_rank(sbc_rank, "all")
     return
 
-def compute_loglik_rank(target_sim_vector_prior:xr.DataArray, m_noise_scale_prior: np.ndarray, observed_data,
-                        target_sim_vector_post:xr.DataArray, m_noise_scale_post:np.ndarray, S:int): #, data_index=0, chain_index=0):
+def compute_loglik_rank(inference_data): #, data_index=0, chain_index=0):
     sbc_rank = []
     loglik_prior = []
     loglik_post = []
+    S = inference_data.posterior.dims["prior_draw"]
     for s in range(S):
-        loglik_prior = lognorm.logpdf(observed_data, m_noise_scale_prior.sel(prior_draw=s).values,
-                                      target_sim_vector_prior.sel(prior_draw=s).values)
-        loglik_post  = lognorm.logpdf(observed_data, m_noise_scale_post.sel(prior_draw=s).values,
-                                      target_sim_vector_post.sel(prior_draw=s).values)
+        loglik_prior = inference_data.prior["loglik"].sel(prior_draw=0).values
+        loglik_post = inference_data.posterior["loglik"].sel(prior_draw=0).values[:, :]  # [chain, draw]
 
-        sbc_rank.append(sum(loglik_post < loglik_prior))
+        sbc_rank.append(np.sum(loglik_post < loglik_prior))
         loglik_prior.append(loglik_prior) # length S [.1, .3, .4]
         loglik_post.append(loglik_post) # length S [0, .2, .4]
     return sbc_rank, loglik_prior, loglik_post

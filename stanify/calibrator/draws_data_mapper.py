@@ -47,7 +47,7 @@ def draws2data(model, idata_kwargs, data_dict) -> az.InferenceData:
 
     return draws2data_idata
 
-def data2draws(s, model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, metric=None) -> az.InferenceData:
+def data2draws(model, idata_kwargs, data_dict, init_draws_dict:dict, step_size, is_adapt_fit=False, metric=None) -> az.InferenceData:
     """
     Parameters
     ----------
@@ -63,7 +63,7 @@ def data2draws(s, model, idata_kwargs, data_dict, init_draws_dict:dict, step_siz
     """
     chains = 1
     #print("init_draws_dict: ", init_draws_dict)
-    if s == 0: # adaptive step
+    if is_adapt_fit: # adaptive step
         data2draws_fit = model.stanify_data2draws().sample(data=data_dict, chains=chains, iter_sampling= int(model.precision_context.M / chains),
                          inits = init_draws_dict, step_size=.1, seed = 10) #iter_warmup=0 gives RuntimeError: Error during sampling
         return data2draws_fit
@@ -121,24 +121,21 @@ def draws2data2draws(vensim, setting, precision, numeric, prior, idata_kwargs) -
         }
 
         if s == 0:
-            fit_0 = data2draws(s, model, idata_kwargs, data_dict, init_draws_dict, step_size=.1)
+            fit_0 = data2draws(model, idata_kwargs, data_dict, init_draws_dict, is_adapt_fit=True, step_size=.1)
             step_size = get_stepsize(fit_0)
             #metric = get_metric(s, fit_0, checkpoint_name="metric_checkpoint")
             init_draws_dict = extract(fit_0)
 
         #print("step_size", step_size)
-        data2draws_idata_s = data2draws(s, model, idata_kwargs, data_dict, init_draws_dict, step_size= step_size) #, metric = metric
+        data2draws_idata_s = data2draws(model, idata_kwargs, data_dict, init_draws_dict, step_size= step_size) #, metric = metric
         sbc_list.append(data2draws_idata_s)
 
-    post = xr.concat((data2draws_idata_s.posterior for data2draws_idata_s in sbc_list), dim="prior_draw")
-    post_pred = xr.concat((data2draws_idata_s.posterior_predictive for data2draws_idata_s in sbc_list), dim="prior_draw")
-    loglik = xr.concat((data2draws_idata_s.log_likelihood for data2draws_idata_s in sbc_list), dim="prior_draw")
-    sample_stats = xr.concat((data2draws_idata_s.sample_stats for data2draws_idata_s in sbc_list), dim="prior_draw")
+    post = xr.concat((postfit.posterior for postfit in sbc_list), dim="prior_draw")
+    post_pred = xr.concat((postfit.posterior_predictive for postfit in sbc_list), dim="prior_draw")
+    loglik = xr.concat((postfit.log_likelihood for postfit in sbc_list), dim="prior_draw")
+    sample_stats = xr.concat((postfit.sample_stats for postfit in sbc_list), dim="prior_draw")
 
     idata.add_groups(posterior=post, posterior_predictive = post_pred, observed_data = draws2data_dataset, log_likelihood = loglik, sample_stats=sample_stats)
-
-    compute_loglik_sbc(model, idata, setting, precision)
-    compute_lp_sbc(idata, precision)
 
     if 'process_noise_scale' in numeric.keys():
         idata2netcdf4store(f"{get_data_path(model.model_name)}/sbc_{len(setting['est_param_names'])}est_pnoise{numeric['process_noise_scale']}.nc", idata)
@@ -159,7 +156,7 @@ def compute_loglik_sbc(model, inference_data, setting, precision, data_index=0):
     n_chains = inference_data.posterior.dims["draw"]
     n_draws = inference_data.posterior.dims["chain"]
 
-    for data_var_name in setting["target_simulated_vector_names"]:
+    for data_var_name in setting["target_sim_vector_names"]:
         sbc_results[data_var_name] = []
         for s in range(precision["S"]):
             tilde_lp = 0
