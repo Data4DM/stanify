@@ -202,64 +202,15 @@ class Vensim2Stan:
 
         """
 
-        self.function_builder = StanFunctionBuilder(self.abstract_model)
-        function_code = self.function_builder.build_functions(self.stan_model_context.odefunc_exposed_parameters, self.hier_est_param_names, self.vensim_model_context.integ_outcome_vector_names)
-
         stan_function_path = self.model_stan_files_directory.joinpath("functions.stan")
         with open(stan_function_path, "w") as f:
-            f.write(function_code)
+            pass
 
     def get_draws2data_stanfile_path(self):
         return self.model_stan_files_directory.joinpath("draws2data.stan")
 
     def stanify_draws2data(self):
         stan_draws2data_path = self.get_draws2data_stanfile_path()
-
-        # Find sampling statements for init
-        stock_initials = {}
-        for statement in self.stan_model_context.sample_statements:
-            if statement.init_state:
-                stock_initials[statement.lhs_variable] = statement.lhs_variable + "__init"
-
-        with open(stan_draws2data_path, "w") as f:
-            # Include the function
-            f.write("functions{")
-            f.write("\n")
-            f.write(f"  #include functions.stan\n")
-            f.write("}")
-            f.write("\n")
-            f.write("\n")
-            f.write(Draws2DataStanDataBuilder(self.stan_model_context).build_block())
-            f.write("\n")
-
-            transformed_data_builder = StanTransformedDataBuilder(self.stan_model_context, self.vensim_model_context)
-            f.write(transformed_data_builder.build_block(
-                  self.vensim_model_context.integ_outcome_vector_names,
-                  self.function_builder.get_generated_lookups_dict(),
-                  self.function_builder.get_generated_driving_data_ftn_set(),
-                  stock_initials)
-            )
-
-            stock_initials = {}
-            for statement in self.stan_model_context.sample_statements:
-                if statement.init_state:
-                    stock_variable_name = statement.lhs_variable
-                    stock_initials[stock_variable_name] = stock_variable_name
-
-                #f.write(f"real {stock_initials[stock_variable_name]} = {statement.distribution_type}_rng({', '.join([str(arg) for arg in statement.distribution_args])});\n")
-
-            transformed_params_builder = StanTransformedParametersBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context)
-            transformed_params_builder.code = IndentedString(indent_level=1)
-            transformed_params_builder.write_block(self.stan_model_context.odefunc_exposed_parameters,
-                                                   self.hier_est_param_names,
-                                                   self.vensim_model_context.integ_outcome_vector_names,
-                                                   self.function_builder.ode_function_name,
-                                                   )
-            f.write("\n")
-
-            draws2data_gq_builder = Draws2DataStanGQBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context)
-            draws2data_gq_builder.code = IndentedString(indent_level=1)
-            f.write(draws2data_gq_builder.build_block(self.hier_est_param_names, transformed_parameters_code=str(transformed_params_builder.code)))
 
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_draws2data_path, cpp_options={'STAN_THREADS':'true'})
         return stan_model
@@ -270,48 +221,6 @@ class Vensim2Stan:
 
     def stanify_data2draws(self):
         stan_data2draws_path = self.get_data2draws_stanfile_path()
-
-        # Find sampling statements for init
-        stock_initials = {}
-        for statement in self.stan_model_context.sample_statements:
-            if statement.init_state:
-                stock_initials[statement.lhs_variable] = statement.lhs_variable + "__init"
-
-        with open(stan_data2draws_path, "w") as f:
-            # Include the function
-            f.write("functions{\n")
-            f.write(f"    #include functions.stan\n")
-            f.write("}\n\n")
-
-            f.write(Data2DrawsStanDataBuilder(self.precision_context, self.stan_model_context).build_block())
-            f.write("\n")
-
-            transformed_data_builder = StanTransformedDataBuilder(self.stan_model_context, self.vensim_model_context)
-            f.write(transformed_data_builder.build_block(
-                  self.vensim_model_context.integ_outcome_vector_names,
-                  self.function_builder.get_generated_lookups_dict(),
-                  self.function_builder.get_generated_driving_data_ftn_set(),
-                  stock_initials)
-            )
-
-            f.write("\n")
-
-            f.write(StanParametersBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context).build_block(self.hier_est_param_names))
-            f.write("\n")
-
-            transformed_params_builder = StanTransformedParametersBuilder(self.precision_context, self.stan_model_context, self.vensim_model_context)
-
-            f.write(transformed_params_builder.build_block(self.stan_model_context.odefunc_exposed_parameters,
-                                                           self.hier_est_param_names,
-                                                           self.vensim_model_context.integ_outcome_vector_names,
-                                                           self.function_builder.ode_function_name,
-                                                           ))
-            f.write("\n")
-
-            f.write(StanModelBuilder(self.precision_context, self.stan_model_context).build_block(self.hier_est_param_names))
-            f.write("\n")
-
-            f.write(Data2DrawsStanGQBuilder(self.precision_context,self.stan_model_context, self.vensim_model_context,).build_block(self.hier_est_param_names))
 
         stan_model = cmdstanpy.CmdStanModel(stan_file=stan_data2draws_path, cpp_options={'STAN_THREADS':'true'})
         return stan_model
