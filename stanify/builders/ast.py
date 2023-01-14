@@ -60,7 +60,14 @@ class FunctionCall(ModelBase):
 @dataclass(eq=False)
 class Variable(ModelBase):
     arglist: Any = None
+    constraints: Any = None
     name: Any = None
+
+
+@dataclass(eq=False)
+class Constraints(ModelBase):
+    left: Any = None
+    right: Any = None
 
 
 @dataclass(eq=False)

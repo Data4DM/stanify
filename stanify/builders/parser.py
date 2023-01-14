@@ -216,6 +216,9 @@ class Vensim2StanParser(Parser):
         self._identifier_()
         self.name_last_node('name')
         with self._optional():
+            self._constraints_()
+            self.name_last_node('constraints')
+        with self._optional():
             self._token('[')
             self._arglist_()
             self.name_last_node('arglist')
@@ -227,7 +230,53 @@ class Vensim2StanParser(Parser):
             )
 
         self._define(
-            ['arglist', 'name'],
+            ['arglist', 'constraints', 'name'],
+            []
+        )
+
+    @tatsumasu('Constraints')
+    def _constraints_(self):  # noqa
+        self._token('<')
+        self._constraint_()
+        self.name_last_node('left')
+        self._cut()
+        with self._optional():
+            self._token(',')
+            self._constraint_()
+            self.name_last_node('right')
+
+            self._define(
+                ['right'],
+                []
+            )
+        self._token('>')
+
+        self._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu()
+    def _constraint_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('lower')
+                with self._option():
+                    self._token('upper')
+                self._error(
+                    'expecting one of: '
+                    "'lower' 'upper'"
+                )
+        self.name_last_node('name')
+        self._cut()
+        self._token('=')
+        self._cut()
+        self._literal_()
+        self.name_last_node('value')
+
+        self._define(
+            ['name', 'value'],
             []
         )
 
@@ -318,6 +367,12 @@ class Vensim2StanSemantics:
         return ast
 
     def variable(self, ast):  # noqa
+        return ast
+
+    def constraints(self, ast):  # noqa
+        return ast
+
+    def constraint(self, ast):  # noqa
         return ast
 
     def arglist(self, ast):  # noqa
