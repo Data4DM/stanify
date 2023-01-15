@@ -1,6 +1,8 @@
 name: Generate Docs
 
 on: [push]
+  branches:
+    - 'main'
 
 jobs:
   build:
