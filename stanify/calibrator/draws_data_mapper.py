@@ -9,7 +9,6 @@ import numpy as np
 import xarray as xr
 xr.set_options(display_expand_attrs = False)
 import arviz as az
-import bridgestan
 import numpy as np
 from typing import Optional
 import typing
