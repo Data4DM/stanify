@@ -35,8 +35,8 @@ v2s:
 ```
 mu_pooled ~ normal(3, 1);
 mu_region[region] ~ normal(mu_pooled, 3);
-sigma_time[time] ~ lognormal(0, 1);
-stock_var1[region, time] ~ normal(mu_region[region], sigma_time[time]);
+sigma ~ lognormal(0, 1);
+stock_var1[region, time] ~ normal(mu_region[region], sigma);
 ```
 
 stan:
@@ -80,3 +80,8 @@ Inline generated quantities/transformed parameters.
 ## What I need your help on
 - If we want to support Vensim subscripts, need a tour of how it functions(simple example preferred)
 - Feedback on whether the minisyntax is comfortable to use(now is the (only) chance to shape its format)
+
+## Input Specifications
+1. V2S syntax code
+2. vensim model
+3. auxiliary data
