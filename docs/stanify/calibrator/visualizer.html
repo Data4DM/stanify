@@ -1293,44 +1293,49 @@ can be controlled with the <code>uncertainty_agg</code> argument.</p>
 be used heuristically. For instanec, in the case of multi-modal posteriors, common point
 estimates, such as mean, (geometric) median, or maximum a posteriori (MAP) mean nothing.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>post_samples      : np.ndarray of shape (n_data_sets, n_post_draws, n_params)
-    The posterior draws obtained from n_data_sets
-prior_samples     : np.ndarray of shape (n_data_sets, n_params)
-    The prior draws (true parameters) obtained for generating the n_data_sets
-point_agg         : callable, optional, default: np.median
-    The function to apply to the posterior draws to get a point estimate for each marginal.
-    The default computes the marginal median for each marginal posterior as a robust
-    point estimate.
-uncertainty_agg   : callable or None, optional, default: scipy.stats.median_abs_deviation
-    The function to apply to the posterior draws to get an uncertainty estimate.
-    If <code>None</code> provided, a simple scatter using only <code>point_agg</code> will be plotted.
-param_names       : list or None, optional, default: None
-    The parameter names for nice plot titles. Inferred if None
-fig_size          : tuple or None, optional, default : None
-    The figure size passed to the matplotlib constructor. Inferred if None.
-label_fontsize    : int, optional, default: 14
-    The font size of the y-label text
-title_fontsize    : int, optional, default: 16
-    The font size of the title text
-metric_fontsize   : int, optional, default: 16
-    The font size of the goodness-of-fit metric (if provided)
-add_corr          : bool, optional, default: True
-    A flag for adding correlation between true and estimates to the plot
-add_r2            : bool, optional, default: True
-    A flag for adding R^2 between true and estimates to the plot
-color             : str, optional, default: '#8f2727'
-    The color for the true vs. estimated scatter points and errobars</p>
+<ul>
+<li><strong>post_samples</strong> (np.ndarray of shape (n_data_sets, n_post_draws, n_params)):
+The posterior draws obtained from n_data_sets</li>
+<li><strong>prior_samples</strong> (np.ndarray of shape (n_data_sets, n_params)):
+The prior draws (true parameters) obtained for generating the n_data_sets</li>
+<li><strong>point_agg         : callable, optional, default</strong> (np.median):
+The function to apply to the posterior draws to get a point estimate for each marginal.
+The default computes the marginal median for each marginal posterior as a robust
+point estimate.</li>
+<li><strong>uncertainty_agg   : callable or None, optional, default</strong> (scipy.stats.median_abs_deviation):
+The function to apply to the posterior draws to get an uncertainty estimate.
+If <code>None</code> provided, a simple scatter using only <code>point_agg</code> will be plotted.</li>
+<li><strong>param_names       : list or None, optional, default</strong> (None):
+The parameter names for nice plot titles. Inferred if None</li>
+<li><strong>fig_size          : tuple or None, optional, default</strong> (None):
+The figure size passed to the matplotlib constructor. Inferred if None.</li>
+<li><strong>label_fontsize    : int, optional, default</strong> (14):
+The font size of the y-label text</li>
+<li><strong>title_fontsize    : int, optional, default</strong> (16):
+The font size of the title text</li>
+<li><strong>metric_fontsize   : int, optional, default</strong> (16):
+The font size of the goodness-of-fit metric (if provided)</li>
+<li><strong>add_corr          : bool, optional, default</strong> (True):
+A flag for adding correlation between true and estimates to the plot</li>
+<li><strong>add_r2            : bool, optional, default</strong> (True):
+A flag for adding R^2 between true and estimates to the plot</li>
+<li><strong>color             : str, optional, default</strong> ('#8f2727'):
+The color for the true vs. estimated scatter points and errobars</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>ShapeError
-    If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</p>
+<ul>
+<li><strong>ShapeError</strong>: If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</li>
+</ul>
 </div>
 
 
@@ -1491,43 +1496,48 @@ its applications in goodness-of-fit evaluation and multiple sample comparison. S
 <p>For models with many parameters, use <code>stacked=True</code> to obtain an idea of the overall calibration
 of a posterior approximator.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>post_samples      : np.ndarray of shape (n_data_sets, n_post_draws, n_params)
-    The posterior draws obtained from n_data_sets
-prior_samples     : np.ndarray of shape (n_data_sets, n_params)
-    The prior draws obtained for generating n_data_sets
-difference        : bool, optional, default: False
-    If <code>True</code>, plots the ECDF difference. Enables a more dynamic visualization range.
-stacked           : bool, optional, default: False
-    If <code>True</code>, all ECDFs will be plotted on the same plot. If <code>False</code>, each ECDF will
-    have its own subplot, similar to the behavior of <code><a href="#plot_sbc_histograms">plot_sbc_histograms</a></code>.
-param_names       : list or None, optional, default: None
-    The parameter names for nice plot titles. Inferred if None. Only relevant if <code>stacked=False</code>.
-fig_size          : tuple or None, optional, default: None
-    The figure size passed to the matplotlib constructor. Inferred if None.
-label_fontsize    : int, optional, default: 14
-    The font size of the y-label and y-label texts
-legend_fontsize   : int, optional, default: 14
-    The font size of the legend text
-title_fontsize    : int, optional, default: 16
-    The font size of the title text. Only relevant if <code>stacked=False</code>
-rank_ecdf_color   : str, optional, default: '#a34f4f'
-    The color to use for the rank ECDFs
-fill_color        : str, optional, default: 'grey'
-    The color of the fill arguments.
-**kwargs          : dict, optional, default: {}
-    Keyword arguments can be passed to control the behavior of ECDF simultaneous band computation
-    through the <code>ecdf_bands_kwargs</code> dictionary. See <code>simultaneous_ecdf_bands</code> for keyword arguments</p>
+<ul>
+<li><strong>post_samples</strong> (np.ndarray of shape (n_data_sets, n_post_draws, n_params)):
+The posterior draws obtained from n_data_sets</li>
+<li><strong>prior_samples</strong> (np.ndarray of shape (n_data_sets, n_params)):
+The prior draws obtained for generating n_data_sets</li>
+<li><strong>difference        : bool, optional, default</strong> (False):
+If <code>True</code>, plots the ECDF difference. Enables a more dynamic visualization range.</li>
+<li><strong>stacked           : bool, optional, default</strong> (False):
+If <code>True</code>, all ECDFs will be plotted on the same plot. If <code>False</code>, each ECDF will
+have its own subplot, similar to the behavior of <code><a href="#plot_sbc_histograms">plot_sbc_histograms</a></code>.</li>
+<li><strong>param_names       : list or None, optional, default</strong> (None):
+The parameter names for nice plot titles. Inferred if None. Only relevant if <code>stacked=False</code>.</li>
+<li><strong>fig_size          : tuple or None, optional, default</strong> (None):
+The figure size passed to the matplotlib constructor. Inferred if None.</li>
+<li><strong>label_fontsize    : int, optional, default</strong> (14):
+The font size of the y-label and y-label texts</li>
+<li><strong>legend_fontsize   : int, optional, default</strong> (14):
+The font size of the legend text</li>
+<li><strong>title_fontsize    : int, optional, default</strong> (16):
+The font size of the title text. Only relevant if <code>stacked=False</code></li>
+<li><strong>rank_ecdf_color   : str, optional, default</strong> ('#a34f4f'):
+The color to use for the rank ECDFs</li>
+<li><strong>fill_color        : str, optional, default</strong> ('grey'):
+The color of the fill arguments.</li>
+<li><strong>**kwargs          : dict, optional, default</strong> ({}):
+Keyword arguments can be passed to control the behavior of ECDF simultaneous band computation
+through the <code>ecdf_bands_kwargs</code> dictionary. See <code>simultaneous_ecdf_bands</code> for keyword arguments</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>ShapeError
-    If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</p>
+<ul>
+<li><strong>ShapeError</strong>: If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</li>
+</ul>
 </div>
 
 
@@ -1663,35 +1673,40 @@ arXiv preprint arXiv:1804.06788.</p>
 <p>Any deviation from uniformity indicates miscalibration and thus poor convergence
 of the networks or poor combination between generative model / networks.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>post_samples      : np.ndarray of shape (n_data_sets, n_post_draws, n_params)
-    The posterior draws obtained from n_data_sets
-prior_samples     : np.ndarray of shape (n_data_sets, n_params)
-    The prior draws obtained for generating n_data_sets
-param_names       : list or None, optional, default: None
-    The parameter names for nice plot titles. Inferred if None
-fig_size          : tuple or None, optional, default : None
-    The figure size passed to the matplotlib constructor. Inferred if None
-num_bins          : int, optional, default: 10
-    The number of bins to use for each marginal histogram
-binomial_interval : float in (0, 1), optional, default: 0.95
-    The width of the confidence interval for the binomial distribution
-label_fontsize    : int, optional, default: 14
-    The font size of the y-label text
-title_fontsize    : int, optional, default: 16
-    The font size of the title text
-hist_color        : str, optional, default '#a34f4f'
-    The color to use for the histogram body</p>
+<ul>
+<li><strong>post_samples</strong> (np.ndarray of shape (n_data_sets, n_post_draws, n_params)):
+The posterior draws obtained from n_data_sets</li>
+<li><strong>prior_samples</strong> (np.ndarray of shape (n_data_sets, n_params)):
+The prior draws obtained for generating n_data_sets</li>
+<li><strong>param_names       : list or None, optional, default</strong> (None):
+The parameter names for nice plot titles. Inferred if None</li>
+<li><strong>fig_size          : tuple or None, optional, default</strong> (None):
+The figure size passed to the matplotlib constructor. Inferred if None</li>
+<li><strong>num_bins          : int, optional, default</strong> (10):
+The number of bins to use for each marginal histogram</li>
+<li><strong>binomial_interval : float in (0, 1), optional, default</strong> (0.95):
+The width of the confidence interval for the binomial distribution</li>
+<li><strong>label_fontsize    : int, optional, default</strong> (14):
+The font size of the y-label text</li>
+<li><strong>title_fontsize    : int, optional, default</strong> (16):
+The font size of the title text</li>
+<li><strong>hist_color</strong> (str, optional, default '#a34f4f'):
+The color to use for the histogram body</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>ShapeError
-    If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</p>
+<ul>
+<li><strong>ShapeError</strong>: If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</li>
+</ul>
 </div>
 
 
@@ -1831,14 +1846,17 @@ post_alpha        : float in [0, 1], optonal, default: 0.9
 prior_alpha       : float in [0, 1], optonal, default: 0.7
     The opacity of the prior plots</p>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>AssertionError
-    If the shape of posterior_draws is not 2-dimensional.</p>
+<ul>
+<li><strong>AssertionError</strong>: If the shape of posterior_draws is not 2-dimensional.</li>
+</ul>
 </div>
 
 
@@ -1947,44 +1965,49 @@ prior_alpha       : float in [0, 1], optonal, default: 0.7
 
             <div class="docstring"><p>A generic helper function to plot the losses of a series of training epochs and runs.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>train_losses      : pd.DataFrame
-    The (plottable) history as returned by a train_[...] method of a <code>Trainer</code> instance.
-    Alternatively, you can just pass a data frame of validation losses instead of train losses,
-    if you only want to plot the validation loss.
-val_losses        : pd.DataFrame or None, optional, default: None
-    The (plottable) validation history as returned by a train_[...] method of a <code>Trainer</code> instance.
-    If left <code>None</code>, only train losses are plotted. Should have the same number of columns
-    as <code>train_losses</code>.
-fig_size          : tuple or None, optional, default: None
-    The figure size passed to the <code>matplotlib</code> constructor. Inferred if <code>None</code>
-train_color       : str, optional, default: '#8f2727'
-    The color for the train loss trajectory
-val_color         : str, optional, default: black
-    The color for the optional validation loss trajectory
-lw_train          : int, optional, default: 2
-    The linewidth for the training loss curve
-lw_val            : int, optional, default: 3
-    The linewidth for the validation loss curve
-grid_alpha        : float, optional, default 0.5
-    The opacity factor for the background gridlines
-legend_fontsize   : int, optional, default: 14
-    The font size of the legend text
-label_fontsize    : int, optional, default: 14
-    The font size of the y-label text
-title_fontsize    : int, optional, default: 16
-    The font size of the title text</p>
+<ul>
+<li><strong>train_losses</strong> (pd.DataFrame):
+The (plottable) history as returned by a train_[...] method of a <code>Trainer</code> instance.
+Alternatively, you can just pass a data frame of validation losses instead of train losses,
+if you only want to plot the validation loss.</li>
+<li><strong>val_losses        : pd.DataFrame or None, optional, default</strong> (None):
+The (plottable) validation history as returned by a train_[...] method of a <code>Trainer</code> instance.
+If left <code>None</code>, only train losses are plotted. Should have the same number of columns
+as <code>train_losses</code>.</li>
+<li><strong>fig_size          : tuple or None, optional, default</strong> (None):
+The figure size passed to the <code>matplotlib</code> constructor. Inferred if <code>None</code></li>
+<li><strong>train_color       : str, optional, default</strong> ('#8f2727'):
+The color for the train loss trajectory</li>
+<li><strong>val_color         : str, optional, default</strong> (black):
+The color for the optional validation loss trajectory</li>
+<li><strong>lw_train          : int, optional, default</strong> (2):
+The linewidth for the training loss curve</li>
+<li><strong>lw_val            : int, optional, default</strong> (3):
+The linewidth for the validation loss curve</li>
+<li><strong>grid_alpha</strong> (float, optional, default 0.5):
+The opacity factor for the background gridlines</li>
+<li><strong>legend_fontsize   : int, optional, default</strong> (14):
+The font size of the legend text</li>
+<li><strong>label_fontsize    : int, optional, default</strong> (14):
+The font size of the y-label text</li>
+<li><strong>title_fontsize    : int, optional, default</strong> (16):
+The font size of the title text</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>AssertionError
-    If the number of columns in <code>train_losses</code> does not match the
-    number of columns in <code>val_losses</code>.</p>
+<ul>
+<li><strong>AssertionError</strong>: If the number of columns in <code>train_losses</code> does not match the
+number of columns in <code>val_losses</code>.</li>
+</ul>
 </div>
 
 
@@ -2063,24 +2086,28 @@ title_fontsize    : int, optional, default: 16
 
             <div class="docstring"><p>Creates pairplots for a given joint prior.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>prior       : callable
-    The prior object which takes a single integer argument and generates random draws.
-param_names : list of str or None, optional, default None
-    An optional list of strings which
-n_samples   : int, optional, default: 1000
-    The number of random draws from the joint prior
-height      : float, optional, default: 2.5
-    The height of the pair plot
-color       : str, optional, defailt : '#8f2727'
-    The color of the plot
-**kwargs    : dict, optional
-    Additional keyword arguments passed to the sns.PairGrid constructor</p>
+<ul>
+<li><strong>prior</strong> (callable):
+The prior object which takes a single integer argument and generates random draws.</li>
+<li><strong>param_names</strong> (list of str or None, optional, default None):
+An optional list of strings which</li>
+<li><strong>n_samples   : int, optional, default</strong> (1000):
+The number of random draws from the joint prior</li>
+<li><strong>height      : float, optional, default</strong> (2.5):
+The height of the pair plot</li>
+<li><strong>color       : str, optional, defailt</strong> ('#8f2727'):
+The color of the plot</li>
+<li><strong>**kwargs</strong> (dict, optional):
+Additional keyword arguments passed to the sns.PairGrid constructor</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 </div>
 
 
@@ -2147,20 +2174,24 @@ color       : str, optional, defailt : '#8f2727'
 visual inspection of the the latent space and whether its structrue corresponds to the
 one enforced by the optimization criterion.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>z_samples   : np.ndarray or tf.Tensor of shape (n_sim, n_params)
-    The latent samples computed through a forward pass of the inference network.
-height      : float, optional, default: 2.5
-    The height of the pair plot.
-color       : str, optional, defailt : '#8f2727'
-    The color of the plot
-**kwargs    : dict, optional
-    Additional keyword arguments passed to the sns.PairGrid constructor</p>
+<ul>
+<li><strong>z_samples</strong> (np.ndarray or tf.Tensor of shape (n_sim, n_params)):
+The latent samples computed through a forward pass of the inference network.</li>
+<li><strong>height      : float, optional, default</strong> (2.5):
+The height of the pair plot.</li>
+<li><strong>color       : str, optional, defailt</strong> ('#8f2727'):
+The color of the plot</li>
+<li><strong>**kwargs</strong> (dict, optional):
+Additional keyword arguments passed to the sns.PairGrid constructor</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>f : plt.Figure - the figure instance for optional saving</p>
+<ul>
+<li><strong>f</strong> (plt.Figure - the figure instance for optional saving):</li>
+</ul>
 </div>
 
 
@@ -2238,9 +2269,11 @@ color       : str, optional, defailt : '#8f2727'
             <div class="docstring"><p>Plots the calibration curves and the ECE for a model comparison problem. Depends on the
 <code>expected_calibration_error</code> function for computing the ECE.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>TODO</p>
+<ul>
+<li><strong>TODO</strong></li>
+</ul>
 </div>
 
 
@@ -2298,17 +2331,20 @@ color       : str, optional, defailt : '#8f2727'
             <div class="docstring"><p>Checks requirements for the shapes of posterior and prior draws as
 necessitated by most diagnostic functions.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h6 id="parameters">Parameters</h6>
 
-<p>post_samples      : np.ndarray of shape (n_data_sets, n_post_draws, n_params)
-    The posterior draws obtained from n_data_sets
-prior_samples     : np.ndarray of shape (n_data_sets, n_params)
-    The prior draws obtained for generating n_data_sets</p>
+<ul>
+<li><strong>post_samples</strong> (np.ndarray of shape (n_data_sets, n_post_draws, n_params)):
+The posterior draws obtained from n_data_sets</li>
+<li><strong>prior_samples</strong> (np.ndarray of shape (n_data_sets, n_params)):
+The prior draws obtained for generating n_data_sets</li>
+</ul>
 
-<h2 id="raises">Raises</h2>
+<h6 id="raises">Raises</h6>
 
-<p>ShapeError
-    If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</p>
+<ul>
+<li><strong>ShapeError</strong>: If there is a deviation form the expected shapes of <code>post_samples</code> and <code>prior_samples</code>.</li>
+</ul>
 </div>
 
 

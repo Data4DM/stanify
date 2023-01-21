@@ -449,15 +449,19 @@
 </span></pre></div>
 
 
-            <div class="docstring"><h2 id="parameters">Parameters</h2>
+            <div class="docstring"><h6 id="parameters">Parameters</h6>
 
-<p>model: model with constructed function and draws2data stanfile
-idata_kwargs: output format supplied from users, containing group, group's dims, coord, data var
-data_dict: data to be used for generator stan data block</p>
+<ul>
+<li><p><strong>model</strong> (model with constructed function and draws2data stanfile):</p></li>
+<li><p><strong>idata_kwargs</strong> (output format supplied from users, containing group, group's dims, coord, data var):</p></li>
+<li><p><strong>data_dict</strong> (data to be used for generator stan data block):</p></li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>draws2data_idata: InferenceData type which acts as backbone for concating data2draws idatas (along dim = prior_group)</p>
+<ul>
+<li><strong>draws2data_idata</strong> (InferenceData type which acts as backbone for concating data2draws idatas (along dim = prior_group)):</li>
+</ul>
 </div>
 
 
@@ -504,18 +508,22 @@ data_dict: data to be used for generator stan data block</p>
 </span></pre></div>
 
 
-            <div class="docstring"><h2 id="parameters">Parameters</h2>
+            <div class="docstring"><h6 id="parameters">Parameters</h6>
 
-<p>s: index for the prior draw i.e. synthetic dataset index
-model: configuration combination of structural, setting, numeric; model with constructed function and draws2data stanfile
-data_dict: dictionary of observed data to fit
-init_draws_dict: initialize each data2drawss chain from ground truth, that is prior draws
-step_size: HMC sampling step_size; first SBC fit (s=0) uses .01, then adapted step_size from the previous fit is used
-metric: HMC sampling adapted metric from the previous fit from the second fit</p>
+<ul>
+<li><p><strong>s</strong> (index for the prior draw i.e. synthetic dataset index):</p></li>
+<li><p><strong>model</strong> (configuration combination of structural, setting, numeric; model with constructed function and draws2data stanfile):</p></li>
+<li><p><strong>data_dict</strong> (dictionary of observed data to fit):</p></li>
+<li><p><strong>init_draws_dict</strong> (initialize each data2drawss chain from ground truth, that is prior draws):</p></li>
+<li><p><strong>step_size</strong> (HMC sampling step_size; first SBC fit (s=0) uses .01, then adapted step_size from the previous fit is used):</p></li>
+<li><p><strong>metric</strong> (HMC sampling adapted metric from the previous fit from the second fit):</p></li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>InferenceData type</p>
+<ul>
+<li><strong>InferenceData type</strong></li>
+</ul>
 </div>
 
 
@@ -752,15 +760,19 @@ prior: dictionary-like container for estimated parameters (default point mass fo
 </span></pre></div>
 
 
-            <div class="docstring"><h2 id="parameters">Parameters</h2>
+            <div class="docstring"><h6 id="parameters">Parameters</h6>
 
-<p>draws2data_idata: InferenceData with dimension (general: chain, draws, initial_outcome_dim_0, integrated_result_dim_0, integrated_result_dim_1,
-                                               specific: prey_dim_0, process_noise_dim_0, predator_dim_0, prey_obs_dim_0, predator_obs_dim_0)</p>
+<ul>
+<li><strong>draws2data_idata: InferenceData with dimension (general</strong> (chain, draws, initial_outcome_dim_0, integrated_result_dim_0, integrated_result_dim_1,):
+specific: prey_dim_0, process_noise_dim_0, predator_dim_0, prey_obs_dim_0, predator_obs_dim_0)</li>
+</ul>
 
-<h2 id="returns">Returns</h2>
+<h6 id="returns">Returns</h6>
 
-<p>model_data2draws: process noise turned-off model
-numeric_data2draws: draws2data_s added as observed data</p>
+<ul>
+<li><p><strong>model_data2draws</strong> (process noise turned-off model):</p></li>
+<li><p><strong>numeric_data2draws</strong> (draws2data_s added as observed data):</p></li>
+</ul>
 </div>
 
 
