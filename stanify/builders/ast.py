@@ -59,9 +59,9 @@ class FunctionCall(ModelBase):
 
 @dataclass(eq=False)
 class Variable(ModelBase):
-    arglist: Any = None
     constraints: Any = None
     name: Any = None
+    subscripts: Any = None
 
 
 @dataclass(eq=False)

@@ -49,6 +49,7 @@ class InputDataContext:
         """
         Process a data variable and create a data entry corresponding to it. Note that it does not modify nor save the
         actual data value
+
         Parameters
         ----------
         data_name : str
@@ -62,7 +63,7 @@ class InputDataContext:
             case xarray.DataArray():
                 dims = OrderedDict()
                 for dim_name, length in zip(data_value.dims, data_value.shape):
-                    dim_name = str(dim_name)
+                    dim_name = str(dim_name)  # .dims does return a string-able type,but re-casting for typechecks
                     dims[dim_name] = length
                     if dim_name in self.data_dims:
                         assert length == self.data_dims[dim_name], f"Found conflicting dimension length for dim name {dim_name}."
@@ -72,8 +73,7 @@ class InputDataContext:
                 self.data_entries[data_name] = InputDataEntry(data_name, dims=dims)
 
             case _:
-                raise Exception(
-                    f"Unsupported input data type {type(data_value)}. Either numbers or a xarray.DataArray is supported.")
+                raise Exception(f"Unsupported input data type {type(data_value)}. Either numbers or a xarray.DataArray is supported.")
 
 
 class Vensim2Stan:

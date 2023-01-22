@@ -220,17 +220,17 @@ class Vensim2StanParser(Parser):
             self.name_last_node('constraints')
         with self._optional():
             self._token('[')
-            self._arglist_()
-            self.name_last_node('arglist')
+            self._subscript_()
+            self.name_last_node('subscripts')
             self._token(']')
 
             self._define(
-                ['arglist'],
+                ['subscripts'],
                 []
             )
 
         self._define(
-            ['arglist', 'constraints', 'name'],
+            ['constraints', 'name', 'subscripts'],
             []
         )
 
@@ -289,6 +289,18 @@ class Vensim2StanParser(Parser):
             self._token(',')
             self._cut()
             self._expression_()
+            self.add_last_node_to_name('@')
+        self._closure(block1)
+
+    @tatsumasu()
+    def _subscript_(self):  # noqa
+        self._identifier_()
+        self.add_last_node_to_name('@')
+
+        def block1():
+            self._token(',')
+            self._cut()
+            self._identifier_()
             self.add_last_node_to_name('@')
         self._closure(block1)
 
@@ -376,6 +388,9 @@ class Vensim2StanSemantics:
         return ast
 
     def arglist(self, ast):  # noqa
+        return ast
+
+    def subscript(self, ast):  # noqa
         return ast
 
     def subexpression(self, ast):  # noqa
