@@ -1,7 +1,7 @@
 from typing import Type
 import ast, pathlib
 
-from .stan_block_builder import *
+from .old_stan_block_builder import *
 from .utilities import vensim_name_to_identifier
 from pysd.translators.structures.abstract_expressions import *
 import cmdstanpy

@@ -11,28 +11,6 @@ if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
 
 
-@dataclass
-class FindAllUsedVariablesWalker(Vensim2StanWalker):
-    """
-    Find all variable usage in the AST, excluding subscripts.
-
-    Attributes
-    ----------
-    variable_names : list[str]
-        list of all variable names used within the V2S code
-
-    Methods
-    ----------
-    walk()
-        Default entry point for walker
-    """
-    variable_names: list[str] = field(default_factory=list)
-
-    def walk_Variable(self, node: ast.Variable):
-        self.variable_names.append(node.name)
-        # Don't walk into arguments(subscripts)
-
-
 @dataclass(frozen=True)
 class V2SVariableContext:
     r"""
@@ -56,6 +34,28 @@ class V2SVariableContext:
 
     def __hash__(self) -> int:
         return hash(self.name)
+
+
+@dataclass
+class FindAllUsedVariablesWalker(Vensim2StanWalker):
+    """
+    Find all variable usage in the AST, excluding subscripts.
+
+    Attributes
+    ----------
+    variable_names : list[str]
+        list of all variable names used within the V2S code
+
+    Methods
+    ----------
+    walk()
+        Default entry point for walker
+    """
+    variable_names: list[str] = field(default_factory=list)
+
+    def walk_Variable(self, node: ast.Variable):
+        self.variable_names.append(node.name)
+        # Don't walk into arguments(subscripts)
 
 
 class FindDeclarationsWalker(Vensim2StanWalker):
@@ -96,7 +96,7 @@ class FindDeclarationsWalker(Vensim2StanWalker):
         if node.constraints:
             # left and right exists for the constraints
             # node.constraints : Constraints
-            # node.constraints.left, node.constraints.left : AST object with attribute name, value
+            # node.constraints.left, node.constraints.left : AST object with attributes name and value
             # lower = node.constraints.left/right.name.value : Literal
             if node.constraints.left:
                 if node.constraints.left.name == "lower":
@@ -133,10 +133,6 @@ class VerifySubscriptsWalker(Vensim2StanWalker):
         self.v2s_code_handler = v2s_code_handler
         super().__init__()
 
-    def walk_Statement(self, node: ast.Statement):
-        self.walk(node.left)
-        self.walk(node.right)
-
     def walk_Variable(self, node: ast.Variable):
         subscripts = node.subscripts
 
@@ -151,10 +147,10 @@ class VerifySubscriptsWalker(Vensim2StanWalker):
         declared_subscripts = set(self.v2s_code_handler.declared_variables[node.name].subscripts)
         if len(used_subscripts - declared_subscripts) > 0:
             # User included other subscript which aren't declared for the variable
-            raise Exception(f"Subscripting for variable {node.name} - subscript(s) {used_subscripts - declared_subscripts} isn't declared for the variable!")
+            raise Exception(f"Subscripts for variable {node.name} - subscript(s) {used_subscripts - declared_subscripts} isn't declared for the variable!")
         elif len(declared_subscripts - used_subscripts) > 0:
             # User omitted subscript(s), meaning indexing isn't returning a scalar
-            raise Exception(f"Subscripting for variable {node.name} - too few subscripts used. Expected subscripts {declared_subscripts}, but only found {used_subscripts}")
+            raise Exception(f"Subscripts for variable {node.name} - too few subscripts used. Expected subscripts {declared_subscripts}, but only found {used_subscripts}")
 
 
 class Vensim2StanCodeHandler:
@@ -164,9 +160,6 @@ class Vensim2StanCodeHandler:
     1.Pre-vensim model (preliminary passes)
         - Collects vensim model-context-free information.
         - Includes V2S code-data dims validation, and variable usage information
-    2. Post-vensim model
-        1. Identifies
-
 
     Attributes
     ----------

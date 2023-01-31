@@ -16,24 +16,40 @@ class IndentedString:
     """
     This can be seen as a stateful `textwrap.indent()`.
     """
-    def __init__(self, indent_level=0):
+    def __init__(self, indent_level: int = 0):
+        """
+
+        Parameters
+        ----------
+        indent_level : int
+            The initial indentation level. Default is 0. Note that it indicates the number of tabs, not spaces.
+        """
         self.indent_level = indent_level
         self.string = ""
 
-    def __iadd__(self, other: str):
+    def __iadd__(self, other: str) -> IndentedString:
         prefix = " " * 4 * self.indent_level
         if other != "\n":
             self.string += prefix
         self.string += other
         return self
 
-    def add_raw(self, string, ignore_indent=False):
+    def add_raw(self, string: str, ignore_indent: bool = False) -> None:
+        """
+        Directly append a string, potentially overriding the indentation.
+        Parameters
+        ----------
+        string : str
+            string to append
+        ignore_indent : bool
+            Default is False. If set to True, will not add the indentation.
+        """
         if ignore_indent:
             self.string += string
         else:
             self.__iadd__(string)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.string
 
 
@@ -80,14 +96,14 @@ class StatementTopoSort:
     def add_stmt(self, lhs_var, rhs_vars: Iterable[str]) -> None:
         """
         Add an edge to the dependency graph.
-        Edge being added is the form `lhs_var -> rhs_var`, and read as, "`lhs_var` depends on `rhs_var`".
+        Edge being added is the form `lhs_var -> rhs_var` and read as "`lhs_var` depends on `rhs_var`".
 
         Parameters
         ----------
         lhs_var : str
             string denoting the LHS variable name
         rhs_vars : Iterable[str]
-            An iterable denoting the RHS variables
+            An Iterable of strings denoting the RHS variable names
         """
         if lhs_var not in self.dependency_graph:
             self.dependency_graph[lhs_var] = set()
