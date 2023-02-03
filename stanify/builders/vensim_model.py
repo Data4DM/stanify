@@ -89,6 +89,14 @@ class VensimModelContext:
         for subscript in self._first_section.subscripts:
             self.subscripts[subscript.name] = tuple(subscript.subscripts)
 
+    @property
+    def first_section(self) -> AbstractSection:
+        return self._first_section
+
+    @property
+    def abstract_model(self) -> AbstractModel:
+        return self._abstract_model
+
     def get_subscript_values(self, subscript_name: str) -> tuple[Any]:
         """
         Return the values of a given subscript.

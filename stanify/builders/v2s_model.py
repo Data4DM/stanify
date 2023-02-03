@@ -7,30 +7,7 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 
 if TYPE_CHECKING:
-    from .vensim2stan import InputDataContext
     from .vensim_model import VensimModelContext
-
-
-@dataclass(frozen=True)
-class SBCSettings:
-    r"""
-    Settings for running SBC
-
-    Attributes
-    ----------
-    data_variable : str
-        Name of the data variable. This corresponds to $y$.
-    target_parameter : str
-        Name of the parameter in which SBC should be run against. Corresponds to $\theta$.
-    n_fits : int
-        Number of fits to perform. Defaults to 100.
-    n_draws : int
-        Number of draws to draw from the posterior. Defaults to 1000.
-    """
-    data_variable: str
-    target_parameter: str
-    n_fits: int = field(default=100)
-    n_draws: int = field(default=1000)
 
 
 @dataclass(frozen=True)

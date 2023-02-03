@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
+from .utilities import IndentedString, StatementTopoSort, vensim_name_to_identifier
 
 
 class StanFunctionBuilder:
-    """
+    r"""
     `StanFunctionBuilder` handles building the function stan file. The Stan portion of Stanify has the following
     hierarchy:
     - `functions.stan`: This holds the ODE target function. In short, this is your Vensim model translated into Stan.
@@ -80,5 +81,6 @@ class StanFunctionBuilder:
         -------
         a code string
         """
+        pass
 
 

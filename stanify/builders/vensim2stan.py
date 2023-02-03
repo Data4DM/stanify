@@ -2,89 +2,39 @@ from __future__ import annotations
 import pathlib
 from .vensim_model import VensimModelContext
 from typing import Union, TYPE_CHECKING
-from dataclasses import dataclass, field
-from collections import OrderedDict
+from dataclasses import dataclass
 from numbers import Number
 import datetime
 
-if TYPE_CHECKING:
-    import xarray
 
-
-@dataclass
-class InputDataEntry:
-    """
-    Holds information about a given input data entry.
+@dataclass(frozen=True)
+class V2SModelSettings:
+    r"""
+    These are the settings that the code generators need to know.
 
     Attributes
     ----------
-    name : str
-        Name of the data variable
-    dims : OrderedDict[str, int]
-        An OrderedDict such that each key indicates the name of the dimension, and value an integer specifying the
-        size of the dimension. Denotes a scalar variable if the dict is empty.
+    data_variable : str
+        Name of the data variable. This corresponds to $y$.
+    initial_time : Number
+        Number indicating the start time simulation.
+    integration_times : list[Number]
+        List of numbers that indicate the times in which the differential equations will be integrated for.
+        See https://mc-stan.org/docs/functions-reference/functions-ode-solver.html for details. Note that
+        `initial_time` **shouldn't be included**.
     """
-    name: str
-    dims: OrderedDict[str, int] = field(default_factory=OrderedDict)
-
-
-@dataclass
-class InputDataContext:
-    """
-    Holds InputDataEntry objects and makes sure shared dimension names are consistent across all data entries.
-
-    Attributes
-    ----------
-    data_entries : dict[str, InputDataEntry]
-        Dict of data entries
-    data_dims : dict[str, int]
-        Dict holding dim names. Key is the name of the dim, and value its length. For example, if there's two dataarrays
-        that contain the dim `N`, it will make sure the size of `N` is the same across all datasets.
-
-    """
-    data_entries: dict[str, InputDataEntry] = field(default_factory=dict)
-    data_dims: dict[str, int] = field(default_factory=dict)
-
-    def add_data_entry(self, data_name: str, data_value: Union[Number, xarray.DataArray]) -> None:
-        """
-        Process a data variable and create a data entry corresponding to it. Note that it does not modify nor save the
-        actual data value
-
-        Parameters
-        ----------
-        data_name : str
-            The declared name of the data variable
-        data_value : Number or xarray.DataArray
-            The value of the data. Can be either a Number type(`int, float`) or a `xarray.DataArray`.
-        """
-        match data_value:
-            case int() | float():
-                self.data_entries[data_name] = InputDataEntry(data_name)
-            case xarray.DataArray():
-                dims = OrderedDict()
-                for dim_name, length in zip(data_value.dims, data_value.shape):
-                    dim_name = str(dim_name)  # .dims does return a string-able type,but re-casting for typechecks
-                    dims[dim_name] = length
-                    if dim_name in self.data_dims:
-                        assert length == self.data_dims[dim_name], f"Found conflicting dimension length for dim name {dim_name}."
-                    else:
-                        self.data_dims[dim_name] = length
-
-                self.data_entries[data_name] = InputDataEntry(data_name, dims=dims)
-
-            case _:
-                raise Exception(f"Unsupported input data type {type(data_value)}. Either numbers or a xarray.DataArray is supported.")
+    data_variable: str
+    initial_time: Number
+    integration_times: list[Number]
 
 
 class Vensim2Stan:
     """
     `Vensim2Stan` is the entry point of the stanify translation process. It orchestrates the entire process of parsing
-    necessary resources and code generation.
+    necessary resources and code generation. It also performs fits and simulations for SBC.
 
     Attributes
     ----------
-    data_context : InputDataContext
-        `InputDataContext` object which holds input data information
     v2s_model_code : str
         User specified v2s code string
     vensim_model_context : VensimModelContext
@@ -95,26 +45,30 @@ class Vensim2Stan:
     model_name : str
         A string denoting a unique identifier for the model. Defaults to using a combination of the current datetime and
         the vensim model filename.
+    v2s_model_settings : V2SModelSettings
+        A `V2SModelSettings` object that holds the settings that need to be passed down to codegen.
     """
-    def __init__(self, data: dict[str, Union[Number, xarray.DataArray]], vensim2stan_code: str,
-                 vensim_file_path: str, model_name: str = "", stan_file_directory: str = ""):
+    def __init__(self, vensim2stan_code: str, vensim_file_path: str, initial_time: Number,
+                 integration_times: list[Number], model_name: str = "", stan_file_directory: str = ""):
         """
 
         Parameters
         ----------
-        data : dict[str, Union[Number, xarray.DataArray]]
-            Input data dict. Keys are a string denoting the variable name to be used, and values either a number or a
-            `xarray.DataArray`
         vensim2stan_code : str
             vensim2stan model specification code
         vensim_file_path : str or pathlib.Path
             Path to the vensim model file
+        initial_time : Number
+            Number indicating the start time simulation.
+        integration_times : list[Number]
+            List of numbers that indicate the times in which the differential equations will be integrated for.
+            See https://mc-stan.org/docs/functions-reference/functions-ode-solver.html for details. Note that
+            `initial_time` **shouldn't be included**.
         model_name : str
             Refer to class attribute documentation
         stan_file_directory : str or pathlib.Path
             Refer to class attribute documentation
         """
-        self.data_context = InputDataContext()
         self.v2s_model_code = vensim2stan_code
         vensim_file_path = pathlib.Path(vensim_file_path)
         self.vensim_model_context = VensimModelContext(vensim_file_path)
@@ -131,9 +85,36 @@ class Vensim2Stan:
         else:
             self.model_name = model_name
 
-        # Process the data - populate the data context
-        for data_name, value in data.items():
-            self.data_context.add_data_entry(data_name, value)
+        self.v2s_model_settings = V2SModelSettings("", initial_time=initial_time, integration_times=integration_times)
+
+    def run_sbc(self, data_variable: str, n_fits: int = 100, n_draws: int = 1000):
+        """
+        generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
+        SBC.
+
+        Parameters
+        ----------
+        data_variable : str
+            Name of the data variable. This corresponds to $y$.
+        n_fits : int
+            Number of fits to perform. Defaults to 100.
+        n_draws : int
+            Number of draws to draw from the posterior. Defaults to 1000.
+
+        Returns
+        -------
+        A SBCFit object
+        """
+        # Re-instantiate a model settings with the updated data variable.
+        self.v2s_model_settings = V2SModelSettings(data_variable=data_variable,
+                                                   initial_time=self.v2s_model_settings.initial_time,
+                                                   integration_times=self.v2s_model_settings.integration_times)
+
+        # call codegen
+
+        # run draws2data
+
+        # run data2draws
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         pass
