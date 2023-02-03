@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 import numpy as np
 from .vensim_ast_walker import BaseVensimWalker
-from .vensim2stan_walker import Vensim2StanWalker
+from .vensim2stan_walker import Vensim2StanWalker, FindDeclarationsWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
 from collections import defaultdict
 from numbers import Number
@@ -82,7 +82,8 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 declared_subscripts = component.subscripts[0]
                 self.walk(component.ast, element.name, declared_subscripts)
 
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None) -> None:
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None,
+             current_precedence: int = 100) -> None:
         # Find constant data declarations.
         match component_ast:
             case int():
@@ -102,6 +103,34 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 stan_array_init = str(component_ast.tolist()).replace("[", "{").replace("]", "}")
 
                 self._code += f"array[{','.join(str(dim) for dim in component_ast.shape)}] {stan_dtype} {node_name} = {stan_array_init};\n"
+
+
+@dataclass
+class ParametersBlockCodegen(StanBlockCodegen):
+
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+        walker = FindDeclarationsWalker()
+        walker.walk(v2s_code_handler.program_ast)
+        for key, variable_context in walker.declared_variables.items():
+            if key in vensim_model_context.integ_outcome_variables:
+                continue
+            if not variable_context.sampled:
+                continue
+
+            subscripts = variable_context.subscripts if variable_context.subscripts else ()
+            dims = [str(len(vensim_model_context.subscripts[subscript])) for subscript in subscripts]
+            constraint_code = ""
+            if variable_context.lower > float("-inf"):
+                constraint_code += f"lower={variable_context.lower}"
+            if variable_context.upper < float("inf"):
+                constraint_code += f", upper={variable_context.upper}"
+
+            if constraint_code:
+                constraint_code = "<" + constraint_code + ">"
+
+            variable_type = f"array[{','.join(dims)}]" if subscripts else "real"
+
+            self._code += f"{variable_type} {key}{constraint_code};\n"
 
 
 @dataclass
@@ -127,7 +156,7 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
         for index, arg in enumerate(node.arglist):
             self.walk(arg)
             if index < len(node.arglist) - 1:
-                self._code += ","
+                self._code += ", "
         self._code += ")"
 
     def walk_Variable(self, node: ast.Variable):
@@ -136,6 +165,9 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
             self._code += "["
             self._code += ",".join(self.subscript_loop_variable_mapping[subscript] for subscript in node.subscripts)
             self._code += "]"
+
+    def walk_Literal(self, node: ast.Literal):
+        self._code += f"{node.value}"
 
     @property
     def code(self):
@@ -322,6 +354,10 @@ class Data2DrawsCodegen(StanFileCodegen):
             transformed_params_gen.generate(self.v2s_code_handler, self.vensim_model_context)
 
             f.write(transformed_params_gen.code)
+
+            parameters_gen = ParametersBlockCodegen("parameters")
+            parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            f.write(parameters_gen.code)
 
             model_gen = ModelBlockCodegen("model")
             model_gen.generate(self.v2s_code_handler, self.vensim_model_context)

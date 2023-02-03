@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from .utilities import IndentedString, vensim_name_to_identifier
 import pysd.translators.structures.abstract_expressions as pysd_ast
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from vensim_model import VensimModelContext
@@ -11,6 +11,12 @@ from numbers import Number
 from abc import ABC, abstractmethod
 import numpy as np
 
+
+def get_subscripts_ReferenceStructure(reference_structure: pysd_ast.ReferenceStructure) -> tuple[str]:
+    if reference_structure.subscripts:
+        return reference_structure.subscripts.subscripts
+
+    return ()
 
 @dataclass
 class BaseVensimWalker(ABC):
@@ -28,7 +34,7 @@ class BaseVensimWalker(ABC):
     vensim_model_context: VensimModelContext
 
     @abstractmethod
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None) -> None:
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None, current_precedence: int = 100) -> None:
         """
         This is the base format of the Vensim AST walkers. Although they're normally recursively called,
         values shouldn't be returned directly, but instead use a class attribute to pass back values.
@@ -47,13 +53,93 @@ class BaseVensimWalker(ABC):
             element hierarchy, should be `component.ast`.
         node_name : str
             String indicating the AST Node name. By the above element hierarchy, should be `element.name`
-        subscripts : list[str]
-            List indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+        subscripts : tuple[str]
+            Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
             `component.subscripts`.
-
-
+        current_precedence : int
+            Integer indicating the current operator precedence level. Only relevant when parsing `ArithmeticStructure`.
         """
         raise NotImplementedError
+
+
+def walk_ArithmeticStructure(callback_function: Callable, component_ast: pysd_ast.ArithmeticStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100):
+    operator_precedence = {  # lower comes first
+        "+": 3,
+        "-": 3,
+        "*": 2,
+        "/": 2,
+        "^": 1
+    }
+    # ArithmeticStructure consists of chained arithmetic expressions.
+    # We parse them one by one into a single expression
+    # Assume ArithmeticStructure.operators are in order of precedence(lower comes first)
+    """
+    Suppose we have:
+    A = 1 + 1; B = A * 2
+    Naively substituting in A will result in:
+    1 + 1 * 2
+    which is not correct, and instead should be:
+    (1 + 1) * 2
+    Assume we have the following AST:
+          *  # precedence level 2
+          /\
+         /  2
+        +  # precedence level 3
+        /\
+       1  1
+    We check if the operators of the subtrees of '*' have a precedence level higher than its parent, and
+    enclose them in parentheses if so.
+           *  # precedence level 2
+          /\
+         /  2
+        +  # precedence level 3
+        /\
+       1  b (b is treated as reference structure)
+
+
+    """
+
+    output_string = ""
+    last_argument_index = len(component_ast.arguments) - 1
+
+    # Find the maximum precedence value of the operators
+    max_precedence = max([operator_precedence[op] for op in component_ast.operators])
+
+    if max_precedence >= current_precedence:
+        output_string += "("
+
+    for index, argument in enumerate(component_ast.arguments):
+        # Find the operators which set the precedence level of its children
+        if index == 0:
+            operators_to_check = [component_ast.operators[0]]
+        elif index == last_argument_index:
+            operators_to_check = [component_ast.operators[-1]]
+        else:
+            operators_to_check = [component_ast.operators[index - 1], component_ast.operators[index]]
+
+        # Pass the minimum precedence level
+        if isinstance(argument, pysd_ast.ReferenceStructure):
+            subscripts = get_subscripts_ReferenceStructure(argument)
+        else:
+            subscripts = tuple()
+
+        operand_text = callback_function(callback_function, argument, node_name, subscripts, min([operator_precedence[op] for op in operators_to_check]))
+
+        # If one of the operators is division, and the operand is an integer, convert the integer to a float string representation
+        if operand_text.isdigit():
+            if '/' in operators_to_check:
+                operand_text = str(float(operand_text))
+
+        output_string += operand_text
+
+        if index < last_argument_index:
+            output_string += " "
+            output_string += component_ast.operators[index]
+            output_string += " "
+
+    if max_precedence >= current_precedence:
+        output_string += ")"
+    return output_string
 
 
 @dataclass
