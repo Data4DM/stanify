@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
+    from .vensim2stan import V2SModelSettings
 
 
 @dataclass(frozen=True)
@@ -136,14 +137,18 @@ class VerifySubscriptsWalker(Vensim2StanWalker):
         subscripts = node.subscripts
 
         # Check that subscript is in the Vensim model
-        for subscript in subscripts:
-            if subscript not in self.vensim_model_context.subscripts:
-                raise Exception(f"Subscript {subscript} for variable {node.name} isn't defined in the Vensim model.")
+        if subscripts:
+            for subscript in subscripts:
+                if subscript not in self.vensim_model_context.subscripts:
+                    raise Exception(f"Subscript {subscript} for variable {node.name} isn't defined in the Vensim model.")
 
         # Check that variables are subscripted fully - make sure they're scalars when subscripting is done.
         # This is checked by comparing the subscript usage with the declaration
-        used_subscripts = set(subscripts)
-        declared_subscripts = set(self.v2s_code_handler.declared_variables[node.name].subscripts)
+        used_subscripts = set(subscripts) if subscripts else set()
+        if node.name not in self.vensim_model_context.variables:
+            declared_subscripts = set(self.v2s_code_handler.declared_variables[node.name].subscripts)
+        else:
+            declared_subscripts = set(self.vensim_model_context.variables[node.name].subscripts)
         if len(used_subscripts - declared_subscripts) > 0:
             # User included other subscript which aren't declared for the variable
             raise Exception(f"Subscripts for variable {node.name} - subscript(s) {used_subscripts - declared_subscripts} isn't declared for the variable!")
@@ -172,7 +177,7 @@ class Vensim2StanCodeHandler:
     declared_variables : dict[str, V2SVariableContext]
         see `FindDeclarationsWalker`
     """
-    def __init__(self, v2s_code: str, vensim_model_context: VensimModelContext):
+    def __init__(self, v2s_code: str, v2s_settings: V2SModelSettings, vensim_model_context: VensimModelContext):
         """
 
         Parameters
@@ -183,6 +188,7 @@ class Vensim2StanCodeHandler:
             `VensimModelContext`
         """
         self.v2s_code: str = v2s_code
+        self.v2s_settings = v2s_settings
         self.vensim_model_context = vensim_model_context
         self.program_ast: ast.ModelBase = ast.ModelBase()  # initialized as a ModelBase for type checking
         self.declared_variables: dict[str, V2SVariableContext] = {}

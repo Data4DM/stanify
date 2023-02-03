@@ -68,6 +68,7 @@ class VensimModelContext:
         assert len(self._abstract_model.sections) == 1, "Number of sections in AbstractModel must be 1."
 
         for element in self._abstract_model.sections[0].elements:
+            element.name = vensim_name_to_identifier(element.name)
             # Save names of variables defined in the model
             assert len(element.components) == 1, f"Number of components in AbstractElement must be 1, but {element.name} has {len(element.components)}"
 

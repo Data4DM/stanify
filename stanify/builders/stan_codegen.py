@@ -5,11 +5,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
     from .v2s_model import Vensim2StanCodeHandler
+    from . import ast
 
 from abc import ABC, abstractmethod
 from pathlib import Path
 import numpy as np
 from .vensim_ast_walker import BaseVensimWalker
+from .vensim2stan_walker import Vensim2StanWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
 from collections import defaultdict
 from numbers import Number
@@ -39,7 +41,7 @@ class StanBlockCodegen(ABC):
 
     def __post_init__(self):
         # Set up the block - write the block declaration and opening braces.
-        self._code += f"{self.block_name} {{"
+        self._code += f"{self.block_name} {{\n"
         # Increment indent level by 1 since we're inside the block body.
         self._code.indent_level += 1
 
@@ -63,14 +65,18 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
     - draws2data
     """
 
-    def __post_init__(self) -> None:
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
         # Write initial time
-        self._code += f"real initial_time = {self.initial_time};\n"
+        self._code += f"real initial_time = {v2s_code_handler.v2s_settings.initial_time};\n"
 
         # Create the array that holds the ODE integration timesteps
-        self._code += f"array[{len(self.integration_times)}] real integration_times = {{ {','.join([str(time) for time in self.integration_times])} }};\n"
+        self._code += f"array[{len(v2s_code_handler.v2s_settings.integration_times)}] real integration_times = {{ {','.join([str(time) for time in v2s_code_handler.v2s_settings.integration_times])} }};\n"
 
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+        # Create the variables that hold the range of each subscript
+        for subscript_name, values in vensim_model_context.subscripts.items():
+            subscript_comment = [f"{val} : {index}" for index, val in enumerate(values, 1)]
+            self._code += f"int {subscript_name} = {len(values)};  # ({', '.join(subscript_comment)});\n"
+
         for element in vensim_model_context.first_section.elements:
             for component in element.components:
                 declared_subscripts = component.subscripts[0]
@@ -85,8 +91,8 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 self._code += f"real {node_name} = {component_ast};\n"
             case np.ndarray():
                 # Check if the shape of the array matches the declared subscripts
-                assert component_ast.shape == (len(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts), \
-                    f"Vensim node {node_name} has subscripts {subscripts}, its length not matching the shape of the declared value array with shape {component_ast.shape}"
+                assert component_ast.shape == tuple(len(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts), \
+                    f"Vensim node {node_name} has subscripts {subscripts} of length {tuple(len(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts)}, its length not matching the shape of the declared value array with shape {component_ast.shape}"
 
                 stan_dtype = "int" if np.issubdtype(component_ast.dtype, np.integer) else "real"
 
@@ -96,6 +102,44 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 stan_array_init = str(component_ast.tolist()).replace("[", "{").replace("]", "}")
 
                 self._code += f"array[{','.join(str(dim) for dim in component_ast.shape)}] {stan_dtype} {node_name} = {stan_array_init};\n"
+
+
+@dataclass
+class ModelBlockStatementV2SWalker(Vensim2StanWalker):
+    subscript_loop_variable_mapping: dict[str, str]
+    _code = ""
+
+    def walk_Statement(self, node: ast.Statement):
+        if node.op == "=":
+            return
+        self.walk(node.left)
+        self._code += " ~ "
+        self.walk(node.right)
+        self._code += ";\n"
+
+    def walk_Binary(self, node: ast.Binary):
+        self.walk(node.left)
+        self._code += f" {node.op} "
+        self.walk(node.right)
+
+    def walk_FunctionCall(self, node: ast.FunctionCall):
+        self._code += f"{node.name}("
+        for index, arg in enumerate(node.arglist):
+            self.walk(arg)
+            if index < len(node.arglist) - 1:
+                self._code += ","
+        self._code += ")"
+
+    def walk_Variable(self, node: ast.Variable):
+        self._code += node.name
+        if node.subscripts:
+            self._code += "["
+            self._code += ",".join(self.subscript_loop_variable_mapping[subscript] for subscript in node.subscripts)
+            self._code += "]"
+
+    @property
+    def code(self):
+        return self._code
 
 
 class ModelBlockCodegen(StanBlockCodegen):
@@ -132,7 +176,7 @@ class ModelBlockCodegen(StanBlockCodegen):
         # Iterate through all declared LHS-variables and record what subscript was used with what subscript.
         for _, declared_variable in v2s_code_handler.declared_variables.items():
             if declared_variable.subscripts:
-                used_subscripts.add(set(declared_variable.subscripts))
+                used_subscripts.add(frozenset(declared_variable.subscripts))
 
         # We will use a simple tree structure to hold the hierarchical order of nested for loops.
         @dataclass
@@ -204,30 +248,52 @@ class ModelBlockCodegen(StanBlockCodegen):
                     parent.children.add(current_node)
 
 
-            # Create a dummy node to hold the results
-            root = Node("")
-            find_order(list(used_subscripts), root)
+        # Create a dummy node to hold the results
+        root = Node("")
+        find_order(list(used_subscripts), root)
 
-            # Now we run code generation by traversing through the V2S AST
-            # Keep a set of V2S variables we've already processed
-            completed_v2s_variables = set()
+        # Now we run code generation by traversing through the V2S AST
+        # Keep a set of V2S variables we've already processed
+        completed_v2s_variables = set()
+        def build_forloops(node: Node, current_subscripts: dict[str, str], nest_level=0):
+            """
+            Parameters
+            ----------
+            node : Node
+            current_subscripts : dict[str, str]
+                dict indicating the current subscripts and their loop bound variables
+                `dict[subscript_name, loop_bound]` where `subscript_name` is the subscript name and `loop_bound` is the
+                loop bounded variable (i, j, k, ...)
+            nest_level : current nest level of the for loops. base starting value is 0(outermost for loop)
+            """
+            if not node:
+                return
+            loop_bound_variable = chr(ord("i") + nest_level)  # i, j, k, l, ...
+            current_subscripts[node.value] = loop_bound_variable
 
-            def build_forloops(node: Node, current_subscript: set[str], nest_level=0):
-                current_subscript.add(node.value)
-                if not node:
-                    return
+            current_vensim_subscripts = set(current_subscripts.keys())
 
-                loop_bound_variable = chr(ord("i") + nest_level)  # i, j, k, l, ...
-                self._code += f"for ({loop_bound_variable} in 1:{node.value}) {{\n"
-                self._code.indent_level += 1
+            self._code += f"for ({loop_bound_variable} in 1:{node.value}) {{\n"
+            self._code.indent_level += 1
 
-                for children in node.children:
-                    build_forloops(children, current_subscript, nest_level + 1)
-                self._code.indent_level -= 1
-                self._code += "}}\n"
+            for statement in v2s_code_handler.program_ast.statements:
+                if statement.op != "~":
+                    continue
 
-            for child in root.children:
-                build_forloops(child, set())
+                lhs_variable = statement.left
+                if set(lhs_variable.subscripts) == current_vensim_subscripts and lhs_variable.name not in completed_v2s_variables:
+                    completed_v2s_variables.add(lhs_variable.name)
+                    walker = ModelBlockStatementV2SWalker(current_subscripts)
+                    walker.walk(statement)
+                    self._code += walker.code
+
+            for children in node.children:
+                build_forloops(children, current_subscripts, nest_level + 1)
+            self._code.indent_level -= 1
+            self._code += "}\n"
+
+        for child in root.children:
+            build_forloops(child, {})
 
 
 
@@ -256,6 +322,10 @@ class Data2DrawsCodegen(StanFileCodegen):
             transformed_params_gen.generate(self.v2s_code_handler, self.vensim_model_context)
 
             f.write(transformed_params_gen.code)
+
+            model_gen = ModelBlockCodegen("model")
+            model_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            f.write(model_gen.code)
 
 
 class Draws2DataCodegen(StanFileCodegen):

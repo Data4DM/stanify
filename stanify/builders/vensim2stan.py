@@ -5,6 +5,8 @@ from typing import Union, TYPE_CHECKING
 from dataclasses import dataclass
 from numbers import Number
 import datetime
+from .stan_codegen import Draws2DataCodegen, Data2DrawsCodegen, FunctionsFileCodegen
+from .v2s_model import Vensim2StanCodeHandler
 
 
 @dataclass(frozen=True)
@@ -48,7 +50,7 @@ class Vensim2Stan:
     v2s_model_settings : V2SModelSettings
         A `V2SModelSettings` object that holds the settings that need to be passed down to codegen.
     """
-    def __init__(self, vensim2stan_code: str, vensim_file_path: str, initial_time: Number,
+    def __init__(self, vensim2stan_code: str, vensim_file_path: str, data_variable: str, initial_time: Number,
                  integration_times: list[Number], model_name: str = "", stan_file_directory: str = ""):
         """
 
@@ -73,6 +75,11 @@ class Vensim2Stan:
         vensim_file_path = pathlib.Path(vensim_file_path)
         self.vensim_model_context = VensimModelContext(vensim_file_path)
 
+        self.v2s_model_settings = V2SModelSettings(data_variable=data_variable, initial_time=initial_time,
+                                                   integration_times=integration_times)
+
+        self.v2s_code_handler = Vensim2StanCodeHandler(self.v2s_model_code, self.v2s_model_settings, self.vensim_model_context)
+
         if not stan_file_directory:
             # Use CWD as the parent directory for storing stan_files
             self.stan_file_directory = pathlib.Path.cwd().joinpath("stan_files")
@@ -81,13 +88,14 @@ class Vensim2Stan:
             self.stan_file_directory = pathlib.Path(stan_file_directory).expanduser()
 
         if not model_name:
-            self.model_name = datetime.datetime.now().strftime('%Y%m%d-%H-%M-%S') + f"-{vensim_file_path.stem}"
+            self.model_name = vensim_file_path.stem
         else:
             self.model_name = model_name
 
-        self.v2s_model_settings = V2SModelSettings("", initial_time=initial_time, integration_times=integration_times)
+    def get_functions_stanfile_path(self) -> pathlib.Path:
+        return self.stan_file_directory.joinpath(f"functions_{self.model_name}.stan")
 
-    def run_sbc(self, data_variable: str, n_fits: int = 100, n_draws: int = 1000):
+    def run_sbc(self, n_fits: int = 100, n_draws: int = 1000):
         """
         generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
         SBC.
@@ -116,20 +124,20 @@ class Vensim2Stan:
 
         # run data2draws
 
-    def get_functions_stanfile_path(self) -> pathlib.Path:
-        pass
-
     def create_functions_stanfile(self) -> pathlib.Path:
         pass
 
     def get_draws2data_stanfile_path(self) -> pathlib.Path:
-        pass
+        return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")
 
     def create_draws2data_stanfile(self) -> pathlib.Path:
         pass
 
     def get_data2draws_stanfile_path(self) -> pathlib.Path:
-        pass
+        return self.stan_file_directory.joinpath(f"data2draws_{self.model_name}.stan")
 
     def create_data2draws_stanfile(self) -> pathlib.Path:
-        pass
+        generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler)
+        generator.generate_and_write(self.get_data2draws_stanfile_path())
+        return self.get_data2draws_stanfile_path()
+
