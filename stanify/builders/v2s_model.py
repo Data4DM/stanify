@@ -25,6 +25,8 @@ class Vensim2StanCodeHandler:
     ----------
     v2s_code : str
         V2S code string
+    v2s_settings : V2SModelSettings
+        The `V2SModelSettings` that holds some model settings. It is needed for codegen.
     program_ast : ModelBase
         AST of the program(`ast.program`)
     vensim_model_context : VensimModelContext
@@ -39,6 +41,8 @@ class Vensim2StanCodeHandler:
         ----------
         v2s_code : str
             V2S code string
+        v2s_settings : V2SModelSettings
+            The `V2SModelSettings` passed from `Vensim2Stan`
         vensim_model_context : VensimModelContext
             `VensimModelContext`
         """

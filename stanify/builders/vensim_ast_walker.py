@@ -13,6 +13,20 @@ import numpy as np
 
 
 def get_subscripts_ReferenceStructure(reference_structure: pysd_ast.ReferenceStructure) -> tuple[str]:
+    """
+    This function gets the subscript tuple from a `ReferenceStructure`. `ReferenceStructure` means it's referencing a
+    value of a variable, and its subscript attribute is a `SubscriptReferenceStructure` object. This function picks
+    out the tuple values from the `SubscriptReferenceStructure`.
+
+    Parameters
+    ----------
+    reference_structure : pysd_ast.ReferenceStructure
+        The `ReferenceStructure` AST object
+
+    Returns
+    -------
+    A tuple of strings indicating the subscripts
+    """
     if reference_structure.subscripts:
         return reference_structure.subscripts.subscripts
 
@@ -62,7 +76,30 @@ class BaseVensimWalker(ABC):
         raise NotImplementedError
 
 
-def walk_ArithmeticStructure(callback_function: Callable, component_ast: pysd_ast.ArithmeticStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100):
+def walk_ArithmeticStructure(callback_function: Callable, component_ast: pysd_ast.ArithmeticStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
+    """
+    The family of `walk_X`, where `X` is a Vensim AST class, is intended to be used in Vensim AST walkers. Instead of
+    writing all the logic for handling different types of AST nodes in a single function which would then pose
+    problems when you subclass walkers, you can you these functions to reduce duplicate code.
+
+    Parameters
+    ----------
+    callback_function : Callable
+        This is the function that will be called with a `walk()` function needs to be called. Normally this would be
+        the caller of this function. This way, the original caller retains the execution trace and is allowed to
+        resume running its own code.
+    component_ast : ArithmeticStructure
+        An `ArithmeticStructure` object. The arguments are exactly the same as `BaseVensimWalker.walk()`
+    node_name
+    subscripts : tuple[str]
+        **Note for `ArithmeticStructure`**: In the case that one of the arithmetic operands are a `ReferenceStructure`,
+        it will pass the correct subscripts. Otherwise, no subscripts will be passed onwards to the callback function.
+    current_precedence
+
+    Returns
+    -------
+    A string of the generated code
+    """
     operator_precedence = {  # lower comes first
         "+": 3,
         "-": 3,
@@ -142,92 +179,92 @@ def walk_ArithmeticStructure(callback_function: Callable, component_ast: pysd_as
     return output_string
 
 
-@dataclass
-class DataStructureVensimWalker(BaseVensimWalker):
-    """
-    Walks the Vensim AST for data structures, and generates stan code for them
-
-    Attributes
-    ----------
-    function_name_dict : dict[str, str]
-        Maps the names of Vensim variable identifiers to their corresponding Stan function names
-    code : IndentedString
-        The `IndentedString` object that holds the generated code for the data functions.
-
-    """
-    function_name_dict: dict[str, str] = field(init=False, default_factory=dict)
-    # This dict holds the generated function names of each individual data function.
-    # Key is x + y + x_limits + y_limits, value is function name
-
-    @staticmethod
-    def get_function_name(variable_name) -> str:
-        return f"dataFunc__{vensim_name_to_identifier(variable_name)}"
-
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None) -> None:
-        if isinstance(component_ast, pysd_ast.DataStructure):
-            function_name = f"dataFunc__{node_name}"
-            self.data_variable_names.add(node_name)
-            try:
-                data_vector = self.input_data_dict[vensim_name_to_identifier(node_name)]
-                n_intervals = len(data_vector) # only defined in vensim
-            except KeyError:
-                raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
-
-            # if node_name == "time_saveper":
-            #     self.code += f"real cum_time (real time, data vector times){{\n"
-            #     self.code.indent_level += 1
-            #     # Enter function body
-            #     self.code += f"// DataStructure for variable cum_time\n"
-            #     self.code += "real slope;\n"
-            #     self.code += "real intercept;\n\n"
-            #     for time_index in range(n_intervals):
-            #         if time_index == 0:
-            #             continue
-            #         if time_index == 1:
-            #             self.code += f"if(time <= times[{time_index-1}]){{\n"
-            #         else:
-            #             self.code += f"else if(time <= times[{time_index}]){{\n"
-            #
-            #         self.code.indent_level += 1
-            #         # enter conditional body
-            #         self.code += f"intercept = {data_vector[time_index - 1]};\n"
-            #         self.code += f"real time_saveper = times[{time_index}] - times[{time_index-1}];\n"
-            #         self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_saveper;\n"
-            #         self.code += f"return intercept + slope * (time - times[{time_index-1}]);\n"
-            #         self.code.indent_level -= 1
-            #         # exit conditional body
-            #         self.code += "}\n"
-
-            # else:
-            self.code += f"real {function_name}(real time, real time_saveper){{\n"
-            self.code.indent_level += 1
-            # Enter function body
-            self.code += f"// DataStructure for variable {node_name}\n"
-            self.code += "real slope;\n"
-            self.code += "real intercept;\n\n"
-            for time_index in range(n_intervals):
-                if time_index == 0:
-                    continue
-                if time_index == 1:
-                    self.code += f"if(time <= time_saveper * {time_index}){{\n"
-                else:
-                    self.code += f"else if(time <= time_saveper * {time_index}){{\n"
-
-                self.code.indent_level += 1
-                # enter conditional body
-                self.code += f"intercept = {data_vector[time_index - 1]};\n"
-                self.code += f"real local_time_saveper = time_saveper * {time_index} - time_saveper * {time_index-1};\n"
-                self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / local_time_saveper;\n"
-                self.code += f"return intercept + slope * (time - time_saveper * {time_index-1});\n"
-                self.code.indent_level -= 1
-                # exit conditional body
-                self.code += "}\n"
-
-            # Handle out-of-bounds input
-            self.code += f"return {data_vector[-1]};\n"
-
-            self.code.indent_level -= 1
-            # exit function body
-            self.code += "}\n\n"
-        else:
-            return None
+# @dataclass
+# class DataStructureVensimWalker(BaseVensimWalker):
+#     """
+#     Walks the Vensim AST for data structures, and generates stan code for them
+#
+#     Attributes
+#     ----------
+#     function_name_dict : dict[str, str]
+#         Maps the names of Vensim variable identifiers to their corresponding Stan function names
+#     code : IndentedString
+#         The `IndentedString` object that holds the generated code for the data functions.
+#
+#     """
+#     function_name_dict: dict[str, str] = field(init=False, default_factory=dict)
+#     # This dict holds the generated function names of each individual data function.
+#     # Key is x + y + x_limits + y_limits, value is function name
+#
+#     @staticmethod
+#     def get_function_name(variable_name) -> str:
+#         return f"dataFunc__{vensim_name_to_identifier(variable_name)}"
+#
+#     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None) -> None:
+#         if isinstance(component_ast, pysd_ast.DataStructure):
+#             function_name = f"dataFunc__{node_name}"
+#             self.data_variable_names.add(node_name)
+#             try:
+#                 data_vector = self.input_data_dict[vensim_name_to_identifier(node_name)]
+#                 n_intervals = len(data_vector) # only defined in vensim
+#             except KeyError:
+#                 raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
+#
+#             # if node_name == "time_saveper":
+#             #     self.code += f"real cum_time (real time, data vector times){{\n"
+#             #     self.code.indent_level += 1
+#             #     # Enter function body
+#             #     self.code += f"// DataStructure for variable cum_time\n"
+#             #     self.code += "real slope;\n"
+#             #     self.code += "real intercept;\n\n"
+#             #     for time_index in range(n_intervals):
+#             #         if time_index == 0:
+#             #             continue
+#             #         if time_index == 1:
+#             #             self.code += f"if(time <= times[{time_index-1}]){{\n"
+#             #         else:
+#             #             self.code += f"else if(time <= times[{time_index}]){{\n"
+#             #
+#             #         self.code.indent_level += 1
+#             #         # enter conditional body
+#             #         self.code += f"intercept = {data_vector[time_index - 1]};\n"
+#             #         self.code += f"real time_saveper = times[{time_index}] - times[{time_index-1}];\n"
+#             #         self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_saveper;\n"
+#             #         self.code += f"return intercept + slope * (time - times[{time_index-1}]);\n"
+#             #         self.code.indent_level -= 1
+#             #         # exit conditional body
+#             #         self.code += "}\n"
+#
+#             # else:
+#             self.code += f"real {function_name}(real time, real time_saveper){{\n"
+#             self.code.indent_level += 1
+#             # Enter function body
+#             self.code += f"// DataStructure for variable {node_name}\n"
+#             self.code += "real slope;\n"
+#             self.code += "real intercept;\n\n"
+#             for time_index in range(n_intervals):
+#                 if time_index == 0:
+#                     continue
+#                 if time_index == 1:
+#                     self.code += f"if(time <= time_saveper * {time_index}){{\n"
+#                 else:
+#                     self.code += f"else if(time <= time_saveper * {time_index}){{\n"
+#
+#                 self.code.indent_level += 1
+#                 # enter conditional body
+#                 self.code += f"intercept = {data_vector[time_index - 1]};\n"
+#                 self.code += f"real local_time_saveper = time_saveper * {time_index} - time_saveper * {time_index-1};\n"
+#                 self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / local_time_saveper;\n"
+#                 self.code += f"return intercept + slope * (time - time_saveper * {time_index-1});\n"
+#                 self.code.indent_level -= 1
+#                 # exit conditional body
+#                 self.code += "}\n"
+#
+#             # Handle out-of-bounds input
+#             self.code += f"return {data_vector[-1]};\n"
+#
+#             self.code.indent_level -= 1
+#             # exit function body
+#             self.code += "}\n\n"
+#         else:
+#             return None

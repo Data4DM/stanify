@@ -17,13 +17,13 @@ class VensimVariableContext:
     ----------
     name : str
         Name of the variable. Names are converted into identifiers(whitespaces are replaced with underscores)
-    subscripts : list[str]
+    subscripts : tuple[str]
         subscripts defined for the variable. This is in the same format as `AbstractComponent.subscripts[0]`
     is_stock : bool
         Whether the variable is a stock variable. Default is `False`
     """
     name: str
-    subscripts: list[str] = field(default_factory=list)
+    subscripts: tuple[str] = field(default_factory=tuple)
     is_stock: bool = field(default=False)
 
     def __hash__(self) -> int:
@@ -73,7 +73,7 @@ class VensimModelContext:
             assert len(element.components) == 1, f"Number of components in AbstractElement must be 1, but {element.name} has {len(element.components)}"
 
             component = element.components[0]
-            subscripts = component.subscripts[0]  # Get the subscripts defined for the variable.
+            subscripts = tuple(component.subscripts[0])  # Get the subscripts defined for the variable.
             # See https://pysd.readthedocs.io/en/master/structure/vensim_translation.html#pysd.translators.vensim.vensim_element.Component
 
             variable_name = vensim_name_to_identifier(element.name)

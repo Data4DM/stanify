@@ -35,7 +35,7 @@ class Vensim2StanWalker(NodeWalker):
             self.walk(arg, *args, **kwargs)
 
     def walk_Variable(self, node: ast.Variable, *args, **kwargs):
-        for arg in node.arglist:
+        for arg in node.subscripts:
             self.walk(arg, *args, **kwargs)
 
     def walk_Literal(self, node: ast.Literal, *args, **kwargs):
@@ -71,6 +71,15 @@ class FindDeclarationsWalker(Vensim2StanWalker):
             self.walk(node.left)
 
     def walk_Variable(self, node: ast.Variable, sampled=False):
+        """
+
+        Parameters
+        ----------
+        node : ast.Variable
+            The `Variable` node.
+        sampled : bool
+            boolean indicating whether the current variable is on the LHS of a sample statement. Defaults to `False`
+        """
         subscripts = []
         if node.subscripts:
             for subscript in node.subscripts:

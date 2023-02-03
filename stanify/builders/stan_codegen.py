@@ -77,6 +77,7 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
             subscript_comment = [f"{val} : {index}" for index, val in enumerate(values, 1)]
             self._code += f"int {subscript_name} = {len(values)};  # ({', '.join(subscript_comment)});\n"
 
+        # Walk through the Vensim model
         for element in vensim_model_context.first_section.elements:
             for component in element.components:
                 declared_subscripts = component.subscripts[0]
@@ -92,8 +93,8 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 self._code += f"real {node_name} = {component_ast};\n"
             case np.ndarray():
                 # Check if the shape of the array matches the declared subscripts
-                assert component_ast.shape == tuple(len(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts), \
-                    f"Vensim node {node_name} has subscripts {subscripts} of length {tuple(len(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts)}, its length not matching the shape of the declared value array with shape {component_ast.shape}"
+                assert component_ast.shape == self.vensim_model_context.get_variable_shape(node_name), \
+                    f"Vensim node {node_name} has subscript(s) {subscripts} of dimension {self.vensim_model_context.get_variable_shape(node_name)}, its length not matching the shape of the declared value array with shape {component_ast.shape}"
 
                 stan_dtype = "int" if np.issubdtype(component_ast.dtype, np.integer) else "real"
 
@@ -107,18 +108,30 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
 
 @dataclass
 class ParametersBlockCodegen(StanBlockCodegen):
+    """
+    Generate code for the Parameters Stan block.
+
+    Used for:
+    - data2draws
+    """
 
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+        # Find the LHS declared variables
         walker = FindDeclarationsWalker()
         walker.walk(v2s_code_handler.program_ast)
+
         for key, variable_context in walker.declared_variables.items():
+            # Stock variables are always an assigned parameter
             if key in vensim_model_context.integ_outcome_variables:
                 continue
+
+            # Non-sampled parameters do not go into the parameter block
             if not variable_context.sampled:
                 continue
 
+            # Determine dimension and constraints
             subscripts = variable_context.subscripts if variable_context.subscripts else ()
-            dims = [str(len(vensim_model_context.subscripts[subscript])) for subscript in subscripts]
+            dims = [str(i) for i in vensim_model_context.get_variable_shape(key)]
             constraint_code = ""
             if variable_context.lower > float("-inf"):
                 constraint_code += f"lower={variable_context.lower}"
@@ -128,6 +141,7 @@ class ParametersBlockCodegen(StanBlockCodegen):
             if constraint_code:
                 constraint_code = "<" + constraint_code + ">"
 
+            # Default type is float. This may not be optimal, but it should be fine for now.
             variable_type = f"array[{','.join(dims)}]" if subscripts else "real"
 
             self._code += f"{variable_type} {key}{constraint_code};\n"
@@ -135,8 +149,21 @@ class ParametersBlockCodegen(StanBlockCodegen):
 
 @dataclass
 class ModelBlockStatementV2SWalker(Vensim2StanWalker):
+    """
+    This walker traverses through the V2S AST, and generates individual Stan sampling statements.
+
+    Attributes
+    ----------
+    subscript_loop_variable_mapping : dict[str, str]
+        Dict which maps subscript names to loop variable. `dict[subscript_name, loop_variable]` where `subscript_name`
+        is the original subscript name, and `loop_variable` is the Stan loop variable(`i, j, k, ...`) that corresponds
+        to it.
+    _code : IndentedString
+        `IndentedString` that holds the generated code
+
+    """
     subscript_loop_variable_mapping: dict[str, str]
-    _code = ""
+    _code: IndentedString = field(init=False, default_factory=IndentedString)
 
     def walk_Statement(self, node: ast.Statement):
         if node.op == "=":
@@ -170,8 +197,8 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
         self._code += f"{node.value}"
 
     @property
-    def code(self):
-        return self._code
+    def code(self) -> str:
+        return str(self._code)
 
 
 class ModelBlockCodegen(StanBlockCodegen):
