@@ -146,6 +146,7 @@ class StatementTopoSort:
         sorted_order : list[str]
             List of sorted variable names
         """
+        self.sorted_order = []
         for key in self.dependency_graph.keys():
             self._recursive_order_search(key, set())
 

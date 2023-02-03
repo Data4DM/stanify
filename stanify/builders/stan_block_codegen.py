@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from .utilities import IndentedString, vensim_name_to_identifier
+from .utilities import IndentedString
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
@@ -14,7 +14,6 @@ from .vensim_ast_walker import BaseVensimWalker
 from .vensim2stan_walker import Vensim2StanWalker, FindDeclarationsWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
 from collections import defaultdict
-from numbers import Number
 
 
 @dataclass
@@ -226,8 +225,8 @@ class ModelBlockCodegen(StanBlockCodegen):
         # cost = 2 * 2 + 2 * 2
 
         # Problem definition - minimize the total cost of loops while ensuring all subscript combinations are used.
-        # This felt really similar to Quine-McClusky; I had to find the "combinations" that covered all subscripts with
-        # minimizing rendundant subscript.
+        # This felt really similar to Quine-McClusky; I had to find the "combinations" that covered all subscripts while
+        # minimizing duplicate subscript loops.
 
         # This set holds all the subscript combinations that need to be covered
         used_subscripts = set()
@@ -247,11 +246,11 @@ class ModelBlockCodegen(StanBlockCodegen):
                 return hash(self.value)
 
         # We're going to recursively iterate through the subscript sets. This helps when we have triple-subscripted
-        # variables, and maybe even more!
+        # variables, and maybe even deeper!
         # I'll try my best to write out my thought process
 
         # This is the driving function
-        def find_order(subscript_combinations: list[set[str]], parent: Node):
+        def find_order(subscript_combinations: list[frozenset[str]], parent: Node):
             """
 
             Parameters
@@ -355,8 +354,6 @@ class ModelBlockCodegen(StanBlockCodegen):
             build_forloops(child, {})
 
 
-
-
 @dataclass
 class StanFileCodegen(ABC):
     vensim_model_context: VensimModelContext
@@ -375,12 +372,12 @@ class FunctionsFileCodegen(StanFileCodegen):
 class Data2DrawsCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path) -> None:
         with open(full_file_path, "w") as f:
-            transformed_params_gen = TransformedDataCodegenVensimWalker("transformed parameters",
+            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
                                                                         v2s_code_handler=self.v2s_code_handler,
                                                                         vensim_model_context=self.vensim_model_context)
-            transformed_params_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context)
 
-            f.write(transformed_params_gen.code)
+            f.write(transformed_data_gen.code)
 
             parameters_gen = ParametersBlockCodegen("parameters")
             parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context)
@@ -394,9 +391,9 @@ class Data2DrawsCodegen(StanFileCodegen):
 class Draws2DataCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path) -> None:
         with open(full_file_path, "w") as f:
-            transformed_params_gen = TransformedDataCodegenVensimWalker("transformed parameters",
+            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
                                                                         v2s_code_handler=self.v2s_code_handler,
                                                                         vensim_model_context=self.vensim_model_context)
-            transformed_params_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context)
 
-            f.write(transformed_params_gen.code)
+            f.write(transformed_data_gen.code)

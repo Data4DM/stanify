@@ -5,7 +5,7 @@ from typing import Union, TYPE_CHECKING
 from dataclasses import dataclass
 from numbers import Number
 import datetime
-from .stan_codegen import Draws2DataCodegen, Data2DrawsCodegen, FunctionsFileCodegen
+from .stan_block_codegen import Draws2DataCodegen, Data2DrawsCodegen, FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
 
 
