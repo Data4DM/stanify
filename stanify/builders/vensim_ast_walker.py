@@ -1,3 +1,14 @@
+"""
+Walkers for Vensim AST
+
+- [ ] data2draws data block
+- [X] transformed data block
+- [ ] data2draws parameters data block
+- [ ] data2draws transformed parameters data block
+- [ ] draws2data generated quantities data block
+- [ ] data2draws model data block
+
+"""
 from __future__ import annotations
 from dataclasses import dataclass, field
 from .utilities import IndentedString, vensim_name_to_identifier
@@ -182,6 +193,10 @@ class TransformedDataCodegenVensimWalker(BlockCodegenVensimWalker):
     """
     Generates code for generating code for the `transformed data` Stan block. This block includes variable declarations
     for constant variables.
+
+    Used for:
+    - data2draws
+    - draws2data
 
     Attributes
     ----------

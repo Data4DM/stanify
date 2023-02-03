@@ -12,6 +12,28 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True)
+class SBCSettings:
+    r"""
+    Settings for running SBC
+
+    Attributes
+    ----------
+    data_variable : str
+        Name of the data variable. This corresponds to $y$.
+    target_parameter : str
+        Name of the parameter in which SBC should be run against. Corresponds to $\theta$.
+    n_fits : int
+        Number of fits to perform. Defaults to 100.
+    n_draws : int
+        Number of draws to draw from the posterior. Defaults to 1000.
+    """
+    data_variable: str
+    target_parameter: str
+    n_fits: int = field(default=100)
+    n_draws: int = field(default=1000)
+
+
+@dataclass(frozen=True)
 class V2SVariableContext:
     r"""
     Hold information of a variable used within a V2S source code.
@@ -157,6 +179,7 @@ class Vensim2StanCodeHandler:
     """
     This class handles the parsing and processing of Vensim2Stan(V2S) code.
     Passes on the AST are executed according to the following classifications:
+
     1.Pre-vensim model (preliminary passes)
         - Collects vensim model-context-free information.
         - Includes V2S code-data dims validation, and variable usage information
@@ -179,6 +202,8 @@ class Vensim2StanCodeHandler:
         ----------
         v2s_code : str
             V2S code string
+        vensim_model_context : VensimModelContext
+            `VensimModelContext`
         """
         self.v2s_code: str = v2s_code
         self.vensim_model_context = vensim_model_context
