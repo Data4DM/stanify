@@ -72,4 +72,13 @@ class StanFunctionBuilder:
         code += self.generate_odefunction_code()
         return code
 
+    def generate_datafunctions_code(self) -> str:
+        """
+        Generate code for the data functions.
+
+        Returns
+        -------
+        a code string
+        """
+
 

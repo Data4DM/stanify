@@ -47,7 +47,7 @@ class VensimModelContext:
     integ_outcome_variables : dict[str, VensimVariableContext]
         Dict of stock variables. Note that if a variable is a stock variable, it's included in both
         `integ_outcome_vector_names` and `variable_names`
-    subscripts : dict[str, list[Any]]
+    subscripts : dict[str, tuple[Any]]
         Values of the subscripts defined within the Vensim model. Key is a string denoting the subscript name, values
         is a list of a sequence of arbitrary values for the subscript.
     """
@@ -69,7 +69,7 @@ class VensimModelContext:
 
         for element in self._abstract_model.sections[0].elements:
             # Save names of variables defined in the model
-            assert len(element.components) == 1, f"Number of components in AbstractElement must be 1, but {element.name} has {len(element.components)} "
+            assert len(element.components) == 1, f"Number of components in AbstractElement must be 1, but {element.name} has {len(element.components)}"
 
             component = element.components[0]
             subscripts = component.subscripts[0]  # Get the subscripts defined for the variable.
@@ -85,9 +85,46 @@ class VensimModelContext:
                                                                                     subscripts, is_stock=True)
 
         # record values of subscripts
-        self.subscripts: dict[str, list[Any]] = {}  # holds the values of subscripts defined within the model.
+        self.subscripts: dict[str, tuple[Any]] = {}  # holds the values of subscripts defined within the model.
         for subscript in self._first_section.subscripts:
-            self.subscripts[subscript.name] = subscript.subscripts
+            self.subscripts[subscript.name] = tuple(subscript.subscripts)
+
+    def get_subscript_values(self, subscript_name: str) -> tuple[Any]:
+        """
+        Return the values of a given subscript.
+
+        Parameters
+        ----------
+        subscript_name : str
+            Subscript name
+
+        Returns
+        -------
+        A tuple with the values of the subscripts
+        """
+        return tuple(self.subscripts[subscript_name])
+
+    def get_variable_shape(self, variable_name: str) -> tuple[int]:
+        """
+        Return the required dimension of vensim variables.
+
+        If a Vensim variable is equipped with a subscript 'a' that has 2 values, it would need to be allocated as a
+        length-2 vector. In this case, this method will return `(2, )` indicating what its shape should be.
+        Parameters
+        ----------
+        variable_name : str
+            Variable name, must be an identifier
+
+        Returns
+        -------
+        A tuple of integer(s) indicating its required shape.
+        """
+        variable_context = self.variables[variable_name]
+        shape = []
+        for subscript in variable_context.subscripts:
+            shape.append(len(self.subscripts[subscript]))
+
+        return tuple(shape)
 
     def print_variable_info(self) -> None:
         """
