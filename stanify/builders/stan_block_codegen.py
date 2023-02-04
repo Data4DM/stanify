@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
     from .v2s_model import Vensim2StanCodeHandler
+    from .stan_model_context import StanModelContext
     from . import ast
 
 from abc import ABC, abstractmethod
@@ -45,7 +46,8 @@ class StanBlockCodegen(ABC):
         self._code.indent_level += 1
 
     @abstractmethod
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
         raise NotImplementedError
 
     @property
@@ -64,7 +66,8 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
     - draws2data
     """
 
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
         # Write initial time
         self._code += f"real initial_time = {v2s_code_handler.v2s_settings.initial_time};\n"
 
@@ -114,12 +117,9 @@ class ParametersBlockCodegen(StanBlockCodegen):
     - data2draws
     """
 
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
-        # Find the LHS declared variables
-        walker = FindDeclarationsWalker()
-        walker.walk(v2s_code_handler.program_ast)
-
-        for key, variable_context in walker.declared_variables.items():
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
+        for key, variable_context in v2s_code_handler.declared_variables.items():
             # Stock variables are always an assigned parameter
             if key in vensim_model_context.integ_outcome_variables:
                 continue
@@ -208,7 +208,8 @@ class ModelBlockCodegen(StanBlockCodegen):
     - data2draws
     """
 
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
         # Find subscripted variables, and figure out the way to loop through them with the minimum amount of loops.
         # If we have three variables, say with subscript usage (a, b), (b, c), (c), (a), it would be best to run like
         # the following loop:
@@ -358,6 +359,7 @@ class ModelBlockCodegen(StanBlockCodegen):
 class StanFileCodegen(ABC):
     vensim_model_context: VensimModelContext
     v2s_code_handler: Vensim2StanCodeHandler
+    stan_model_context: StanModelContext
 
     @abstractmethod
     def generate_and_write(self, full_file_path: Path) -> None:
@@ -370,16 +372,16 @@ class Data2DrawsCodegen(StanFileCodegen):
             transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
                                                                         v2s_code_handler=self.v2s_code_handler,
                                                                         vensim_model_context=self.vensim_model_context)
-            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)
 
             parameters_gen = ParametersBlockCodegen("parameters")
-            parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(parameters_gen.code)
 
             model_gen = ModelBlockCodegen("model")
-            model_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+            model_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(model_gen.code)
 
 
@@ -388,7 +390,8 @@ class Draws2DataCodegen(StanFileCodegen):
         with open(full_file_path, "w") as f:
             transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
                                                                         v2s_code_handler=self.v2s_code_handler,
-                                                                        vensim_model_context=self.vensim_model_context)
-            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context)
+                                                                        vensim_model_context=self.vensim_model_context,
+                                                                      stan_model_context=self.stan_model_context)
+            transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)

@@ -191,7 +191,7 @@ class Vensim2StanParser(Parser):
                 self._literal_()
             self._error(
                 'expecting one of: '
-                "'(' <function_call> <identifier>"
+                "'(' '@' <function_call> <identifier>"
                 '<integer> <literal> <real>'
                 '<subexpression> <variable>'
             )
@@ -213,6 +213,9 @@ class Vensim2StanParser(Parser):
 
     @tatsumasu('Variable')
     def _variable_(self):  # noqa
+        with self._optional():
+            self._token('@')
+            self.name_last_node('not_param')
         self._identifier_()
         self.name_last_node('name')
         with self._optional():
@@ -230,7 +233,7 @@ class Vensim2StanParser(Parser):
             )
 
         self._define(
-            ['constraints', 'name', 'subscripts'],
+            ['constraints', 'name', 'not_param', 'subscripts'],
             []
         )
 

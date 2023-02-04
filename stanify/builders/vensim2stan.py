@@ -6,8 +6,11 @@ from dataclasses import dataclass
 from numbers import Number
 import datetime
 from .stan_block_codegen import Draws2DataCodegen, Data2DrawsCodegen
+from .stan_model_context import StanModelContext
 from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
+from .vensim_ast_walker import FindStaticDataVariablesWalker
+from .vensim2stan_walker import FindDeclarationsWalker
 
 
 @dataclass(frozen=True)
@@ -50,6 +53,9 @@ class Vensim2Stan:
         the vensim model filename.
     v2s_model_settings : V2SModelSettings
         A `V2SModelSettings` object that holds the settings that need to be passed down to codegen.
+    stan_model_context : StanModelContext
+        The `StanModelContext` object that will hold some information about the generated stan code. Refer to
+        docs on `stanify.builders.stan_model_context.StanModelContext` class for more information.
     """
     def __init__(self, vensim2stan_code: str, vensim_file_path: str, data_variable: str, initial_time: Number,
                  integration_times: list[Number], model_name: str = "", stan_file_directory: str = ""):
@@ -79,6 +85,8 @@ class Vensim2Stan:
         self.v2s_model_settings = V2SModelSettings(data_variable=data_variable, initial_time=initial_time,
                                                    integration_times=integration_times)
 
+        self.stan_model_context = StanModelContext()
+
         self.v2s_code_handler = Vensim2StanCodeHandler(self.v2s_model_code, self.v2s_model_settings, self.vensim_model_context)
 
         if not model_name:
@@ -92,6 +100,37 @@ class Vensim2Stan:
             self.stan_file_directory.mkdir(exist_ok=True)
         else:
             self.stan_file_directory = pathlib.Path(stan_file_directory).expanduser().joinpath(self.model_name)
+
+        self._populate_stan_model_context()
+
+    def _populate_stan_model_context(self) -> None:
+        """
+        This does a  preliminary analysis of the V2S and Vensim AST to populate the `transformed_data_variables` and
+        `parameter_variables` of `self.stan_model_context`. Although the information for this does get "re-discovered"
+        when we're building stan model blocks, We need this information when we're trying to build the ODE function.
+        Since we don't want to be strict with what block should be written first (can you imagine the maintenance
+        nightmare if we had to create `transformed parameters, parameters` block and then the functions file? XD).
+        We just resort to doing a couple extra passes to collect the information.
+        """
+        # Find Vensim variables that are static data
+        walker = FindStaticDataVariablesWalker(self.v2s_code_handler, self.vensim_model_context,
+                                               self.stan_model_context)
+
+        for element in self.vensim_model_context.first_section.elements:
+            name = element.name
+            for component in element.components:
+                subscripts = component.subscripts
+                walker.walk(component.ast, name, subscripts)
+
+        # Find Vensim variables which have been used in the V2S code, meaning it needs to be a parameter.
+        for key, variable_context in self.v2s_code_handler.declared_variables.items():
+            # Stock variables are always an assigned parameter
+            if key in self.vensim_model_context.integ_outcome_variables:
+                continue
+
+            # Non-sampled parameters do not go into the parameter block
+            if not variable_context.sampled:
+                continue
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"functions_{self.model_name}.stan")

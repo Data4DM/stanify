@@ -5,7 +5,9 @@ import pysd.translators.structures.abstract_expressions as pysd_ast
 from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
-    from vensim_model import VensimModelContext
+    from .vensim_model import VensimModelContext
+    from .stan_model_context import StanModelContext
+
 
 from itertools import chain
 from numbers import Number
@@ -47,6 +49,7 @@ class BaseVensimWalker(ABC):
     """
     v2s_code_handler: Vensim2StanCodeHandler
     vensim_model_context: VensimModelContext
+    stan_model_context: StanModelContext
 
     @abstractmethod
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
@@ -79,6 +82,17 @@ class BaseVensimWalker(ABC):
         If using any of the `walk_X` methods, must return a string of the generated code.
         """
         raise NotImplementedError
+
+
+class FindStaticDataVariablesWalker(BaseVensimWalker):
+    """
+    This walker finds any static data variables defined within the Vensim program. It's intended to be used to fill
+    `stanify.builders.stan_model_context.StanModelContext` during preliminary passes.
+    """
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> None:
+        match component_ast:
+            case int() | float() | np.ndarray:
+                self.stan_model_context.transformed_data_variables.add(node_name)
 
 
 class FindODERHSVariablesWalker:
@@ -286,83 +300,63 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
 
 @dataclass
 class InitialValueCodegenWalker(BaseVensimWalker):
-    _code: str = ""
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
             case pysd_ast.IntegStructure():
                 code = self.walk(component_ast.initial, node_name)
-                self._code += code
                 return code
 
             case pysd_ast.SmoothStructure():
                 code = self.walk(component_ast.initial, node_name)
-                self._code += code
                 return code
 
             case pysd_ast.ReferenceStructure():
                 code = walk_ReferenceStructure(self.walk, component_ast, node_name)
-                self._code += code
                 return code
 
             case pysd_ast.ArithmeticStructure():
                 code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
-                self._code += code
                 return code
 
             case int() | float():
                 code = f"{component_ast}"
-                self._code += code
                 return code
 
             case str():
-                self._code += component_ast
                 return component_ast
 
             case _:
                 raise Exception(f"InitialValueCodegenWalker - got unknown node type {type(component_ast)} for node {node_name}.")
 
-    @property
-    def code(self) -> str:
-        return self._code
-
 
 @dataclass
 class ODEFunctionStatementCodegenWalker(BaseVensimWalker):
-    _code: IndentedString = field(init=False, default_factory=IndentedString)
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
             case pysd_ast.ReferenceStructure():
                 code = walk_ReferenceStructure(self.walk, component_ast, node_name)
-                self._code += code
                 return code
 
             case pysd_ast.ArithmeticStructure():
                 code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
-                self._code += code
                 return code
 
             case pysd_ast.IntegStructure():
                 code = self.walk(component_ast.flow, node_name)
-                self._code += code
                 return code
 
             case int() | float():
                 code = f"{component_ast}"
-                self._code += code
                 return code
 
             case str():
-                self._code += component_ast
-                return component_ast
+                code = component_ast
+                return code
 
             case _:
                 raise Exception(f"ODEFunctionStatementCodegenWalker - got unknown node type {type(component_ast)} for node {node_name}.")
-
-    @property
-    def code(self) -> str:
-        return str(self._code)
 
 # @dataclass
 # class DataStructureVensimWalker(BaseVensimWalker):

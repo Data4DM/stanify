@@ -61,6 +61,7 @@ class FunctionCall(ModelBase):
 class Variable(ModelBase):
     constraints: Any = None
     name: Any = None
+    not_param: Any = None
     subscripts: Any = None
 
 

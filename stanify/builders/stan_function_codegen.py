@@ -112,8 +112,13 @@ class StanFunctionBuilder(StanBlockCodegen):
         for variable_name in self.stan_initialized_variables:
             if variable_name not in self.used_variables:
                 continue
-            dim = vensim_model_context.get_variable_shape(variable_name)
-            print(variable_name, dim)
+
+            # Check whether the variable is subscripted
+            if variable_name in vensim_model_context.variables:
+                dim = vensim_model_context.get_variable_shape(variable_name)
+            else:
+                dim = (len(vensim_model_context.get_subscript_values(subscript)) for subscript in v2s_code_handler.declared_variables[variable_name].subscripts)
+
             if not dim:
                 argtype = "real"
             else:
@@ -161,9 +166,8 @@ class StanFunctionBuilder(StanBlockCodegen):
             for component in element.components:
 
                 rhs_codegen_walker = ODEFunctionStatementCodegenWalker(v2s_code_handler, vensim_model_context)
-                rhs_codegen_walker.walk(component.ast, element_name, subscripts)
-
-                self._code += f"{stan_variable_type} {stan_variable_name} = {rhs_codegen_walker.code};\n"
+                code = rhs_codegen_walker.walk(component.ast, element_name, subscripts)
+                self._code += f"{stan_variable_type} {stan_variable_name} = {code};\n"
 
         # Return the derivative vector
         self._code += "return dydt;\n"
