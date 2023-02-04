@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from .utilities import IndentedString, vensim_name_to_identifier
 import pysd.translators.structures.abstract_expressions as pysd_ast
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Union
 if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
@@ -71,9 +71,11 @@ class BaseVensimWalker(ABC):
             element hierarchy, should be `component.ast`.
         node_name : str
             String indicating the AST Node name. By the above element hierarchy, should be `element.name`
-        subscripts : tuple[str]
-            Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+        subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
             `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
         current_precedence : int
             Integer indicating the current operator precedence level. Only relevant when parsing `ArithmeticStructure`.
 
@@ -95,7 +97,7 @@ class FindStaticDataVariablesWalker(BaseVensimWalker):
                 self.stan_model_context.transformed_data_variables.add(node_name)
 
 
-class FindODERHSVariablesWalker:
+class FindODERHSVariablesVensimWalker:
     """
     Finds all the variables that are present on the RHS of a statement. This is useful for creating a dependency graph,
     since you know the LHS variable name through `element.name`, and this walker provides a list of the dependant
@@ -150,9 +152,11 @@ def walk_ArithmeticStructure(walk_callback: Callable, component_ast: pysd_ast.Ar
         An `ArithmeticStructure` object. The arguments are exactly the same as `BaseVensimWalker.walk()`
     node_name : str
         Name of the Vensim element(variable name)
-    subscripts : tuple[str]
-        **Note for `ArithmeticStructure`**: In the case that one of the arithmetic operands are a `ReferenceStructure`,
-        it will pass the correct subscripts. Otherwise, no subscripts will be passed onwards to the callback function.
+    subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+            `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
     current_precedence : int
         Current precedence level of the AST. Only relevant for ArithmeticStructure.
 
@@ -216,9 +220,11 @@ def walk_ArithmeticStructure(walk_callback: Callable, component_ast: pysd_ast.Ar
 
         # Pass the minimum precedence level
         if isinstance(argument, pysd_ast.ReferenceStructure):
-            subscripts = get_subscripts_ReferenceStructure(argument)
-        else:
-            subscripts = tuple()
+            if isinstance(subscripts, dict):
+                arg_subscripts = get_subscripts_ReferenceStructure(argument)
+                subscripts = {subscript: subscripts[subscript] for subscript in arg_subscripts}
+            else:
+                subscripts = get_subscripts_ReferenceStructure(argument)
 
         operand_text = walk_callback(argument, node_name, subscripts, min([operator_precedence[op] for op in operators_to_check]))
 
@@ -253,9 +259,11 @@ def walk_ReferenceStructure(walk_callback: Callable, component_ast: pysd_ast.Ref
         `BaseVensimWalker.walk()`
     node_name : str
         Name of the Vensim element(variable name)
-    subscripts : tuple[str]
-        **Note for `ArithmeticStructure`**: In the case that one of the arithmetic operands are a `ReferenceStructure`,
-        it will pass the correct subscripts. Otherwise, no subscripts will be passed onwards to the callback function.
+    subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+            `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
     current_precedence : int
         Current precedence level of the AST. Only relevant for ArithmeticStructure.
 
@@ -265,12 +273,18 @@ def walk_ReferenceStructure(walk_callback: Callable, component_ast: pysd_ast.Ref
     """
 
     # Right now, we're just going to stick with non-datafunction variables.
-    return component_ast.reference
+    if not subscripts:
+        return component_ast.reference
+    if isinstance(subscripts, dict):
+        subscript_args = ", ".join(subscripts.keys())
+    else:
+        subscript_args = ", ".join(subscripts)
+    return f"{component_ast.reference}[{subscript_args}]"
 
 
 def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
     output_string = ""
-    function_name = walk_callback(component_ast.function)
+    function_name = walk_callback(component_ast.function, node_name, subscripts)
     if function_name == "min":
         function_name = "fmin"
     elif function_name == "max":
@@ -298,29 +312,39 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
     return output_string
 
 
+def walk_NumericLiteral(walk_callback: Callable, component_ast: Number, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
+    code = f"{component_ast}"
+    if subscripts:
+        if isinstance(subscripts, dict):
+            subscript_args = ", ".join(subscripts.keys())
+        else:
+            subscript_args = ", ".join(subscripts)
+        code = f"rep_array({code}, {subscript_args})"
+    return code
+
 @dataclass
-class InitialValueCodegenWalker(BaseVensimWalker):
+class InitialValueCodegenVensimWalker(BaseVensimWalker):
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
             case pysd_ast.IntegStructure():
-                code = self.walk(component_ast.initial, node_name)
+                code = self.walk(component_ast.initial, node_name, subscripts)
                 return code
 
             case pysd_ast.SmoothStructure():
-                code = self.walk(component_ast.initial, node_name)
+                code = self.walk(component_ast.initial, node_name, subscripts)
                 return code
 
             case pysd_ast.ReferenceStructure():
-                code = walk_ReferenceStructure(self.walk, component_ast, node_name)
+                code = walk_ReferenceStructure(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case pysd_ast.ArithmeticStructure():
-                code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
+                code = walk_ArithmeticStructure(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case int() | float():
-                code = f"{component_ast}"
+                code = walk_NumericLiteral(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case str():
@@ -331,24 +355,24 @@ class InitialValueCodegenWalker(BaseVensimWalker):
 
 
 @dataclass
-class ODEFunctionStatementCodegenWalker(BaseVensimWalker):
+class ODEFunctionStatementCodegenVensimWalker(BaseVensimWalker):
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
             case pysd_ast.ReferenceStructure():
-                code = walk_ReferenceStructure(self.walk, component_ast, node_name)
+                code = walk_ReferenceStructure(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case pysd_ast.ArithmeticStructure():
-                code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
+                code = walk_ArithmeticStructure(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case pysd_ast.IntegStructure():
-                code = self.walk(component_ast.flow, node_name)
+                code = self.walk(component_ast.flow, node_name, subscripts)
                 return code
 
             case int() | float():
-                code = f"{component_ast}"
+                code = walk_NumericLiteral(self.walk, component_ast, node_name, subscripts)
                 return code
 
             case str():

@@ -4,12 +4,12 @@ if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
 
-from .vensim_ast_walker import FindODERHSVariablesWalker, ODEFunctionStatementCodegenWalker
+from .vensim_ast_walker import FindODERHSVariablesVensimWalker, ODEFunctionStatementCodegenVensimWalker
 from .utilities import IndentedString, StatementTopoSort, vensim_name_to_identifier
 from .stan_block_codegen import StanFileCodegen, StanBlockCodegen
 from .stan_model_context import StanModelContext
 from pathlib import Path
-from math import prod
+import copy
 
 
 class FunctionsFileCodegen(StanFileCodegen):
@@ -88,7 +88,7 @@ class StanFunctionBuilder(StanBlockCodegen):
         # This set holds all the variables that are used within the ODE function
         self.used_variables = set()
 
-        walker = FindODERHSVariablesWalker()
+        walker = FindODERHSVariablesVensimWalker()
         for element in vensim_model_context.first_section.elements:
             lhs_variable = element.name
             for component in element.components:
@@ -173,11 +173,11 @@ class StanFunctionBuilder(StanBlockCodegen):
         # Create the state vector
         self._code += f"vector[{state_vector_length}] dydt;  // calculated derivatives\n\n"
 
-        # We now loop through the sorted AST elements and generate code.
+        # pre-allocate all variables. Since stan doesn't support vectorized elementwise operations across arrays,
+        # we have to manually loop over all the dimensions. This is the only way if we want to support more than 2
+        # subscripts.
         for element in elements:
             element_name = element.name
-
-            # Weed out any unnecessary variables that haven't been filtered out yet
             if element_name not in self.used_variables:
                 continue
 
@@ -187,20 +187,54 @@ class StanFunctionBuilder(StanBlockCodegen):
             else:
                 stan_variable_name = element_name
 
-            subscripts = vensim_model_context.variables[element_name].subscripts
             # Figure out what the type of the variable should be, depending on they're subscripted or not
             subscript_shape = vensim_model_context.get_variable_shape(element_name)
             if subscript_shape:
-                stan_variable_type = f"array[{','.join([str(i) for i in subscript_shape])}] real"
+                stan_variable_type = f"array[{', '.join([str(i) for i in subscript_shape])}] real"
             else:
                 stan_variable_type = "real"
 
-            for component in element.components:
+            self._code += f"{stan_variable_type} {stan_variable_name};\n"
 
-                rhs_codegen_walker = ODEFunctionStatementCodegenWalker(v2s_code_handler, vensim_model_context,
-                                                                       stan_model_context)
+        self._code += "\n"
+
+        # We now loop through the sorted AST elements and generate code.
+        # The generated code will look very, very messy since we would have for loops everywhere.
+        # I did write code which changes the order of the nested for loops so that common subscripts are on the outside
+        # level, resulting in less for loops. But I actually think just accessing/writing arrays in Stan is way faster
+        # in just row-major(natural) order, due to cache locality. This is something I need to investigate more.
+        # https://mc-stan.org/docs/stan-users-guide/indexing-efficiency.html
+        for element in elements:
+            element_name = element.name
+
+            # Weed out any unnecessary variables that haven't been filtered out yet
+            if element_name not in self.used_variables:
+                continue
+
+            subscripts = vensim_model_context.variables[element_name].subscripts
+            subscript_args = ""
+            if subscripts:
+                for subscript in subscripts:
+                    subscript_length = len(vensim_model_context.get_subscript_values(subscript))
+                    self._code += f"for ({subscript} in 1:{subscript_length}){{\n"
+                    self._code.indent_level += 1
+                subscript_args = f"[{', '.join(subscripts)}]"
+
+            if element_name in vensim_model_context.integ_outcome_variables:
+                stan_variable_name = f"{element_name}_dydt"
+            else:
+                stan_variable_name = element_name
+
+            for component in element.components:
+                rhs_codegen_walker = ODEFunctionStatementCodegenVensimWalker(v2s_code_handler, vensim_model_context,
+                                                                             stan_model_context)
                 code = rhs_codegen_walker.walk(component.ast, element_name, subscripts)
-                self._code += f"{stan_variable_type} {stan_variable_name} = {code};\n"
+                self._code += f"{stan_variable_name}{subscript_args} = {code};\n"
+
+            if subscripts:
+                for _ in subscripts:
+                    self._code.indent_level -= 1
+                    self._code += "}\n"
 
 
         self._code += "\n"
@@ -215,7 +249,6 @@ class StanFunctionBuilder(StanBlockCodegen):
                 self._code += f"dydt[{index}] = {vec_index.name}_dydt[{', '.join([str(i) for i in vec_index.indices])}];\n"
             else:
                 self._code += f"dydt[{index}] = {vec_index.name};\n"
-
 
         # Return the derivative vector
         self._code += "return dydt;\n"

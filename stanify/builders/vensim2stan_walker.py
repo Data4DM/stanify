@@ -162,8 +162,11 @@ class VerifySubscriptsWalker(Vensim2StanWalker):
         # Check that subscript is in the Vensim model
         if subscripts:
             for subscript in subscripts:
-                if subscript not in self.vensim_model_context.subscripts:
-                    raise Exception(f"Subscript {subscript} for variable {node.name} isn't defined in the Vensim model.")
+                # The subscript "timesteps" is an artificial subscript that isn't defined in the Vensim model.
+                if subscript != "timesteps":
+
+                    if subscript not in self.vensim_model_context.subscripts:
+                        raise Exception(f"Subscript {subscript} for variable {node.name} isn't defined in the Vensim model.")
 
         # Check that variables are subscripted fully - make sure they're scalars when subscripting is done.
         # This is checked by comparing the subscript usage with the declaration
@@ -172,6 +175,11 @@ class VerifySubscriptsWalker(Vensim2StanWalker):
             declared_subscripts = set(self.v2s_code_handler.declared_variables[node.name].subscripts)
         else:
             declared_subscripts = set(self.vensim_model_context.variables[node.name].subscripts)
+
+            # Check if the stock variable has the subscript "timesteps"
+            if node.name in self.vensim_model_context.integ_outcome_variables:
+                assert "timesteps" in used_subscripts, "For stock variables, the subscript 'timesteps', which indicate the integration time must be used."
+                declared_subscripts.add("timesteps")
         if len(used_subscripts - declared_subscripts) > 0:
             # User included other subscript which aren't declared for the variable
             raise Exception(f"Subscripts for variable {node.name} - subscript(s) {used_subscripts - declared_subscripts} isn't declared for the variable!")

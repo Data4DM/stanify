@@ -1,16 +1,13 @@
 from __future__ import annotations
 import pathlib
 from .vensim_model import VensimModelContext
-from typing import Union, TYPE_CHECKING
 from dataclasses import dataclass
 from numbers import Number
-import datetime
-from .stan_block_codegen import Draws2DataCodegen, Data2DrawsCodegen
+from .stan_block_codegen import Data2DrawsCodegen
 from .stan_model_context import StanModelContext
 from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
 from .vensim_ast_walker import FindStaticDataVariablesWalker
-from .vensim2stan_walker import FindDeclarationsWalker
 
 
 @dataclass(frozen=True)
@@ -82,6 +79,9 @@ class Vensim2Stan:
         vensim_file_path = pathlib.Path(vensim_file_path)
         self.vensim_model_context = VensimModelContext(vensim_file_path)
 
+        # Set the timesteps subscript explicitly
+        self.vensim_model_context.set_timesteps_subscript(tuple(integration_times))
+
         self.v2s_model_settings = V2SModelSettings(data_variable=data_variable, initial_time=initial_time,
                                                    integration_times=integration_times)
 
@@ -120,7 +120,7 @@ class Vensim2Stan:
             name = element.name
             for component in element.components:
                 subscripts = component.subscripts
-                walker.walk(component.ast, name, subscripts)
+                walker.walk(component.ast, name, tuple(subscripts[0]))
 
         # Find Vensim variables which have been used in the V2S code, meaning it needs to be a parameter.
         for var_name, variable_context in self.v2s_code_handler.declared_variables.items():
@@ -137,9 +137,6 @@ class Vensim2Stan:
 
             self.stan_model_context.parameter_variables.add(var_name)
 
-    def get_functions_stanfile_path(self) -> pathlib.Path:
-        return self.stan_file_directory.joinpath(f"functions_{self.model_name}.stan")
-
     def run_sbc(self, n_fits: int = 100, n_draws: int = 1000):
         """
         generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
@@ -147,8 +144,6 @@ class Vensim2Stan:
 
         Parameters
         ----------
-        data_variable : str
-            Name of the data variable. This corresponds to $y$.
         n_fits : int
             Number of fits to perform. Defaults to 100.
         n_draws : int
@@ -158,10 +153,6 @@ class Vensim2Stan:
         -------
         A SBCFit object
         """
-        # Re-instantiate a model settings with the updated data variable.
-        self.v2s_model_settings = V2SModelSettings(data_variable=data_variable,
-                                                   initial_time=self.v2s_model_settings.initial_time,
-                                                   integration_times=self.v2s_model_settings.integration_times)
 
         # call codegen
 
@@ -169,10 +160,17 @@ class Vensim2Stan:
 
         # run data2draws
 
+    def get_functions_stanfile_path(self) -> pathlib.Path:
+        return self.stan_file_directory.joinpath(self.get_functions_stanfile_name())
+
     def create_functions_stanfile(self) -> pathlib.Path:
         generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
         generator.generate_and_write(self.get_functions_stanfile_path())
         return self.get_functions_stanfile_path()
+
+    def get_functions_stanfile_name(self) -> str:
+        return f"functions_{self.model_name}.stan"
+
 
     def get_draws2data_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")
@@ -185,6 +183,6 @@ class Vensim2Stan:
 
     def create_data2draws_stanfile(self) -> pathlib.Path:
         generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
-        generator.generate_and_write(self.get_data2draws_stanfile_path())
+        generator.generate_and_write(self.get_data2draws_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_data2draws_stanfile_path()
 

@@ -9,6 +9,7 @@ from pysd.translators.vensim.vensim_file import VensimFile
 from typing import Union, Any
 from dataclasses import dataclass, field
 from itertools import product
+from numbers import Number
 import pathlib
 
 
@@ -124,6 +125,18 @@ class VensimModelContext:
 
             for indices in subscript_indices:
                 self.state_vector_index_map.append(StateVectorIndexMap(var_name, indices))
+
+    def set_timesteps_subscript(self, value: tuple[Number]) -> None:
+        """
+        This function is used to register the "timesteps" subscript. The timesteps subscript is used for stock variables
+        to indicate the time index.
+
+        Parameters
+        ----------
+        value : tuple[Number]
+            values of the subscript
+        """
+        self.subscripts["timesteps"] = value
 
     @property
     def first_section(self) -> AbstractSection:

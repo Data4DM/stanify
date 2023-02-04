@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import warnings
 from dataclasses import dataclass, field
 from .utilities import IndentedString
 from typing import TYPE_CHECKING
@@ -11,8 +13,8 @@ if TYPE_CHECKING:
 from abc import ABC, abstractmethod
 from pathlib import Path
 import numpy as np
-from .vensim_ast_walker import BaseVensimWalker
-from .vensim2stan_walker import Vensim2StanWalker, FindDeclarationsWalker
+from .vensim_ast_walker import BaseVensimWalker, InitialValueCodegenVensimWalker
+from .vensim2stan_walker import Vensim2StanWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
 from collections import defaultdict
 
@@ -71,14 +73,22 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
         # Write initial time
         self._code += f"real initial_time = {v2s_code_handler.v2s_settings.initial_time};\n"
 
+        self._code += "// number of integration timesteps\n"
+        self._code += f"int timesteps = {len(v2s_code_handler.v2s_settings.integration_times)};\n"
+
         # Create the array that holds the ODE integration timesteps
-        self._code += f"array[{len(v2s_code_handler.v2s_settings.integration_times)}] real integration_times = {{ {','.join([str(time) for time in v2s_code_handler.v2s_settings.integration_times])} }};\n\n"
+        self._code += f"array[timesteps] real integration_times = {{ {', '.join([str(time) for time in v2s_code_handler.v2s_settings.integration_times])} }};\n\n"
+
+        self._code += f"int n_odes = {len(vensim_model_context.state_vector_index_map) - 1};\n"
 
         self._code += "///////////////\n"
         self._code += "// subscripts\n"
 
         # Create the variables that hold the range of each subscript
         for subscript_name, values in vensim_model_context.subscripts.items():
+            # Don't generate for the special subscript "timesteps"
+            if subscript_name == "timesteps":
+                continue
             subscript_comment = [f"{val} : {index}" for index, val in enumerate(values, 1)]
             self._code += f"int {subscript_name} = {len(values)};  # ({', '.join(subscript_comment)});\n"
 
@@ -88,6 +98,9 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
 
         # Walk through the Vensim model
         for element in vensim_model_context.first_section.elements:
+            if element.name == "initial_time":
+                warnings.warn("initial time was defined in vensim. It will be ignored in favor for the initial time setting passed to vensim2stan.")
+                continue
             for component in element.components:
                 declared_subscripts = component.subscripts[0]
                 self.walk(component.ast, element.name, declared_subscripts)
@@ -97,9 +110,15 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
         # Find constant data declarations.
         match component_ast:
             case int():
-                self._code += f"int {node_name} = {component_ast};\n"
+                if subscripts:
+                    self._code += f"array[{'. '.join(subscripts)}] int {node_name} = rep_array({component_ast}, {', '.join(subscripts)});\n"
+                else:
+                    self._code += f"int {node_name} = {component_ast};\n"
             case float():
-                self._code += f"real {node_name} = {component_ast};\n"
+                if subscripts:
+                    self._code += f"array[{'. '.join(subscripts)}] real {node_name} = rep_array({component_ast}, {', '.join(subscripts)});\n"
+                else:
+                    self._code += f"real {node_name} = {component_ast};\n"
             case np.ndarray():
                 # Check if the shape of the array matches the declared subscripts
                 assert component_ast.shape == self.vensim_model_context.get_variable_shape(node_name), \
@@ -112,7 +131,7 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 # stringified list with braces.
                 stan_array_init = str(component_ast.tolist()).replace("[", "{").replace("]", "}")
 
-                self._code += f"array[{','.join(subscripts)}] {stan_dtype} {node_name} = {stan_array_init};\n"
+                self._code += f"array[{', '.join(subscripts)}] {stan_dtype} {node_name} = {stan_array_init};\n"
 
 
 @dataclass
@@ -143,9 +162,76 @@ class ParametersBlockCodegen(StanBlockCodegen):
                 constraint_code = "<" + constraint_code + ">"
 
             # Default type is float. This may not be optimal, but it should be fine for now.
-            variable_type = f"array[{','.join(subscripts)}] real" if subscripts else "real"
+            variable_type = f"array[{', '.join(subscripts)}] real" if subscripts else "real"
 
-            self._code += f"{variable_type} {variable_name}{constraint_code};\n"
+            self._code += f"{variable_type}{constraint_code} {variable_name};\n"
+
+
+@dataclass
+class TransformedParametersBlockCodegen(StanBlockCodegen):
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
+
+        # Calculate the initial values for the stock variables.
+
+        self._code += "// initial stock values\n"
+
+        # Create the initial state vector. This will be passed to the ODE solver
+        self._code += f"vector[n_odes] initial_state;\n"
+
+        # Calculate the initial values for each stock
+        for stock_name, var_context in vensim_model_context.integ_outcome_variables.items():
+            stan_varname = f"{stock_name}_initial"
+            if var_context.subscripts:
+                stan_type = f"array[{', '.join(var_context.subscripts)}] real"
+            else:
+                stan_type = "real"
+
+            walker = InitialValueCodegenVensimWalker(v2s_code_handler, vensim_model_context, stan_model_context)
+            for element in vensim_model_context.first_section.elements:
+                if element.name == stock_name:
+                    for component in element.components:
+                        code = walker.walk(component.ast, element.name, tuple(component.subscripts[0]))
+                        self._code += f"{stan_type} {stan_varname} = {code};\n"
+                        break
+
+        # Map the initial values into the initial state vector
+        for index, index_obj in enumerate(vensim_model_context.state_vector_index_map):
+            # skip index 1
+            if index == 0:
+                continue
+
+            if index_obj.indices:
+                indices = f"[{', '.join(str(i) for i in index_obj.indices)}]"
+            else:
+                indices = ""
+            self._code += f"initial_state[{index}] = {index_obj.name}_initial{indices};\n"
+
+        # Now call the ODE solver
+        self._code += "\n"
+        odesolver_args = ", ".join(stan_model_context.odefunc_variable_args)
+        self._code += f"array[timesteps] vector[n_odes] ode_result = ode_rk45(ode_func, initial_state, initial_time, integration_times, {odesolver_args});\n"
+
+        # Map the 1-dimensional ODE integration result back to variables.
+        # Allocate the variables
+        for stock_name, var_context in vensim_model_context.integ_outcome_variables.items():
+            if var_context.subscripts:
+                stan_type = f"array[{', '.join(('timesteps',) + var_context.subscripts)}] real"
+            else:
+                stan_type = f"array[timesteps] real"
+
+            self._code += f"{stan_type} {stock_name};\n"
+
+        self._code += "\n"
+        # Use the mapping to map back
+        for index, mapping in enumerate(vensim_model_context.state_vector_index_map):
+            if index == 0:
+                continue
+            if mapping.indices:
+                subscript_args = ", " + ", ".join([str(i) for i in mapping.indices])
+            else:
+                subscript_args = ""
+            self._code += f"{mapping.name}[:{subscript_args}] = ode_result[:, {index}];\n"
 
 
 @dataclass
@@ -376,13 +462,16 @@ class StanFileCodegen(ABC):
     stan_model_context: StanModelContext
 
     @abstractmethod
-    def generate_and_write(self, full_file_path: Path) -> None:
+    def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         raise NotImplementedError
 
 
 class Data2DrawsCodegen(StanFileCodegen):
-    def generate_and_write(self, full_file_path: Path) -> None:
+    def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         with open(full_file_path, "w") as f:
+            # Write the function file include.
+            f.write(f"#include {functions_file_name}\n")
+
             transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
                                                                       v2s_code_handler=self.v2s_code_handler,
                                                                       vensim_model_context=self.vensim_model_context,
@@ -395,13 +484,18 @@ class Data2DrawsCodegen(StanFileCodegen):
             parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(parameters_gen.code)
 
+            transformed_parameters_gen = TransformedParametersBlockCodegen("transformed parameters")
+            transformed_parameters_gen.generate(self.v2s_code_handler, self.vensim_model_context,
+                                                self.stan_model_context)
+            f.write(transformed_parameters_gen.code)
+
             model_gen = ModelBlockCodegen("model")
             model_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(model_gen.code)
 
 
 class Draws2DataCodegen(StanFileCodegen):
-    def generate_and_write(self, full_file_path: Path) -> None:
+    def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         with open(full_file_path, "w") as f:
             transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
                                                                         v2s_code_handler=self.v2s_code_handler,
