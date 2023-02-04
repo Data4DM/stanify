@@ -167,12 +167,11 @@ class Vensim2Stan:
 
     def create_functions_stanfile(self) -> pathlib.Path:
         generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
-        generator.generate_and_write(self.get_functions_stanfile_path())
+        generator.generate_and_write(self.get_functions_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_functions_stanfile_path()
 
     def get_functions_stanfile_name(self) -> str:
         return f"functions_{self.model_name}.stan"
-
 
     def get_draws2data_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")
@@ -189,4 +188,3 @@ class Vensim2Stan:
         generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
         generator.generate_and_write(self.get_data2draws_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_data2draws_stanfile_path()
-

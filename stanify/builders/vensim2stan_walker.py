@@ -80,7 +80,7 @@ class FindDeclarationsWalker(Vensim2StanWalker):
         sampled : bool
             boolean indicating whether the current variable is on the LHS of a sample statement. Defaults to `False`
         """
-        subscripts = []
+        subscripts: list[str] = []
         if node.subscripts:
             for subscript in node.subscripts:
                 # subscript here is just a string

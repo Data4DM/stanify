@@ -26,13 +26,13 @@ class Vensim2StanCodeHandler:
     v2s_code : str
         V2S code string
     v2s_settings : V2SModelSettings
-        The `V2SModelSettings` object that holds some model settings. It is needed for codegen.
+        The `stanify.builders.vensim2stan.V2SModelSettings` object that holds some model settings. It is needed for codegen.
     program_ast : ModelBase
         AST of the program(`ast.program`)
-    vensim_model_context : VensimModelContext
+    vensim_model_context : stanify.builders.vensim_model.VensimModelContext
         vensim model context object
     declared_variables : dict[str, stanify.builders.v2s_variable.V2SVariableContext]
-        see `FindDeclarationsWalker`
+        see `stanify.builders.vensim2stan_walker.FindDeclarationsWalker`
     """
     def __init__(self, v2s_code: str, v2s_settings: V2SModelSettings, vensim_model_context: VensimModelContext):
         """
@@ -42,9 +42,9 @@ class Vensim2StanCodeHandler:
         v2s_code : str
             V2S code string
         v2s_settings : V2SModelSettings
-            The `V2SModelSettings` passed from `Vensim2Stan`
+            The `stanify.builders.vensim2stan.V2SModelSettings` passed from `stanify.builders.vensim2stan.Vensim2Stan`
         vensim_model_context : VensimModelContext
-            `VensimModelContext`
+            `stanify.builders.vensim_model.VensimModelContext`
         """
         self.v2s_code: str = v2s_code
         self.v2s_settings = v2s_settings

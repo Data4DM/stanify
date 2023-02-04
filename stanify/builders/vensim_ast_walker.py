@@ -1,8 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
-from .utilities import IndentedString, vensim_name_to_identifier
+from dataclasses import dataclass
 import pysd.translators.structures.abstract_expressions as pysd_ast
-from typing import TYPE_CHECKING, Callable, Union
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
@@ -34,6 +33,7 @@ def get_subscripts_ReferenceStructure(reference_structure: pysd_ast.ReferenceStr
         return reference_structure.subscripts.subscripts
 
     return ()
+
 
 @dataclass
 class BaseVensimWalker(ABC):
@@ -139,7 +139,7 @@ class FindODERHSVariablesVensimWalker:
 
 def walk_ArithmeticStructure(walk_callback: Callable, component_ast: pysd_ast.ArithmeticStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
     """
-    The family of `walk_X`, where `X` is a Vensim AST class, is intended to be used in Vensim AST walkers. Instead of
+    The family of `walk_X` functions, where `X` is a Vensim AST class, is intended to be used in Vensim AST walkers. Instead of
     writing all the logic for handling different types of AST nodes in a single function which would then pose
     problems when you subclass walkers, you can you these functions to reduce duplicate code.
 
@@ -322,6 +322,7 @@ def walk_NumericLiteral(walk_callback: Callable, component_ast: Number, node_nam
             subscript_args = ", ".join(subscripts)
         code = f"rep_array({code}, {subscript_args})"
     return code
+
 
 @dataclass
 class InitialValueCodegenVensimWalker(BaseVensimWalker):

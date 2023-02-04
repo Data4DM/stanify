@@ -5,15 +5,14 @@ if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
 
 from .vensim_ast_walker import FindODERHSVariablesVensimWalker, ODEFunctionStatementCodegenVensimWalker
-from .utilities import IndentedString, StatementTopoSort, vensim_name_to_identifier
+from .utilities import StatementTopoSort, vensim_name_to_identifier
 from .stan_block_codegen import StanFileCodegen, StanBlockCodegen
 from .stan_model_context import StanModelContext
 from pathlib import Path
-import copy
 
 
 class FunctionsFileCodegen(StanFileCodegen):
-    def generate_and_write(self, full_file_path: Path) -> None:
+    def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         with open(full_file_path, "w") as f:
             generator = StanFunctionBuilder("functions")
 
@@ -35,11 +34,11 @@ class StanFunctionBuilder(StanBlockCodegen):
     $$
     \begin{aligned}
     \theta &\sim p(\theta) \\\
-    \y &\sim p(y | \theta)
+    y &\sim p(y | \theta)
     \end{aligned}
     $$
     - `data2draws.stan`: This is the second stage of SBC, which fits $\tilde{\theta}$ with the data generated from
-    `draws2data`. For SBC, we now compare the single draw from the prior($\tilde$), with **draws** of the fit
+    `draws2data`. For SBC, we now compare the single draw from the prior($\theta$), with **draws** of the fit
     ($\tilde{\theta}$), enabling us to compute for example, rank statistics.
 
     Attributes
@@ -236,7 +235,6 @@ class StanFunctionBuilder(StanBlockCodegen):
                     self._code.indent_level -= 1
                     self._code += "}\n"
 
-
         self._code += "\n"
         self._code += "// create return vector\n"
         # Now we map the stock variables into the single dimension dydt return vector
@@ -265,5 +263,3 @@ class StanFunctionBuilder(StanBlockCodegen):
         a code string
         """
         pass
-
-

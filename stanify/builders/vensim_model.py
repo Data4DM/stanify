@@ -26,7 +26,7 @@ class VensimVariableContext:
         subscripts defined for the variable. This is in the same format as `AbstractComponent.subscripts[0]`
     is_stock : bool
         Whether the variable is a stock variable. Default is `False`
-    is_static : bool
+    is_static_data : bool
         Whether the variable is static data.
     """
     name: str
@@ -60,7 +60,7 @@ class VensimModelContext:
         identifiers**
     integ_outcome_variables : dict[str, VensimVariableContext]
         Dict of stock variables. Note that if a variable is a stock variable, it's included in both
-        `integ_outcome_vector_names` and `variable_names`
+        `integ_outcome_vector_names` and `variables`
     subscripts : dict[str, tuple[Any]]
         Values of the subscripts defined within the Vensim model. Key is a string denoting the subscript name, values
         is a list of a sequence of arbitrary values for the subscript.
