@@ -1,10 +1,14 @@
 from __future__ import annotations
+
+import numpy as np
+
 from .utilities import vensim_name_to_identifier
 from pysd.translators.structures.abstract_model import AbstractModel, AbstractSection
 from pysd.translators.structures.abstract_expressions import IntegStructure
 from pysd.translators.vensim.vensim_file import VensimFile
 from typing import Union, Any
 from dataclasses import dataclass, field
+from itertools import product
 import pathlib
 
 
@@ -21,13 +25,22 @@ class VensimVariableContext:
         subscripts defined for the variable. This is in the same format as `AbstractComponent.subscripts[0]`
     is_stock : bool
         Whether the variable is a stock variable. Default is `False`
+    is_static : bool
+        Whether the variable is static data.
     """
     name: str
     subscripts: tuple[str] = field(default_factory=tuple)
     is_stock: bool = field(default=False)
+    is_static_data: bool = field(default=False)
 
     def __hash__(self) -> int:
         return hash(self.name)
+
+
+@dataclass
+class StateVectorIndexMap:
+    name: str
+    indices: tuple[int]
 
 
 class VensimModelContext:
@@ -50,6 +63,12 @@ class VensimModelContext:
     subscripts : dict[str, tuple[Any]]
         Values of the subscripts defined within the Vensim model. Key is a string denoting the subscript name, values
         is a list of a sequence of arbitrary values for the subscript.
+    state_vector_index_map : list[Union[None, StateVectorIndexMap]]
+        This list holds the indices each stock variable values should go in if all stock variables were to be stored
+        in a single vector. This is necessary because Stan requires that the input/output format of the ODE function
+        be a single dimension vector. This means we need to take potentially multiple variables that are
+        multidimensional, flatten them into one-dimensional vectors, and concatenate them. **Important**: Since stan
+        indexing starts from 1, the 0'th index has `None` to indicate that it is not used.
     """
     def __init__(self, vensim_model_path: Union[str, pathlib.Path]) -> None:
         """
@@ -63,6 +82,7 @@ class VensimModelContext:
         self.variables: dict[str, VensimVariableContext] = {}
         self.integ_outcome_variables: dict[str, VensimVariableContext] = {}
         self._first_section: AbstractSection = self._abstract_model.sections[0]
+        self.state_vector_index_map: list[StateVectorIndexMap] = [None]
 
         # Some basic checks to make sure the AM is compatible
         assert len(self._abstract_model.sections) == 1, "Number of sections in AbstractModel must be 1."
@@ -76,10 +96,14 @@ class VensimModelContext:
             subscripts = tuple(component.subscripts[0])  # Get the subscripts defined for the variable.
             # See https://pysd.readthedocs.io/en/master/structure/vensim_translation.html#pysd.translators.vensim.vensim_element.Component
 
+            # Check if the variable is just static data
+            is_static_data = isinstance(component.ast, (int, float, np.ndarray))
+
             variable_name = vensim_name_to_identifier(element.name)
             is_stock = isinstance(component.ast, IntegStructure)
             self.variables[variable_name] = VensimVariableContext(vensim_name_to_identifier(element.name), subscripts,
-                                                                  is_stock=is_stock)
+                                                                  is_stock=is_stock, is_static_data=is_static_data)
+
             # Additionally record the stock variables
             if is_stock:
                 self.integ_outcome_variables[variable_name] = VensimVariableContext(vensim_name_to_identifier(element.name),
@@ -89,6 +113,17 @@ class VensimModelContext:
         self.subscripts: dict[str, tuple[Any]] = {}  # holds the values of subscripts defined within the model.
         for subscript in self._first_section.subscripts:
             self.subscripts[subscript.name] = tuple(subscript.subscripts)
+
+        # We create the mapping that maps subscripted, multidimensional stock variables into a single length vector.
+        for var_name, var_context in self.integ_outcome_variables.items():
+            subscript_dim = self.get_variable_shape(var_name)
+
+            # Calculate all possibles indices. If a s subscript dimension is (2, 2), this means (0, 0), (0, 1),
+            # (1, 0), (1, 1) is possible.
+            subscript_indices = product(*[range(x) for x in subscript_dim])
+
+            for indices in subscript_indices:
+                self.state_vector_index_map.append(StateVectorIndexMap(var_name, indices))
 
     @property
     def first_section(self) -> AbstractSection:

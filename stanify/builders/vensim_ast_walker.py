@@ -49,7 +49,7 @@ class BaseVensimWalker(ABC):
     vensim_model_context: VensimModelContext
 
     @abstractmethod
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> None:
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
         """
         This is the base format of the Vensim AST walkers. Although they're normally recursively called,
         values shouldn't be returned directly, but instead use a class attribute to pass back values.
@@ -73,11 +73,15 @@ class BaseVensimWalker(ABC):
             `component.subscripts`.
         current_precedence : int
             Integer indicating the current operator precedence level. Only relevant when parsing `ArithmeticStructure`.
+
+        Returns
+        -------
+        If using any of the `walk_X` methods, must return a string of the generated code.
         """
         raise NotImplementedError
 
 
-class FindRHSVariablesWalker:
+class FindODERHSVariablesWalker:
     """
     Finds all the variables that are present on the RHS of a statement. This is useful for creating a dependency graph,
     since you know the LHS variable name through `element.name`, and this walker provides a list of the dependant
@@ -110,7 +114,7 @@ class FindRHSVariablesWalker:
                 return list(chain.from_iterable([self.walk(argument) for argument in component_ast.arguments]))
 
             case pysd_ast.IntegStructure():
-                return self.walk(component_ast.flow) + self.walk(component_ast.initial)
+                return self.walk(component_ast.flow)
 
             case pysd_ast.InlineLookupsStructure():
                 return self.walk(component_ast.lookups)
@@ -202,7 +206,7 @@ def walk_ArithmeticStructure(walk_callback: Callable, component_ast: pysd_ast.Ar
         else:
             subscripts = tuple()
 
-        operand_text = walk_callback(walk_callback, argument, node_name, subscripts, min([operator_precedence[op] for op in operators_to_check]))
+        operand_text = walk_callback(argument, node_name, subscripts, min([operator_precedence[op] for op in operators_to_check]))
 
         # If one of the operators is division, and the operand is an integer, convert the integer to a float string representation
         if operand_text.isdigit():
@@ -259,15 +263,15 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
         function_name = "fmax"
     elif function_name == "xidz":
         assert len(component_ast.arguments) == 3, "number of arguments for xidz must be 3"
-        arg1 = walk_callback(component_ast.arguments[0])
-        arg2 = walk_callback(component_ast.arguments[1])
-        arg3 = walk_callback(component_ast.arguments[2])
+        arg1 = walk_callback(component_ast.arguments[0], node_name, subscripts, current_precedence)
+        arg2 = walk_callback(component_ast.arguments[1], node_name, subscripts, current_precedence)
+        arg3 = walk_callback(component_ast.arguments[2], node_name, subscripts, current_precedence)
         output_string += f" (abs({arg2}) <= 1e-6) ? {arg3} : ({arg1}) / ({arg2})"
         return output_string
     elif function_name == "zidz":
         assert len(component_ast.arguments) == 2, "number of arguments for zidz must be 2"
-        arg1 = walk_callback(component_ast.arguments[0])
-        arg2 = walk_callback(component_ast.arguments[1])
+        arg1 = walk_callback(component_ast.arguments[0], node_name, subscripts, current_precedence)
+        arg2 = walk_callback(component_ast.arguments[1], node_name, subscripts, current_precedence)
         output_string += f" (abs({arg2}) <= 1e-6) ? 0 : ({arg1}) / ({arg2})"
         return output_string
     elif function_name == "ln":
@@ -275,7 +279,7 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
         function_name = "log"
 
     output_string += function_name
-    output_string += "(" + ", ".join([walk_callback(argument) for argument in component_ast.arguments]) + ")"
+    output_string += "(" + ", ".join([walk_callback(argument, node_name, subscripts, current_precedence) for argument in component_ast.arguments]) + ")"
 
     return output_string
 
@@ -284,25 +288,36 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
 class InitialValueCodegenWalker(BaseVensimWalker):
     _code: str = ""
 
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> None:
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
             case pysd_ast.IntegStructure():
-                self._code += self.walk(component_ast.initial, node_name)
+                code = self.walk(component_ast.initial, node_name)
+                self._code += code
+                return code
 
-            case pysd_ast.SmoothStructure:
-                self._code += self.walk(component_ast.initial, node_name)
+            case pysd_ast.SmoothStructure():
+                code = self.walk(component_ast.initial, node_name)
+                self._code += code
+                return code
 
-            case pysd_ast.ReferenceStructure:
-                self._code += walk_ReferenceStructure(self.walk, component_ast, node_name)
+            case pysd_ast.ReferenceStructure():
+                code = walk_ReferenceStructure(self.walk, component_ast, node_name)
+                self._code += code
+                return code
 
-            case pysd_ast.ArithmeticStructure:
-                self._code += walk_ArithmeticStructure(self.walk, component_ast, node_name)
+            case pysd_ast.ArithmeticStructure():
+                code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
+                self._code += code
+                return code
 
             case int() | float():
-                self._code += f"{component_ast}"
+                code = f"{component_ast}"
+                self._code += code
+                return code
 
             case str():
                 self._code += component_ast
+                return component_ast
 
             case _:
                 raise Exception(f"InitialValueCodegenWalker - got unknown node type {type(component_ast)} for node {node_name}.")
@@ -310,6 +325,44 @@ class InitialValueCodegenWalker(BaseVensimWalker):
     @property
     def code(self) -> str:
         return self._code
+
+
+@dataclass
+class ODEFunctionStatementCodegenWalker(BaseVensimWalker):
+    _code: IndentedString = field(init=False, default_factory=IndentedString)
+
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
+        match component_ast:
+            case pysd_ast.ReferenceStructure():
+                code = walk_ReferenceStructure(self.walk, component_ast, node_name)
+                self._code += code
+                return code
+
+            case pysd_ast.ArithmeticStructure():
+                code = walk_ArithmeticStructure(self.walk, component_ast, node_name)
+                self._code += code
+                return code
+
+            case pysd_ast.IntegStructure():
+                code = self.walk(component_ast.flow, node_name)
+                self._code += code
+                return code
+
+            case int() | float():
+                code = f"{component_ast}"
+                self._code += code
+                return code
+
+            case str():
+                self._code += component_ast
+                return component_ast
+
+            case _:
+                raise Exception(f"ODEFunctionStatementCodegenWalker - got unknown node type {type(component_ast)} for node {node_name}.")
+
+    @property
+    def code(self) -> str:
+        return str(self._code)
 
 # @dataclass
 # class DataStructureVensimWalker(BaseVensimWalker):

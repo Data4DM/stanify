@@ -107,6 +107,8 @@ class StatementTopoSort:
         """
         if lhs_var not in self.dependency_graph:
             self.dependency_graph[lhs_var] = set()
+        if not rhs_vars:
+            return
         self.dependency_graph[lhs_var].update(rhs_vars)
         for var in rhs_vars:
             if var not in self.dependency_graph:
@@ -151,6 +153,33 @@ class StatementTopoSort:
             self._recursive_order_search(key, set())
 
         return self.sorted_order
+
+    def find_required_variables(self, variable: str) -> set[str]:
+        """
+        Find the variables which are required to calculate the value of `variable`.
+
+        Parameters
+        ----------
+        variable : str
+            Target variable name
+
+        Returns
+        -------
+        set of variable names that are required
+        """
+        required_variables = set()
+        bfs_stack = [variable]
+        while len(bfs_stack) > 0:
+            variable = bfs_stack.pop(0)
+            required_variables.add(variable)
+            for next_var in self.dependency_graph[variable]:
+                if next_var in required_variables:
+                    continue
+                bfs_stack.append(next_var)
+            required_variables |= self.dependency_graph[variable]
+
+        return required_variables
+
 
 
 def vensim_name_to_identifier(name: str) -> str:

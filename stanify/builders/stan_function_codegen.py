@@ -4,11 +4,24 @@ if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
 
-from .vensim_ast_walker import FindRHSVariablesWalker
+from .vensim_ast_walker import FindODERHSVariablesWalker, ODEFunctionStatementCodegenWalker
 from .utilities import IndentedString, StatementTopoSort, vensim_name_to_identifier
+from .stan_block_codegen import StanFileCodegen, StanBlockCodegen
+from pathlib import Path
+from math import prod
 
 
-class StanFunctionBuilder:
+class FunctionsFileCodegen(StanFileCodegen):
+    def generate_and_write(self, full_file_path: Path) -> None:
+        with open(full_file_path, "w") as f:
+            generator = StanFunctionBuilder("functions")
+
+            generator.generate(self.v2s_code_handler, self.vensim_model_context)
+
+            f.write(generator.code)
+
+
+class StanFunctionBuilder(StanBlockCodegen):
     r"""
     `StanFunctionBuilder` handles building the function stan file. The Stan portion of Stanify has the following
     hierarchy:
@@ -35,40 +48,29 @@ class StanFunctionBuilder:
        the alternative expression to use. This means the Vensim code that defines the variable is not transpiled. In
        addition, since the variable gets declared within stan it must be passed into the ODE function as one of its
        parameters.
-    _code : IndentedString
-        Holds the generated code for the functions block. Use the property method `code` to access the code string
 
     Methods
     -------
-    generate_functions_code()
-        Generates and returns the code for `functions.stan`. Calls `generate_datafunctions_code` and
-        `generate_odefunction_code`
-    generate_datafunctions_code()
+    _generate_datafunctions_code()
         Creates code for data functions
-    generate_odefunction_code()
+    _generate_odefunction_code()
         Creates code for the ODE function.
     code()
         Property method for accessing the generated code string.
     """
-    def __init__(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext):
-        """
 
-        Parameters
-        ----------
-        v2s_code_handler : Vensim2StanCodeHandler
-            `v2s_model.Vensim2StanCodeHandler`
-        vensim_model_context : VensimModelContext
-            `vensim_model.VensimModelContext`
-        """
-        self.v2s_code_handler = v2s_code_handler
-        self.vensim_model_context = vensim_model_context
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+        # Find variables that are declared within stan
         self.stan_initialized_variables: set[str] = set()
-        self._code = IndentedString()
 
-        # Find variables present in the V2S code and the vensim model
-        for vensim_variable_name in self.vensim_model_context.variables.keys():
-            if vensim_variable_name in self.v2s_code_handler.declared_variables:
-                if vensim_variable_name in self.vensim_model_context.integ_outcome_variables:
+        for vensim_variable_name, vensim_var_context in vensim_model_context.variables.items():
+            # IF it's static data, it means it's declared in the transformed data block and hence we don't need to
+            # process it
+            if vensim_var_context.is_static_data:
+                self.stan_initialized_variables.add(vensim_variable_name)
+
+            if vensim_variable_name in v2s_code_handler.declared_variables:
+                if vensim_variable_name in vensim_model_context.integ_outcome_variables:
                     # If it's a stock variable it can't be overriden
                     continue
 
@@ -80,36 +82,96 @@ class StanFunctionBuilder:
         self.statement_sorter = StatementTopoSort(tuple(self.stan_initialized_variables))
 
         # Iterate through the Vensim AST and populate the dependency graph
-        walker = FindRHSVariablesWalker()
-        for element in self.vensim_model_context.first_section.elements:
+
+        # This set holds all the variables that are used within the ODE function
+        self.used_variables = set()
+
+        walker = FindODERHSVariablesWalker()
+        for element in vensim_model_context.first_section.elements:
             lhs_variable = element.name
             for component in element.components:
                 rhs_variables = walker.walk(component.ast)
 
                 self.statement_sorter.add_stmt(lhs_variable, rhs_variables)
 
-    def generate_functions_code(self) -> None:
-        self._code += "functions {\n"
-        self._code.indent_level += 1
-        #code += self.generate_datafunctions_code()
-        self._code += self.generate_odefunction_code()
-        self._code.indent_level -= 1
-        self._code += "}\n"
+        for stock_name in vensim_model_context.integ_outcome_variables.keys():
+            self.used_variables |= self.statement_sorter.find_required_variables(stock_name)
 
-    @property
-    def code(self) -> str:
-        return str(self._code)
+        self._generate_odefunction_code(v2s_code_handler, vensim_model_context)
 
-    def generate_odefunction_code(self) -> str:
+    def _generate_odefunction_code(self, v2s_code_handler: Vensim2StanCodeHandler,
+                                   vensim_model_context: VensimModelContext) -> None:
         # sort the AST elements according to the sorted order
         statement_eval_order = self.statement_sorter.sort()
-        elements = [element for element in self.vensim_model_context.first_section.elements if vensim_name_to_identifier(element.name) in statement_eval_order]
+        elements = [element for element in vensim_model_context.first_section.elements if vensim_name_to_identifier(element.name) in statement_eval_order]
 
         elements = sorted(elements, key=lambda x: statement_eval_order.index(vensim_name_to_identifier(x.name)))
 
-        self._code += f"vector ode_func(real time, vector outcome"
+        # find what stan variables need to be passed into the ODE function as an argument
+        odefunc_variable_arguments = []
+        for variable_name in self.stan_initialized_variables:
+            if variable_name not in self.used_variables:
+                continue
+            dim = vensim_model_context.get_variable_shape(variable_name)
+            print(variable_name, dim)
+            if not dim:
+                argtype = "real"
+            else:
+                argtype = "array[] real"
 
-    def generate_datafunctions_code(self) -> str:
+            odefunc_variable_arguments.append(f"{argtype} {variable_name}")
+
+        self._code += f"vector ode_func(real time, vector outcome, {', '.join(odefunc_variable_arguments)}){{\n"
+        self._code.indent_level += 1
+
+        # Find how long the state vector needs to be. Unfortunately, the ODE function must return a 1-dimensional
+        # vector. If that means we have stock variables A and B that are both subscripted so that each are length-2,
+        # we would need a length 4 vector. The calculations within the function body will be done separately one their
+        # own arrays. But at the end, we need to move the values from each variable into the respective indices of the
+        # return vector. This means that we need a unified way to map multiple, potentially multidimensional arrays
+        # into a 1-dimensional vector and vice-versa.
+        state_vector_length = 0
+        for name, v_context in vensim_model_context.integ_outcome_variables.items():
+            if v_context.subscripts:
+                state_vector_length += prod(vensim_model_context.get_variable_shape(name))
+            else:
+                state_vector_length += 1
+
+        # Create the state vector
+        self._code += f"vector[{state_vector_length}] dydt;  // calculated derivatives\n"
+
+        # We now loop through the sorted AST elements and generate code.
+        for element in elements:
+            element_name = element.name
+
+            # If the variable is a stock variable, we indicate that we're calculating a derivative.
+            if element_name in vensim_model_context.integ_outcome_variables:
+                stan_variable_name = f"{element_name}_dydt"
+            else:
+                stan_variable_name = element_name
+
+            subscripts = vensim_model_context.variables[element_name].subscripts
+            # Figure out what the type of the variable should be, depending on they're subscripted or not
+            subscript_shape = vensim_model_context.get_variable_shape(element_name)
+            if subscript_shape:
+                stan_variable_type = f"array[{','.join([str(i) for i in subscript_shape])}] real"
+            else:
+                stan_variable_type = "real"
+
+            for component in element.components:
+
+                rhs_codegen_walker = ODEFunctionStatementCodegenWalker(v2s_code_handler, vensim_model_context)
+                rhs_codegen_walker.walk(component.ast, element_name, subscripts)
+
+                self._code += f"{stan_variable_type} {stan_variable_name} = {rhs_codegen_walker.code};\n"
+
+        # Return the derivative vector
+        self._code += "return dydt;\n"
+
+        self._code.indent_level -= 1
+        self._code += "}\n"
+
+    def _generate_datafunctions_code(self) -> str:
         """
         Generate code for the data functions.
 

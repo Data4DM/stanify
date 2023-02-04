@@ -5,7 +5,8 @@ from typing import Union, TYPE_CHECKING
 from dataclasses import dataclass
 from numbers import Number
 import datetime
-from .stan_block_codegen import Draws2DataCodegen, Data2DrawsCodegen, FunctionsFileCodegen
+from .stan_block_codegen import Draws2DataCodegen, Data2DrawsCodegen
+from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
 
 
@@ -80,17 +81,17 @@ class Vensim2Stan:
 
         self.v2s_code_handler = Vensim2StanCodeHandler(self.v2s_model_code, self.v2s_model_settings, self.vensim_model_context)
 
-        if not stan_file_directory:
-            # Use CWD as the parent directory for storing stan_files
-            self.stan_file_directory = pathlib.Path.cwd().joinpath("stan_files")
-            self.stan_file_directory.mkdir(exist_ok=True)
-        else:
-            self.stan_file_directory = pathlib.Path(stan_file_directory).expanduser()
-
         if not model_name:
             self.model_name = vensim_file_path.stem
         else:
             self.model_name = model_name
+
+        if not stan_file_directory:
+            # Use CWD as the parent directory for storing stan_files
+            self.stan_file_directory = pathlib.Path.cwd().joinpath(f"stan_files/{self.model_name}")
+            self.stan_file_directory.mkdir(exist_ok=True)
+        else:
+            self.stan_file_directory = pathlib.Path(stan_file_directory).expanduser().joinpath(self.model_name)
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"functions_{self.model_name}.stan")
@@ -125,7 +126,9 @@ class Vensim2Stan:
         # run data2draws
 
     def create_functions_stanfile(self) -> pathlib.Path:
-        pass
+        generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler)
+        generator.generate_and_write(self.get_functions_stanfile_path())
+        return self.get_functions_stanfile_path()
 
     def get_draws2data_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")

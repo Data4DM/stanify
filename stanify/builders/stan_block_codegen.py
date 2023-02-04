@@ -130,7 +130,7 @@ class ParametersBlockCodegen(StanBlockCodegen):
 
             # Determine dimension and constraints
             subscripts = variable_context.subscripts if variable_context.subscripts else ()
-            dims = [str(i) for i in vensim_model_context.get_variable_shape(key)]
+            dims = [str(len(vensim_model_context.get_subscript_values(i))) for i in subscripts]
             constraint_code = ""
             if variable_context.lower > float("-inf"):
                 constraint_code += f"lower={variable_context.lower}"
@@ -362,11 +362,6 @@ class StanFileCodegen(ABC):
     @abstractmethod
     def generate_and_write(self, full_file_path: Path) -> None:
         raise NotImplementedError
-
-
-class FunctionsFileCodegen(StanFileCodegen):
-    def generate_and_write(self, full_file_path: Path) -> None:
-        pass
 
 
 class Data2DrawsCodegen(StanFileCodegen):

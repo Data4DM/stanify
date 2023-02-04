@@ -12,7 +12,7 @@ class V2SVariableContext:
     ----------
     name : str
         Name of the variable
-    subscripts : list[str]
+    subscripts : tuple[str]
         Subscripts associated with the variable
     lower : float
         Lower bound constraint. Defaults to $-\infty$
@@ -22,7 +22,7 @@ class V2SVariableContext:
         Whether the variable is sampled or assigned
     """
     name: str
-    subscripts: list[str]
+    subscripts: tuple[str]
     sampled: bool
     lower: float = field(default=float("-inf"))
     upper: float = field(default=float("inf"))

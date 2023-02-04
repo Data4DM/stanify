@@ -110,7 +110,8 @@ class FindDeclarationsWalker(Vensim2StanWalker):
         if variable_name in self.declared_variables:
             raise Exception(f"Variable {variable_name} is used on the left-hand side more than once!")
 
-        self.declared_variables[variable_name] = V2SVariableContext(variable_name, subscripts, sampled, lower=lower, upper=upper)
+        self.declared_variables[variable_name] = V2SVariableContext(variable_name, tuple(subscripts), sampled,
+                                                                    lower=lower, upper=upper)
 
 
 @dataclass
