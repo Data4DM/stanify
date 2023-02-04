@@ -72,7 +72,35 @@ scenario. Note that by default when you omit the bounds it will be interpreted a
 <lower=-inf, upper=inf>
 ```
 
-### Variable Transformations
+### LHS Variable Ambiguity
+
+Sometimes You have a static data variable defined in Vensim and would like to use that variable as a data variable, even
+though it was used on the LHS of a sampling statement.
+
+Suppose I had some variable `numberofpeople` in the Vensim model, and it had a static value of 4. There are 2 ways to
+interpret the following V2S code:
+```
+mean ~ normal(0, 1);
+numberofpeople ~ normal(mean, 1);
+```
+
+It can mean either:
+
+- `numberofpeople` is a parameter, which is simulated to be drawn from the `normal(mean, 1)` distribution.
+- `numberofpeople` is known, but is drawn from the distribution.
+
+Normally in V2S it will default to interpreting it as the first case, which will then override the static value(`4`)
+defined in the Vensim model and declare it to be a Stan parameter becoming a quantity to be sampled.
+
+If you wish to treat the variable as *data*, simply add a `@` before the variable usage:
+
+```
+@numberofpeople ~ normal(mean, 1);
+```
+
+Now V2S will not consider `numberofpeople` as a parameter, given it exists in the Vensim model and **is static**.
+
+### Variable Transformations (WIP)
 V2S supports assignment statements(`=`) which are processed by generating code for the "transformed parameters" block in
 Stan.
 

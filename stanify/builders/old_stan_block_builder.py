@@ -14,7 +14,7 @@ from pysd.translators.structures.abstract_model import (
 )
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .stan_model import StanModelContext, VensimModelContext
+    from .old_stan_model import StanModelContext, VensimModelContext
 
 
 

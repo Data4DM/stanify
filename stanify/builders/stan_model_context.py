@@ -25,4 +25,4 @@ class StanModelContext:
     """
     transformed_data_variables: set[str] = field(init=False, default_factory=set)
     parameter_variables: set[str] = field(init=False, default_factory=set)
-    odefunc_variable_args: list[str] = field(init=False, default_factory=set)
+    odefunc_variable_args: list[str] = field(init=False, default_factory=list)

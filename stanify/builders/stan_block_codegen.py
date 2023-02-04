@@ -72,12 +72,19 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
         self._code += f"real initial_time = {v2s_code_handler.v2s_settings.initial_time};\n"
 
         # Create the array that holds the ODE integration timesteps
-        self._code += f"array[{len(v2s_code_handler.v2s_settings.integration_times)}] real integration_times = {{ {','.join([str(time) for time in v2s_code_handler.v2s_settings.integration_times])} }};\n"
+        self._code += f"array[{len(v2s_code_handler.v2s_settings.integration_times)}] real integration_times = {{ {','.join([str(time) for time in v2s_code_handler.v2s_settings.integration_times])} }};\n\n"
+
+        self._code += "///////////////\n"
+        self._code += "// subscripts\n"
 
         # Create the variables that hold the range of each subscript
         for subscript_name, values in vensim_model_context.subscripts.items():
             subscript_comment = [f"{val} : {index}" for index, val in enumerate(values, 1)]
             self._code += f"int {subscript_name} = {len(values)};  # ({', '.join(subscript_comment)});\n"
+
+        self._code += "///////////////\n\n"
+
+        self._code += "// static Vensim variables\n"
 
         # Walk through the Vensim model
         for element in vensim_model_context.first_section.elements:
@@ -105,7 +112,7 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
                 # stringified list with braces.
                 stan_array_init = str(component_ast.tolist()).replace("[", "{").replace("]", "}")
 
-                self._code += f"array[{','.join(str(dim) for dim in component_ast.shape)}] {stan_dtype} {node_name} = {stan_array_init};\n"
+                self._code += f"array[{','.join(subscripts)}] {stan_dtype} {node_name} = {stan_array_init};\n"
 
 
 @dataclass
@@ -119,14 +126,9 @@ class ParametersBlockCodegen(StanBlockCodegen):
 
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
-        for key, variable_context in v2s_code_handler.declared_variables.items():
-            # Stock variables are always an assigned parameter
-            if key in vensim_model_context.integ_outcome_variables:
-                continue
-
-            # Non-sampled parameters do not go into the parameter block
-            if not variable_context.sampled:
-                continue
+        # iterate through the variables belonging in the parameter block
+        for variable_name in stan_model_context.parameter_variables:
+            variable_context = v2s_code_handler.declared_variables[variable_name]
 
             # Determine dimension and constraints
             subscripts = variable_context.subscripts if variable_context.subscripts else ()
@@ -141,9 +143,9 @@ class ParametersBlockCodegen(StanBlockCodegen):
                 constraint_code = "<" + constraint_code + ">"
 
             # Default type is float. This may not be optimal, but it should be fine for now.
-            variable_type = f"array[{','.join(dims)}]" if subscripts else "real"
+            variable_type = f"array[{','.join(subscripts)}] real" if subscripts else "real"
 
-            self._code += f"{variable_type} {key}{constraint_code};\n"
+            self._code += f"{variable_type} {variable_name}{constraint_code};\n"
 
 
 @dataclass
@@ -354,6 +356,18 @@ class ModelBlockCodegen(StanBlockCodegen):
         for child in root.children:
             build_forloops(child, {})
 
+        # After we handled the subscripted statements, handle the non-subscripted statements.
+        for statement in v2s_code_handler.program_ast.statements:
+            if statement.op != "~":
+                continue
+
+            lhs_variable = statement.left
+            if not lhs_variable.subscripts and lhs_variable.name not in completed_v2s_variables:
+                completed_v2s_variables.add(lhs_variable.name)
+                walker = ModelBlockStatementV2SWalker({})
+                walker.walk(statement)
+                self._code += walker.code
+
 
 @dataclass
 class StanFileCodegen(ABC):
@@ -369,9 +383,10 @@ class StanFileCodegen(ABC):
 class Data2DrawsCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path) -> None:
         with open(full_file_path, "w") as f:
-            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
-                                                                        v2s_code_handler=self.v2s_code_handler,
-                                                                        vensim_model_context=self.vensim_model_context)
+            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
+                                                                      v2s_code_handler=self.v2s_code_handler,
+                                                                      vensim_model_context=self.vensim_model_context,
+                                                                      stan_model_context=self.stan_model_context)
             transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)
@@ -388,7 +403,7 @@ class Data2DrawsCodegen(StanFileCodegen):
 class Draws2DataCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path) -> None:
         with open(full_file_path, "w") as f:
-            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed parameters",
+            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
                                                                         v2s_code_handler=self.v2s_code_handler,
                                                                         vensim_model_context=self.vensim_model_context,
                                                                       stan_model_context=self.stan_model_context)

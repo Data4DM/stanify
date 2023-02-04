@@ -33,7 +33,7 @@ factor
 ;
 
 function_call::FunctionCall = name:identifier '(' [ arglist:arglist ] ')';
-variable::Variable = name:identifier [ constraints:constraints ] [ '[' subscripts:subscript ']' ];
+variable::Variable = [ not_param:"@" ] name:identifier [ constraints:constraints ] [ '[' subscripts:subscript ']' ];
 constraints::Constraints = '<' left:constraint ~ [',' right:constraint] '>';
 constraint = name:('lower'|'upper') ~ '=' ~ value:literal;
 arglist = @+:expression {',' ~ @+:expression}*;

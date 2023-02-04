@@ -1,7 +1,7 @@
 import math
 import cmdstanpy
 from ..builders.utilities import get_data_path, idata2netcdf4store, get_structure, hier, diagnose
-from ..builders.stan_model import vensim2stan
+from ..builders.old_stan_model import vensim2stan
 from ..calibrator.calib_util import extract, get_metric, get_stepsize
 from ..calibrator.visualizer import plot_qoi
 import numpy as np

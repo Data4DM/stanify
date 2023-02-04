@@ -123,14 +123,19 @@ class Vensim2Stan:
                 walker.walk(component.ast, name, subscripts)
 
         # Find Vensim variables which have been used in the V2S code, meaning it needs to be a parameter.
-        for key, variable_context in self.v2s_code_handler.declared_variables.items():
+        for var_name, variable_context in self.v2s_code_handler.declared_variables.items():
             # Stock variables are always an assigned parameter
-            if key in self.vensim_model_context.integ_outcome_variables:
+            if var_name in self.vensim_model_context.integ_outcome_variables:
                 continue
 
             # Non-sampled parameters do not go into the parameter block
             if not variable_context.sampled:
+                # check that the variable is static
+                if var_name in self.vensim_model_context.variables:
+                    assert var_name in self.stan_model_context.transformed_data_variables, f"Variable {var_name} was marked as data, but isn't a static Vensim variable!"
                 continue
+
+            self.stan_model_context.parameter_variables.add(var_name)
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"functions_{self.model_name}.stan")
@@ -165,7 +170,7 @@ class Vensim2Stan:
         # run data2draws
 
     def create_functions_stanfile(self) -> pathlib.Path:
-        generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler)
+        generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
         generator.generate_and_write(self.get_functions_stanfile_path())
         return self.get_functions_stanfile_path()
 
@@ -179,7 +184,7 @@ class Vensim2Stan:
         return self.stan_file_directory.joinpath(f"data2draws_{self.model_name}.stan")
 
     def create_data2draws_stanfile(self) -> pathlib.Path:
-        generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler)
+        generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
         generator.generate_and_write(self.get_data2draws_stanfile_path())
         return self.get_data2draws_stanfile_path()
 

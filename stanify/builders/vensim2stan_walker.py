@@ -110,6 +110,10 @@ class FindDeclarationsWalker(Vensim2StanWalker):
         if variable_name in self.declared_variables:
             raise Exception(f"Variable {variable_name} is used on the left-hand side more than once!")
 
+        # not_param flag means that it shouldn't be treated as a parameter
+        if node.not_param:
+            sampled = False
+
         self.declared_variables[variable_name] = V2SVariableContext(variable_name, tuple(subscripts), sampled,
                                                                     lower=lower, upper=upper)
 

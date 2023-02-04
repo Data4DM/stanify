@@ -118,9 +118,9 @@ class VensimModelContext:
         for var_name, var_context in self.integ_outcome_variables.items():
             subscript_dim = self.get_variable_shape(var_name)
 
-            # Calculate all possibles indices. If a s subscript dimension is (2, 2), this means (0, 0), (0, 1),
-            # (1, 0), (1, 1) is possible.
-            subscript_indices = product(*[range(x) for x in subscript_dim])
+            # Calculate all possibles indices. If a subscript dimension is (2, 2), this means (1, 1), (1, 2),
+            # (2, 1), (2, 2) is possible.
+            subscript_indices = product(*[range(1, x + 1) for x in subscript_dim])
 
             for indices in subscript_indices:
                 self.state_vector_index_map.append(StateVectorIndexMap(var_name, indices))

@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 from .vensim_ast_walker import FindODERHSVariablesWalker, ODEFunctionStatementCodegenWalker
 from .utilities import IndentedString, StatementTopoSort, vensim_name_to_identifier
 from .stan_block_codegen import StanFileCodegen, StanBlockCodegen
+from .stan_model_context import StanModelContext
 from pathlib import Path
 from math import prod
 
@@ -16,7 +17,7 @@ class FunctionsFileCodegen(StanFileCodegen):
         with open(full_file_path, "w") as f:
             generator = StanFunctionBuilder("functions")
 
-            generator.generate(self.v2s_code_handler, self.vensim_model_context)
+            generator.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(generator.code)
 
@@ -59,7 +60,8 @@ class StanFunctionBuilder(StanBlockCodegen):
         Property method for accessing the generated code string.
     """
 
-    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext) -> None:
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
         # Find variables that are declared within stan
         self.stan_initialized_variables: set[str] = set()
 
@@ -97,10 +99,11 @@ class StanFunctionBuilder(StanBlockCodegen):
         for stock_name in vensim_model_context.integ_outcome_variables.keys():
             self.used_variables |= self.statement_sorter.find_required_variables(stock_name)
 
-        self._generate_odefunction_code(v2s_code_handler, vensim_model_context)
+        self._generate_odefunction_code(v2s_code_handler, vensim_model_context, stan_model_context)
 
     def _generate_odefunction_code(self, v2s_code_handler: Vensim2StanCodeHandler,
-                                   vensim_model_context: VensimModelContext) -> None:
+                                   vensim_model_context: VensimModelContext,
+                                   stan_model_context: StanModelContext) -> None:
         # sort the AST elements according to the sorted order
         statement_eval_order = self.statement_sorter.sort()
         elements = [element for element in vensim_model_context.first_section.elements if vensim_name_to_identifier(element.name) in statement_eval_order]
@@ -126,8 +129,38 @@ class StanFunctionBuilder(StanBlockCodegen):
 
             odefunc_variable_arguments.append(f"{argtype} {variable_name}")
 
+            # make sure to save the argument order so that it can be called from the transformed block
+            stan_model_context.odefunc_variable_args.append(variable_name)
+
         self._code += f"vector ode_func(real time, vector outcome, {', '.join(odefunc_variable_arguments)}){{\n"
         self._code.indent_level += 1
+
+        # Enter function body
+
+        # Recover the previous time stock variables from the outcome vector
+        # We first allocate the stock variables
+        self._code += "// previous time stock variables\n"
+        for var_name, context in vensim_model_context.integ_outcome_variables.items():
+            dim = vensim_model_context.get_variable_shape(var_name)
+            if not dim:
+                argtype = "real"
+            else:
+                argtype = f"array[{', '.join([str(i) for i in dim])}] real"
+
+            self._code += f"{argtype} {var_name};\n"
+
+        # Next we index the outcome vector, and then plug them into the allocated stock variables
+        for index, vec_index in enumerate(vensim_model_context.state_vector_index_map):
+            # Skip 0th value since it's dummy
+            if index == 0:
+                continue
+
+            if vec_index.indices:
+                self._code += f"{vec_index.name}[{', '.join([str(i) for i in vec_index.indices])}] = outcome[{index}];\n"
+            else:
+                self._code += f"{vec_index.name} = outcome[{index}];\n"
+
+        self._code += "//////////\n\n"
 
         # Find how long the state vector needs to be. Unfortunately, the ODE function must return a 1-dimensional
         # vector. If that means we have stock variables A and B that are both subscripted so that each are length-2,
@@ -135,19 +168,18 @@ class StanFunctionBuilder(StanBlockCodegen):
         # own arrays. But at the end, we need to move the values from each variable into the respective indices of the
         # return vector. This means that we need a unified way to map multiple, potentially multidimensional arrays
         # into a 1-dimensional vector and vice-versa.
-        state_vector_length = 0
-        for name, v_context in vensim_model_context.integ_outcome_variables.items():
-            if v_context.subscripts:
-                state_vector_length += prod(vensim_model_context.get_variable_shape(name))
-            else:
-                state_vector_length += 1
+        state_vector_length = len(vensim_model_context.state_vector_index_map) - 1
 
         # Create the state vector
-        self._code += f"vector[{state_vector_length}] dydt;  // calculated derivatives\n"
+        self._code += f"vector[{state_vector_length}] dydt;  // calculated derivatives\n\n"
 
         # We now loop through the sorted AST elements and generate code.
         for element in elements:
             element_name = element.name
+
+            # Weed out any unnecessary variables that haven't been filtered out yet
+            if element_name not in self.used_variables:
+                continue
 
             # If the variable is a stock variable, we indicate that we're calculating a derivative.
             if element_name in vensim_model_context.integ_outcome_variables:
@@ -165,9 +197,25 @@ class StanFunctionBuilder(StanBlockCodegen):
 
             for component in element.components:
 
-                rhs_codegen_walker = ODEFunctionStatementCodegenWalker(v2s_code_handler, vensim_model_context)
+                rhs_codegen_walker = ODEFunctionStatementCodegenWalker(v2s_code_handler, vensim_model_context,
+                                                                       stan_model_context)
                 code = rhs_codegen_walker.walk(component.ast, element_name, subscripts)
                 self._code += f"{stan_variable_type} {stan_variable_name} = {code};\n"
+
+
+        self._code += "\n"
+        self._code += "// create return vector\n"
+        # Now we map the stock variables into the single dimension dydt return vector
+        for index, vec_index in enumerate(vensim_model_context.state_vector_index_map):
+            # Skip 0th value since it's a dummy
+            if index == 0:
+                continue
+
+            if vec_index.indices:
+                self._code += f"dydt[{index}] = {vec_index.name}_dydt[{', '.join([str(i) for i in vec_index.indices])}];\n"
+            else:
+                self._code += f"dydt[{index}] = {vec_index.name};\n"
+
 
         # Return the derivative vector
         self._code += "return dydt;\n"

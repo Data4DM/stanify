@@ -181,7 +181,6 @@ class StatementTopoSort:
         return required_variables
 
 
-
 def vensim_name_to_identifier(name: str) -> str:
     return name.lower().replace(" ", "_")
 
