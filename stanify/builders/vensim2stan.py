@@ -3,7 +3,7 @@ import pathlib
 from .vensim_model import VensimModelContext
 from dataclasses import dataclass
 from numbers import Number
-from .stan_block_codegen import Data2DrawsCodegen
+from .stan_block_codegen import Data2DrawsCodegen, Draws2DataCodegen
 from .stan_model_context import StanModelContext
 from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
@@ -64,6 +64,8 @@ class Vensim2Stan:
             vensim2stan model specification code
         vensim_file_path : str or pathlib.Path
             Path to the vensim model file
+        data_variable : str
+            Variable that should be treated as data for SBC
         initial_time : Number
             Number indicating the start time simulation.
         integration_times : list[Number]
@@ -176,7 +178,9 @@ class Vensim2Stan:
         return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")
 
     def create_draws2data_stanfile(self) -> pathlib.Path:
-        pass
+        generator = Draws2DataCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
+        generator.generate_and_write(self.get_draws2data_stanfile_path(), self.get_functions_stanfile_name())
+        return self.get_draws2data_stanfile_path()
 
     def get_data2draws_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"data2draws_{self.model_name}.stan")

@@ -133,7 +133,7 @@ class FindAllUsedVariablesWalker(Vensim2StanWalker):
     walk()
         Default entry point for walker
     """
-    variable_names: list[str] = field(default_factory=list)
+    variable_names: list[str] = field(init=False, default_factory=list)
 
     def walk_Variable(self, node: ast.Variable):
         self.variable_names.append(node.name)

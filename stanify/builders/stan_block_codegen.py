@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from .utilities import IndentedString
+from .utilities import IndentedString, StatementTopoSort
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 import numpy as np
 from .vensim_ast_walker import BaseVensimWalker, InitialValueCodegenVensimWalker
-from .vensim2stan_walker import Vensim2StanWalker
+from .vensim2stan_walker import Vensim2StanWalker, FindAllUsedVariablesWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
 from collections import defaultdict
 
@@ -30,6 +30,9 @@ class StanBlockCodegen(ABC):
         The `IndentedString` object that holds the generated code for blocks. Includes the block declarations and braces
     block_name : str
         Name of the Stan block
+    _omit_block : bool
+        Whether the block designation and braces should be omitted. Defaults to False. Should only be used during
+        draws2data and nothing else.
 
     Methods
     -------
@@ -39,13 +42,23 @@ class StanBlockCodegen(ABC):
         Returns the code string generated.
     """
     block_name: str
+    _omit_block: bool = field(default=False)
     _code: IndentedString = field(init=False, default_factory=IndentedString)
 
+    @property
+    def omit_block(self) -> bool:
+        return self._omit_block
+
+    @omit_block.setter
+    def omit_block(self, value: bool) -> None:
+        self._omit_block = value
+
     def __post_init__(self):
-        # Set up the block - write the block declaration and opening braces.
-        self._code += f"{self.block_name} {{\n"
-        # Increment indent level by 1 since we're inside the block body.
-        self._code.indent_level += 1
+        if not self._omit_block:
+            # Set up the block - write the block declaration and opening braces.
+            self._code += f"{self.block_name} {{\n"
+            # Increment indent level by 1 since we're inside the block body.
+            self._code.indent_level += 1
 
     @abstractmethod
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
@@ -54,11 +67,14 @@ class StanBlockCodegen(ABC):
 
     @property
     def code(self):
-        return str(self._code) + "\n}\n"
+        if not self._omit_block:
+            return str(self._code) + "\n}\n"
+        else:
+            return str(self._code)
 
 
 @dataclass
-class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
+class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
     """
     Generates code for the `transformed data` Stan block. This block includes variable declarations
     for constant variables.
@@ -101,9 +117,49 @@ class TransformedDataCodegenVensimWalker(BaseVensimWalker, StanBlockCodegen):
             if element.name == "initial_time":
                 warnings.warn("initial time was defined in vensim. It will be ignored in favor for the initial time setting passed to vensim2stan.")
                 continue
+
+            # if some variables are written as parameters, don't generate code
+            if element.name in stan_model_context.parameter_variables:
+                continue
+
             for component in element.components:
                 declared_subscripts = component.subscripts[0]
                 self.walk(component.ast, element.name, declared_subscripts)
+
+        # Calculate the initial values for the stock variables.
+        self._code += "\n"
+        self._code += "// initial stock values\n"
+
+        # Create the initial state vector. This will be passed to the ODE solver
+        self._code += f"vector[n_odes] initial_state;\n"
+
+        # Calculate the initial values for each stock
+        for stock_name, var_context in vensim_model_context.integ_outcome_variables.items():
+            stan_varname = f"{stock_name}_initial"
+            if var_context.subscripts:
+                stan_type = f"array[{', '.join(var_context.subscripts)}] real"
+            else:
+                stan_type = "real"
+
+            walker = InitialValueCodegenVensimWalker(v2s_code_handler, vensim_model_context, stan_model_context)
+            for element in vensim_model_context.first_section.elements:
+                if element.name == stock_name:
+                    for component in element.components:
+                        code = walker.walk(component.ast, element.name, tuple(component.subscripts[0]))
+                        self._code += f"{stan_type} {stan_varname} = {code};\n"
+                        break
+
+        # Map the initial values into the initial state vector
+        for index, index_obj in enumerate(vensim_model_context.state_vector_index_map):
+            # skip index 1
+            if index == 0:
+                continue
+
+            if index_obj.indices:
+                indices = f"[{', '.join(str(i) for i in index_obj.indices)}]"
+            else:
+                indices = ""
+            self._code += f"initial_state[{index}] = {index_obj.name}_initial{indices};\n"
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None,
              current_precedence: int = 100) -> None:
@@ -172,42 +228,7 @@ class TransformedParametersBlockCodegen(StanBlockCodegen):
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
 
-        # Calculate the initial values for the stock variables.
-
-        self._code += "// initial stock values\n"
-
-        # Create the initial state vector. This will be passed to the ODE solver
-        self._code += f"vector[n_odes] initial_state;\n"
-
-        # Calculate the initial values for each stock
-        for stock_name, var_context in vensim_model_context.integ_outcome_variables.items():
-            stan_varname = f"{stock_name}_initial"
-            if var_context.subscripts:
-                stan_type = f"array[{', '.join(var_context.subscripts)}] real"
-            else:
-                stan_type = "real"
-
-            walker = InitialValueCodegenVensimWalker(v2s_code_handler, vensim_model_context, stan_model_context)
-            for element in vensim_model_context.first_section.elements:
-                if element.name == stock_name:
-                    for component in element.components:
-                        code = walker.walk(component.ast, element.name, tuple(component.subscripts[0]))
-                        self._code += f"{stan_type} {stan_varname} = {code};\n"
-                        break
-
-        # Map the initial values into the initial state vector
-        for index, index_obj in enumerate(vensim_model_context.state_vector_index_map):
-            # skip index 1
-            if index == 0:
-                continue
-
-            if index_obj.indices:
-                indices = f"[{', '.join(str(i) for i in index_obj.indices)}]"
-            else:
-                indices = ""
-            self._code += f"initial_state[{index}] = {index_obj.name}_initial{indices};\n"
-
-        # Now call the ODE solver
+        # call the ODE solver
         self._code += "\n"
         odesolver_args = ", ".join(stan_model_context.odefunc_variable_args)
         self._code += f"array[timesteps] vector[n_odes] ode_result = ode_rk45(ode_func, initial_state, initial_time, integration_times, {odesolver_args});\n"
@@ -286,6 +307,31 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
     @property
     def code(self) -> str:
         return str(self._code)
+
+@dataclass
+class Draws2DataGeneratedQuantitiesDrawV2SWalker(ModelBlockStatementV2SWalker):
+    def walk_Statement(self, node: ast.Statement):
+        if node.op == "=":
+            return
+        self.walk(node.left)
+        # Since we're using RNG functions it will be an assignment
+        self._code += " = "
+        self.walk(node.right)
+        self._code += ";\n"
+
+    def walk_FunctionCall(self, node: ast.FunctionCall):
+        distributions = ("bernoulli", "binomial", "neg_binomial", "poisson", "normal", "cauchy", "lognormal",
+                         "exponential", "gamma", "weibull", "beta")
+        if node.name in distributions:
+            func_name = f"{node.name}_rng"
+        else:
+            func_name = node.name
+        self._code += f"{func_name}("
+        for index, arg in enumerate(node.arglist):
+            self.walk(arg)
+            if index < len(node.arglist) - 1:
+                self._code += ", "
+        self._code += ")"
 
 
 class ModelBlockCodegen(StanBlockCodegen):
@@ -428,11 +474,12 @@ class ModelBlockCodegen(StanBlockCodegen):
                     continue
 
                 lhs_variable = statement.left
-                if set(lhs_variable.subscripts) == current_vensim_subscripts and lhs_variable.name not in completed_v2s_variables:
-                    completed_v2s_variables.add(lhs_variable.name)
-                    walker = ModelBlockStatementV2SWalker(current_subscripts)
-                    walker.walk(statement)
-                    self._code += walker.code
+                if lhs_variable.subscripts:
+                    if set(lhs_variable.subscripts) == current_vensim_subscripts and lhs_variable.name not in completed_v2s_variables:
+                        completed_v2s_variables.add(lhs_variable.name)
+                        walker = ModelBlockStatementV2SWalker(current_subscripts)
+                        walker.walk(statement)
+                        self._code += walker.code
 
             for children in node.children:
                 build_forloops(children, current_subscripts, nest_level + 1)
@@ -455,6 +502,135 @@ class ModelBlockCodegen(StanBlockCodegen):
                 self._code += walker.code
 
 
+class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
+
+        # Draw the parameters. Sort the sampling statements in topological order
+        # Variables defined in transformed data and stock variables are never a parameter
+        #statement_sorter = StatementTopoSort(tuple(stan_model_context.transformed_data_variables.union(tuple(vensim_model_context.integ_outcome_variables.keys()))))
+        statement_sorter = StatementTopoSort(tuple(stan_model_context.transformed_data_variables))
+
+        # We also add stock variables to be dependent on the ODE argument parameters, so we know which parameters
+        # need to be sampled before running the ODE function
+        for stock_varname in vensim_model_context.integ_outcome_variables.keys():
+            statement_sorter.add_stmt(stock_varname, stan_model_context.odefunc_variable_args)
+
+        for statement in v2s_code_handler.program_ast.statements:
+            if statement.op == "=":
+                continue
+
+            left_variable = statement.left
+
+            # If the LHS is a data variable, we ignore the sample statement
+            if left_variable.not_param:
+                continue
+
+            rhs_variable_walker = FindAllUsedVariablesWalker()
+            rhs_variable_walker.walk(statement.right)
+
+            rhs_variables = rhs_variable_walker.variable_names
+
+            statement_sorter.add_stmt(left_variable.name, rhs_variables)
+
+        param_draw_order = statement_sorter.sort()
+        pre_ode_run_params = []  # these are the parameters that are drawn before running the ODE
+        post_ode_run_params = []  # these are the parameters that are drawn after running the ODE
+
+        # Find all parameters before any stock variables
+        for param_name in param_draw_order:
+            param_draw_order.remove(param_name)
+            if param_name in vensim_model_context.integ_outcome_variables:
+                break
+
+            pre_ode_run_params.append(param_name)
+
+        # Once we see a stock variable, remove the remaining stock variables and the rest can be drawn after the ODE
+        for param_name in param_draw_order:
+            if param_name in vensim_model_context.integ_outcome_variables:
+                param_draw_order.remove(param_name)
+
+        post_ode_run_params = param_draw_order[:]
+
+        # Iterate through the pre ODE statements in the sorted order
+        for param_name in pre_ode_run_params:
+            if param_name not in stan_model_context.parameter_variables:
+                continue
+
+            for statement in v2s_code_handler.program_ast.statements:
+                left_variable = statement.left
+                left_variable_name = statement.left.name
+                if left_variable_name != param_name:
+                    continue
+
+                if left_variable.subscripts:
+                    subscript_args = ", ".join(left_variable.subscripts)
+                    stan_dtype = f"array[{subscript_args}] real"
+                else:
+                    stan_dtype = "real"
+
+                self._code += f"{stan_dtype} {param_name};\n"
+
+                self.generate_code_for_statements(statement, v2s_code_handler, vensim_model_context, stan_model_context)
+
+        # generate the ODE statements. We do this through the transformed parameters code generator.
+        transformed_parameters_gen = TransformedParametersBlockCodegen("transformed parameters", _omit_block=True)
+        # omit the block and braces stuff
+        # manually set the indent level to 1
+        transformed_parameters_gen._code.indent_level = 1
+        transformed_parameters_gen.generate(v2s_code_handler, vensim_model_context, stan_model_context)
+        self._code.add_raw(transformed_parameters_gen.code, ignore_indent=True)
+        self._code += "\n"
+
+        # Now generate the post-ODE statements
+        for param_name in post_ode_run_params:
+            if param_name not in stan_model_context.parameter_variables:
+                continue
+
+            for statement in v2s_code_handler.program_ast.statements:
+                left_variable = statement.left
+                left_variable_name = statement.left.name
+                if left_variable_name != param_name:
+                    continue
+
+                if left_variable.subscripts:
+                    subscript_args = ", ".join(left_variable.subscripts)
+                    stan_dtype = f"array[{subscript_args}] real"
+                else:
+                    stan_dtype = "real"
+
+                self._code += f"{stan_dtype} {param_name};\n"
+
+                self.generate_code_for_statements(statement, v2s_code_handler, vensim_model_context, stan_model_context)
+
+    def generate_code_for_statements(self, statement: ast.Statement, v2s_code_handler: Vensim2StanCodeHandler,
+                                     vensim_model_context: VensimModelContext, stan_model_context: StanModelContext):
+        if statement.op == "=":
+            return
+
+        left_variable = statement.left
+
+        loop_variable_mapping = {}  # key is subscript name, value is loop variable
+        if left_variable.subscripts:
+            indent_levels = len(left_variable.subscripts)
+
+            for nest_level in range(indent_levels):
+                loop_variable = chr(ord("i") + nest_level)
+                loop_bound = left_variable.subscripts[nest_level]
+                self._code += f"for ({loop_variable} in 1:{loop_bound}){{\n"
+                self._code.indent_level += 1
+                loop_variable_mapping[loop_bound] = loop_variable
+
+        walker = Draws2DataGeneratedQuantitiesDrawV2SWalker(loop_variable_mapping)
+        walker.walk(statement)
+        self._code += walker.code
+
+        if left_variable.subscripts:
+            for nest_level in range(len(left_variable.subscripts)):
+                self._code.indent_level -= 1
+                self._code += "}\n"
+
+
 @dataclass
 class StanFileCodegen(ABC):
     vensim_model_context: VensimModelContext
@@ -470,12 +646,12 @@ class Data2DrawsCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         with open(full_file_path, "w") as f:
             # Write the function file include.
-            f.write(f"#include {functions_file_name}\n")
+            f.write(f"#include {functions_file_name}\n\n")
 
-            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
-                                                                      v2s_code_handler=self.v2s_code_handler,
+            transformed_data_gen = TransformedDataCodegenVensimWalker(v2s_code_handler=self.v2s_code_handler,
                                                                       vensim_model_context=self.vensim_model_context,
-                                                                      stan_model_context=self.stan_model_context)
+                                                                      stan_model_context=self.stan_model_context,
+                                                                      block_name="transformed data")
             transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)
@@ -497,10 +673,19 @@ class Data2DrawsCodegen(StanFileCodegen):
 class Draws2DataCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         with open(full_file_path, "w") as f:
-            transformed_data_gen = TransformedDataCodegenVensimWalker("transformed data",
-                                                                        v2s_code_handler=self.v2s_code_handler,
-                                                                        vensim_model_context=self.vensim_model_context,
-                                                                      stan_model_context=self.stan_model_context)
+            # Write the function file include.
+            f.write(f"#include {functions_file_name}\n\n")
+
+            transformed_data_gen = TransformedDataCodegenVensimWalker(v2s_code_handler=self.v2s_code_handler,
+                                                                      vensim_model_context=self.vensim_model_context,
+                                                                      stan_model_context=self.stan_model_context,
+                                                                      block_name="transformed data")
             transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)
+
+            draws2data_generated_quantities_gen = Draws2DataGeneratedQuantitiesBlockCodegen("generated quantities")
+            draws2data_generated_quantities_gen.generate(self.v2s_code_handler, self.vensim_model_context,
+                                                         self.stan_model_context)
+
+            f.write(draws2data_generated_quantities_gen.code)

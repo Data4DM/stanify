@@ -94,7 +94,8 @@ class FindStaticDataVariablesWalker(BaseVensimWalker):
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> None:
         match component_ast:
             case int() | float() | np.ndarray:
-                self.stan_model_context.transformed_data_variables.add(node_name)
+                if node_name not in self.v2s_code_handler.declared_variables:
+                    self.stan_model_context.transformed_data_variables.add(node_name)
 
 
 class FindODERHSVariablesVensimWalker:
