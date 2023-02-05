@@ -29,25 +29,25 @@ region. The assumption is that the measurement error follows $\mathrm{cauchy}(0,
 
 $$
 \begin{aligned}
-{prey_{observed}}_{region,t} &\sim \mathrm{normal}(prey, {\sigma_{prey}}_{region,t}) \\\
-{predator_{observed}}_{region,t} &\sim \mathrm{normal}(predator, {\sigma_{predator}}_{region,t}) \\\
-{\sigma_{prey}}_{region,t} &\sim \mathrm{cauchy}(0, 5) \\\
-{\sigma_{predator}}_{region,t} &\sim \mathrm{cauchy}(0, 5) \\\
+{prey_{observed}}_{region,t} &\sim \mathrm{normal}(prey, {\sigma_{prey}}_{region}) \\\
+{predator_{observed}}_{region,t} &\sim \mathrm{normal}(predator, {\sigma_{predator}}_{region}) \\\
+{\sigma_{prey}}_{region} &\sim \mathrm{cauchy}(0, 5) \\\
+{\sigma_{predator}}_{region} &\sim \mathrm{cauchy}(0, 5) \\\
 \end{aligned}
 $$
 
 The V2S model corresponding to the above specification would be written as so:
 ```
-prey_observed[region, timesteps] ~ normal(prey[region, timesteps], sigma_prey[region, timesteps]);
-predator_observed[region, timesteps] ~ normal(predator[region, timesteps], sigma_predator[region, timesteps]);
-sigma_prey<lower=0.0>[region, timesteps] ~ cauchy(0, 5);
-sigma_predator<lower=0.0>[region, timesteps] ~ cauchy(0, 5);
+prey_observed[region, timesteps] ~ normal(prey[region, timesteps], sigma_prey[region]);
+predator_observed[region, timesteps] ~ normal(predator[region, timesteps], sigma_predator[region]);
+sigma_prey<lower=0.0>[region] ~ cauchy(0, 5);
+sigma_predator<lower=0.0>[region] ~ cauchy(0, 5);
 ```
 
 Let's pick this apart piece by piece:
 ```
-prey_observed[region, timesteps] ~ normal(prey[region, timesteps], sigma_prey[region, timesteps]);
-predator_observed[region, timesteps] ~ normal(predator[region, timesteps], sigma_predator[region, timesteps]);
+prey_observed[region, timesteps] ~ normal(prey[region, timesteps], sigma_prey[region]);
+predator_observed[region, timesteps] ~ normal(predator[region, timesteps], sigma_predator[region]);
 ```
 
 The first two lines here define `prey_observed` and `predator_observed` as sampled variables, which are drawn from a
@@ -59,8 +59,8 @@ Note that there's a subscript `timesteps`, which wasn't present in the Vensim mo
  that **must be present for stock variables**. It indicates obviously the time index of the stock variable.
 
 ```
-sigma_prey<lower=0.0>[region, timesteps] ~ cauchy(0, 5);
-sigma_predator<lower=0.0>[region, timesteps] ~ cauchy(0, 5);
+sigma_prey<lower=0.0>[region] ~ cauchy(0, 5);
+sigma_predator<lower=0.0>[region] ~ cauchy(0, 5);
 ```
 Here we see the same bracket syntax again, which tells V2S to make a sigma parameter for each region and time. Additionally, we
 have another syntax that indicates the lower bound of $\sigma$ be zero, since it would be the standard deviation.
