@@ -241,6 +241,10 @@ class ParametersBlockCodegen(StanBlockCodegen):
             # Default type is float. This may not be optimal, but it should be fine for now.
             variable_type = f"array[{', '.join(subscripts)}] real" if subscripts else "real"
 
+            # Save the subscript order in stan model context
+            if subscripts:
+                stan_model_context.array_dims_subscript_map[variable_name] = subscripts
+
             self._code += f"{variable_type}{constraint_code} {variable_name};\n"
 
 
@@ -258,6 +262,7 @@ class TransformedParametersBlockCodegen(StanBlockCodegen):
         for stock_name, var_context in vensim_model_context.integ_outcome_variables.items():
             if var_context.subscripts:
                 stan_type = f"array[{', '.join(('timesteps',) + var_context.subscripts)}] real"
+                stan_model_context.array_dims_subscript_map[stock_name] = ("timesteps", *var_context.subscripts)
             else:
                 stan_type = f"array[timesteps] real"
 
@@ -286,11 +291,15 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
         Dict which maps subscript names to loop variable. `dict[subscript_name, loop_variable]` where `subscript_name`
         is the original subscript name, and `loop_variable` is the Stan loop variable(`i, j, k, ...`) that corresponds
         to it.
+    array_dims_subscript_map : dict[str, tuple[str]]
+        dict that holds the dimension order for each stan variable. Should be from
+        `stanify.builders.stan_model_context.StanModelContext`
     _code : IndentedString
         `stanify.builders.utilities.IndentedString` that holds the generated code
 
     """
     subscript_loop_variable_mapping: dict[str, str]
+    array_dims_subscript_map: dict[str, tuple[str]]
     _code: IndentedString = field(init=False, default_factory=IndentedString)
 
     def walk_Statement(self, node: ast.Statement):
@@ -317,8 +326,14 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
     def walk_Variable(self, node: ast.Variable):
         self._code += node.name
         if node.subscripts:
+            # Check that the info in the dims-subscript map is the same as the AST subscripts
+            assert set(node.subscripts) == set(self.array_dims_subscript_map[node.name]), f"Found unmatched subscript-dimension map information for Stan variable {node.name}"
+
+            # Sort the subscript order according to their declared ordering
+            subscript_order = sorted(list(node.subscripts), key=lambda x: self.array_dims_subscript_map[node.name].index(x))
+
             self._code += "["
-            self._code += ",".join(self.subscript_loop_variable_mapping[subscript] for subscript in node.subscripts)
+            self._code += ",".join(self.subscript_loop_variable_mapping[subscript] for subscript in subscript_order)
             self._code += "]"
 
     def walk_Literal(self, node: ast.Literal):
@@ -473,7 +488,8 @@ class ModelBlockCodegen(StanBlockCodegen):
                 if lhs_variable.subscripts:
                     if set(lhs_variable.subscripts) == current_vensim_subscripts and lhs_variable.name not in completed_v2s_variables:
                         completed_v2s_variables.add(lhs_variable.name)
-                        stmt_walker = ModelBlockStatementV2SWalker(current_subscripts)
+                        stmt_walker = ModelBlockStatementV2SWalker(current_subscripts,
+                                                                   stan_model_context.array_dims_subscript_map)
                         stmt_walker.walk(statement)
                         self._code += stmt_walker.code
 
@@ -493,7 +509,7 @@ class ModelBlockCodegen(StanBlockCodegen):
             lhs_variable = statement.left
             if not lhs_variable.subscripts and lhs_variable.name not in completed_v2s_variables:
                 completed_v2s_variables.add(lhs_variable.name)
-                walker = ModelBlockStatementV2SWalker({})
+                walker = ModelBlockStatementV2SWalker({}, stan_model_context.array_dims_subscript_map)
                 walker.walk(statement)
                 self._code += walker.code
 
@@ -511,6 +527,7 @@ class Data2DrawsDataBlockCodegen(StanBlockCodegen):
 
         if data_subscripts:
             stan_dtype = f"array[{', '.join(str(x) for x in data_subscript_dim)}] real"
+            stan_model_context.array_dims_subscript_map[data_variable] = data_subscripts
             stan_comments = f"  // subscripts: {', '.join(data_subscripts)}"
         else:
             stan_dtype = "real"
@@ -608,6 +625,7 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
                 if left_variable.subscripts:
                     subscript_args = ", ".join(left_variable.subscripts)
                     stan_dtype = f"array[{subscript_args}] real"
+                    stan_model_context.array_dims_subscript_map[left_variable_name] = left_variable.subscripts
                 else:
                     stan_dtype = "real"
 
@@ -638,6 +656,7 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
                 if left_variable.subscripts:
                     subscript_args = ", ".join(left_variable.subscripts)
                     stan_dtype = f"array[{subscript_args}] real"
+                    stan_model_context.array_dims_subscript_map[left_variable_name] = left_variable.subscripts
                 else:
                     stan_dtype = "real"
 
@@ -663,7 +682,8 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
                 self._code.indent_level += 1
                 loop_variable_mapping[loop_bound] = loop_variable
 
-        walker = Draws2DataGeneratedQuantitiesDrawV2SWalker(loop_variable_mapping)
+        walker = Draws2DataGeneratedQuantitiesDrawV2SWalker(loop_variable_mapping,
+                                                            stan_model_context.array_dims_subscript_map)
         walker.walk(statement)
         self._code += walker.code
 

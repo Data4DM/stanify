@@ -22,7 +22,11 @@ class StanModelContext:
         List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE
         function can be called with the appropriate arguments. Written when creating the ODE function, accessed when
         creating `transformed parameters` block.
+    array_dims_subscript_map : dict[str, tuple[str]]
+        Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension
+        of each index
     """
     transformed_data_variables: set[str] = field(init=False, default_factory=set)
     parameter_variables: set[str] = field(init=False, default_factory=set)
     odefunc_variable_args: list[str] = field(init=False, default_factory=list)
+    array_dims_subscript_map: dict[str, tuple[str]] = field(default_factory=dict)

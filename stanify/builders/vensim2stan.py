@@ -157,8 +157,11 @@ class Vensim2Stan:
         """
 
         # call codegen
-
+        self.create_functions_stanfile()
+        self.create_draws2data_stanfile()
+        self.create_data2draws_stanfile()
         # run draws2data
+
 
         # run data2draws
 
