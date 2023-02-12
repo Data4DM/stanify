@@ -13,7 +13,7 @@ from pathlib import Path
 
 class FunctionsFileCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
-        with open(full_file_path, "w") as f:
+        with self.get_file_context(full_file_path) as f:
             generator = StanFunctionBuilder("functions")
 
             generator.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)

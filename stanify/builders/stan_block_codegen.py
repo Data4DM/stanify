@@ -3,7 +3,9 @@ from __future__ import annotations
 import warnings
 from dataclasses import dataclass, field
 from .utilities import IndentedString, StatementTopoSort
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TextIO
+import tempfile
+import contextlib
 if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
     from .v2s_model import Vensim2StanCodeHandler
@@ -121,7 +123,7 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
             if subscript_name == "timesteps":
                 continue
             subscript_comment = [f"{val} : {index}" for index, val in enumerate(values, 1)]
-            self._code += f"int {subscript_name} = {len(values)};  # ({', '.join(subscript_comment)});\n"
+            self._code += f"int {subscript_name} = {len(values)};  // ({', '.join(subscript_comment)});\n"
 
         self._code += "///////////////\n\n"
 
@@ -243,7 +245,7 @@ class ParametersBlockCodegen(StanBlockCodegen):
 
             # Save the subscript order in stan model context
             if subscripts:
-                stan_model_context.array_dims_subscript_map[variable_name] = subscripts
+                stan_model_context.array_dims_subscript_map[variable_name] = tuple(subscripts)
 
             self._code += f"{variable_type}{constraint_code} {variable_name};\n"
 
@@ -625,7 +627,7 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
                 if left_variable.subscripts:
                     subscript_args = ", ".join(left_variable.subscripts)
                     stan_dtype = f"array[{subscript_args}] real"
-                    stan_model_context.array_dims_subscript_map[left_variable_name] = left_variable.subscripts
+                    stan_model_context.array_dims_subscript_map[left_variable_name] = tuple(left_variable.subscripts)
                 else:
                     stan_dtype = "real"
 
@@ -656,7 +658,7 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
                 if left_variable.subscripts:
                     subscript_args = ", ".join(left_variable.subscripts)
                     stan_dtype = f"array[{subscript_args}] real"
-                    stan_model_context.array_dims_subscript_map[left_variable_name] = left_variable.subscripts
+                    stan_model_context.array_dims_subscript_map[left_variable_name] = tuple(left_variable.subscripts)
                 else:
                     stan_dtype = "real"
 
@@ -695,18 +697,50 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
 
 @dataclass
 class StanFileCodegen(ABC):
+    """
+    This is the base class for writing to stan files.
+
+    Attributes
+    ----------
+    v2s_code_handler : Vensim2StanCodeHandler
+        see `StanBlockCodegen`
+    vensim_model_context : VensimModelContext
+        see `StanBlockCodegen`
+    stan_model_context : StanModelContext
+        see `StanBlockCodegen`
+    overwrite : bool
+        Whether to actually write the code to the file. If set to True(Default), writes to the designated file.
+        However, if set to False which is helpful for debugging/using your own modified stan files, will write to a
+        temporary file just for running codegen and is deleted after codegen completes.
+    """
     vensim_model_context: VensimModelContext
     v2s_code_handler: Vensim2StanCodeHandler
     stan_model_context: StanModelContext
+    overwrite: bool = field(default=True)
+
 
     @abstractmethod
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
         raise NotImplementedError
 
+    @contextlib.contextmanager
+    def get_file_context(self, file_path: Path) -> TextIO:
+        """
+        Returns
+        -------
+        A file object to write to
+        """
+        if self.overwrite:
+            f = open(file_path, "w")
+        else:
+            f = tempfile.TemporaryFile(mode="w")
+        yield f
+        f.close()
+
 
 class Data2DrawsCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
-        with open(full_file_path, "w") as f:
+        with self.get_file_context(full_file_path) as f:
             # Write the function file include.
             f.write(f"#include {functions_file_name}\n\n")
 
@@ -738,7 +772,7 @@ class Data2DrawsCodegen(StanFileCodegen):
 
 class Draws2DataCodegen(StanFileCodegen):
     def generate_and_write(self, full_file_path: Path, functions_file_name: str) -> None:
-        with open(full_file_path, "w") as f:
+        with self.get_file_context(full_file_path) as f:
             # Write the function file include.
             f.write(f"#include {functions_file_name}\n\n")
 
