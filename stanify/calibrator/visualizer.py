@@ -77,14 +77,8 @@ def plot_qoi(idata, setting, precision, idata_kwargs, model_name):
 
     loglik_prior = []
     loglik_post = []
-    for target_sim_vector_name in setting['target_sim_vector_names']:
-        rank, loglik_prior_q, loglik_post_q = compute_loglik_rank(idata.prior[target_sim_vector_name], idata.prior["m_noise_scale"],
-                    idata.observed_data[f'{target_sim_vector_name}_obs'], idata.posterior[target_sim_vector_name], idata.posterior["m_noise_scale"], precision['S'])
-        plot_sbc_rank(rank, target_sim_vector_name)
-        loglik_prior = [sum(i) for i in zip(loglik_prior, loglik_prior_q)]
-        loglik_post = [sum(i) for i in zip(loglik_post, loglik_post_q)]
-    sbc_rank = sum([i<j for i,j in zip(loglik_prior, loglik_post)])
-    compute_loglik_rank(sbc_rank, "all")
+    rank, loglik_prior_q, loglik_post_q = compute_loglik_rank(idata)
+    plot_sbc_rank(rank, "loglik", model_name)
     return
 
 def compute_loglik_rank(inference_data): #, data_index=0, chain_index=0):
@@ -93,18 +87,19 @@ def compute_loglik_rank(inference_data): #, data_index=0, chain_index=0):
     loglik_post = []
     S = inference_data.posterior.dims["prior_draw"]
     for s in range(S):
-        loglik_prior = inference_data.prior["loglik"].sel(prior_draw=0).values
-        loglik_post = inference_data.posterior["loglik"].sel(prior_draw=0).values[:, :]  # [chain, draw]
+        loglik_prior_vals = inference_data.prior["loglik"].sel(prior_draw=0).values
+        loglik_post_vals = inference_data.log_likelihood["loglik"].sel(prior_draw=0).values.flatten()  # [chain, draw]
 
-        sbc_rank.append(np.sum(loglik_post < loglik_prior))
-        loglik_prior.append(loglik_prior) # length S [.1, .3, .4]
-        loglik_post.append(loglik_post) # length S [0, .2, .4]
+        sbc_rank.append(np.sum(loglik_post_vals < loglik_prior_vals))
+        loglik_prior.append(loglik_prior_vals) # length S [.1, .3, .4]
+        loglik_post.append(loglik_post_vals) # length S [0, .2, .4]
     return sbc_rank, loglik_prior, loglik_post
 
 def plot_sbc_rank(sbc_rank:list, target_sim_vector_name: str, model_name: str):
     ranks = []
     plt.hist(sbc_rank)
     plt.title(f"SBC - {target_sim_vector_name}")
+    plt.show()
     save_fig(model_name, False, "sbc_rank")
     plt.clf()
 
