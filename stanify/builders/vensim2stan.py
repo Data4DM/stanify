@@ -1,13 +1,18 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import pathlib
 from .vensim_model import VensimModelContext
 from dataclasses import dataclass
 from numbers import Number
+import warnings
 from .stan_block_codegen import Data2DrawsCodegen, Draws2DataCodegen
 from .stan_model_context import StanModelContext
 from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
 from .vensim_ast_walker import FindStaticDataVariablesWalker
+from .sbc_runner import SBCRunner
+if TYPE_CHECKING:
+    import arviz
 
 
 @dataclass(frozen=True)
@@ -18,7 +23,7 @@ class V2SModelSettings:
     Attributes
     ----------
     data_variable : str
-        Name of the data variable. This corresponds to $y$.
+        Name of the data variable. This corresponds to $y$ in SBC.
     initial_time : Number
         Number indicating the start time simulation.
     integration_times : list[Number]
@@ -35,6 +40,12 @@ class Vensim2Stan:
     """
     `Vensim2Stan` is the entry point of the stanify translation process. It orchestrates the entire process of parsing
     necessary resources and code generation. It also performs fits and simulations for SBC.
+
+    Note that `create_functions_stanfile` must be run before other create methods since the function signature must
+    be known in order to create the transformed parameters/generated quantities block.
+
+    Additionally, note that the class and the codegen process is stateful and has side effects. Therefore, it's
+    recommended to re-instantiate this class.
 
     Attributes
     ----------
@@ -113,7 +124,10 @@ class Vensim2Stan:
         Since we don't want to be strict with what block should be written first (can you imagine the maintenance
         nightmare if we had to create `transformed parameters, parameters` block and then the functions file? XD).
         We just resort to doing a couple extra passes to collect the information.
+
+        This method should be called every time you wish to re-run the code generation process.
         """
+        self.stan_model_context = StanModelContext()
         # Find Vensim variables that are static data
         walker = FindStaticDataVariablesWalker(self.v2s_code_handler, self.vensim_model_context,
                                                self.stan_model_context)
@@ -139,7 +153,8 @@ class Vensim2Stan:
 
             self.stan_model_context.parameter_variables.add(var_name)
 
-    def run_sbc(self, n_fits: int = 100, n_draws: int = 1000):
+    def run_sbc(self, n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4,
+                overwrite: bool = True) -> arviz.InferenceData:
         """
         generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
         SBC.
@@ -150,26 +165,41 @@ class Vensim2Stan:
             Number of fits to perform. Defaults to 100.
         n_draws : int
             Number of draws to draw from the posterior. Defaults to 1000.
-
+        n_chains : int
+            Number of chains to run for data2draws
+        overwrite : bool
+            Whether to actually write the generated code to the files. This is useful when you want to personally
+            modify the stancode and run SBC on it. defaults to True
         Returns
         -------
-        A SBCFit object
+        An `arviz.InferenceData object`
         """
-
+        if not overwrite:
+            warnings.warn("Overwriting stan files is disabled - vensim2stan will use whatever content that's present on the disk.")
         # call codegen
-        self.create_functions_stanfile()
-        self.create_draws2data_stanfile()
-        self.create_data2draws_stanfile()
-        # run draws2data
+        self.create_functions_stanfile(overwrite=overwrite)
+        self.create_data2draws_stanfile(overwrite=overwrite)
+        self.create_draws2data_stanfile(overwrite=overwrite)
 
+        # Find the dims for arviz. This dictionary corresponds to the `dims` argument of
+        # https://python.arviz.org/en/stable/api/generated/arviz.from_cmdstanpy.html#arviz-from-cmdstanpy
+        arviz_dims = {key: list(value) for key, value in self.stan_model_context.array_dims_subscript_map.items()}
 
-        # run data2draws
+        arviz_coords = self.vensim_model_context.subscripts
+
+        # run SBC
+        sbc_runner = SBCRunner(self.get_draws2data_stanfile_path(), self.get_data2draws_stanfile_path(),
+                               self.v2s_model_settings.data_variable, n_fits=n_fits, n_draws=n_draws, n_chains=n_chains,
+                               arviz_dims=arviz_dims, arviz_coords=arviz_coords)
+
+        return sbc_runner.run_sbc()
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(self.get_functions_stanfile_name())
 
-    def create_functions_stanfile(self) -> pathlib.Path:
-        generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
+    def create_functions_stanfile(self, overwrite: bool = True) -> pathlib.Path:
+        generator = FunctionsFileCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context,
+                                         overwrite=overwrite)
         generator.generate_and_write(self.get_functions_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_functions_stanfile_path()
 
@@ -179,15 +209,17 @@ class Vensim2Stan:
     def get_draws2data_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"draws2data_{self.model_name}.stan")
 
-    def create_draws2data_stanfile(self) -> pathlib.Path:
-        generator = Draws2DataCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
+    def create_draws2data_stanfile(self, overwrite: bool = True) -> pathlib.Path:
+        generator = Draws2DataCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context,
+                                      overwrite=overwrite)
         generator.generate_and_write(self.get_draws2data_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_draws2data_stanfile_path()
 
     def get_data2draws_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(f"data2draws_{self.model_name}.stan")
 
-    def create_data2draws_stanfile(self) -> pathlib.Path:
-        generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context)
+    def create_data2draws_stanfile(self, overwrite: bool = True) -> pathlib.Path:
+        generator = Data2DrawsCodegen(self.vensim_model_context, self.v2s_code_handler, self.stan_model_context,
+                                      overwrite=overwrite)
         generator.generate_and_write(self.get_data2draws_stanfile_path(), self.get_functions_stanfile_name())
         return self.get_data2draws_stanfile_path()

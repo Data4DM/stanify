@@ -24,7 +24,9 @@ class StanModelContext:
         creating `transformed parameters` block.
     array_dims_subscript_map : dict[str, tuple[str]]
         Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension
-        of each index
+        of each index. `dict[variable_name, subscript_tuples)` where `variable_name` is the array stan variable and
+        `subscript_tuples` which holds the actual subscript names that correspond to each dimension of the declared
+        array.
     """
     transformed_data_variables: set[str] = field(init=False, default_factory=set)
     parameter_variables: set[str] = field(init=False, default_factory=set)
