@@ -1,0 +1,1 @@
+tatsu grammar.ebnf --outfile parser.py --object-model-outfile ast.py

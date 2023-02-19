@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import defaultdict
 import os
 import arviz as az
@@ -8,46 +9,122 @@ import pickle
 from hashlib import sha256
 import cmdstanpy
 import tempfile
-import textwrap
+from typing import Iterable
+
 
 class IndentedString:
-    def __init__(self, indent_level=0):
+    """
+    This can be seen as a stateful `textwrap.indent()`.
+    """
+    def __init__(self, indent_level: int = 0):
+        """
+
+        Parameters
+        ----------
+        indent_level : int
+            The initial indentation level. Default is 0. Note that it indicates the number of tabs, not spaces.
+        """
         self.indent_level = indent_level
         self.string = ""
 
-    def __iadd__(self, other: str):
+    def __iadd__(self, other: str) -> IndentedString:
         prefix = " " * 4 * self.indent_level
         if other != "\n":
             self.string += prefix
         self.string += other
         return self
 
-    def add_raw(self, string, ignore_indent=False):
+    def add_raw(self, string: str, ignore_indent: bool = False) -> None:
+        """
+        Directly append a string, potentially overriding the indentation.
+        Parameters
+        ----------
+        string : str
+            string to append
+        ignore_indent : bool
+            Default is False. If set to True, will not add the indentation.
+        """
         if ignore_indent:
             self.string += string
         else:
             self.__iadd__(string)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.string
 
 
 class StatementTopoSort:
-    def __init__(self, ignored_variables=tuple()):
-        self.dependency_graph = dict()
-        self.sorted_order = []
-        self.ignored_variables = ignored_variables
+    """
+    Topologically sort a group of statements, based on their usage.
+    This is useful when you're working with unordered statements, and need to
+    order them for declarations.
 
-    def add_stmt(self, lhs_var, rhs_vars):
+    For example, I can have the following statements:
+    ```
+    a = 1;
+    b = a * 2
+    c = a + b;
+    ```
+    If we were to topologically order the variables involved, it would become:
+    ```
+    a, b, c
+    ```
+
+    Attributes
+    ----------
+    dependency_graph : dict[str, set[str]]
+        An adjacency list for a dependency graph. Key denotes the destination, value the sources
+        In other words, "key is dependent on values".
+    sorted_order : list[str]
+        The result of the sort. Holds variable names
+    ignored_variables : tuple[str]
+        Tuple of variable names which should be ignored during the sort. This is useful when you have some variables
+        that require special treatment.
+    """
+    def __init__(self, ignored_variables: tuple[str] = tuple()):
+        """
+
+        Parameters
+        ----------
+        ignored_variables : tuple[str]
+            Refer to attribute documentation.
+        """
+        self.dependency_graph: dict[str, set[str]] = dict()
+        self.sorted_order: list[str] = []
+        self.ignored_variables: tuple[str] = ignored_variables
+
+    def add_stmt(self, lhs_var, rhs_vars: Iterable[str]) -> None:
+        """
+        Add an edge to the dependency graph.
+        Edge being added is the form `lhs_var -> rhs_var` and read as "`lhs_var` depends on `rhs_var`".
+
+        Parameters
+        ----------
+        lhs_var : str
+            string denoting the LHS variable name
+        rhs_vars : Iterable[str]
+            An Iterable of strings denoting the RHS variable names
+        """
         if lhs_var not in self.dependency_graph:
             self.dependency_graph[lhs_var] = set()
+        if not rhs_vars:
+            return
         self.dependency_graph[lhs_var].update(rhs_vars)
         for var in rhs_vars:
             if var not in self.dependency_graph:
                 self.dependency_graph[var] = set()
 
+    def _recursive_order_search(self, current: str, visited: set[str]) -> None:
+        """
+        Search through the dependency graph depth-first.
 
-    def recursive_order_search(self, current, visited):
+        Parameters
+        ----------
+        current : str
+            current node name
+        visited : set[str]
+            set of visited node names
+        """
         if current in self.ignored_variables:
             return
         visited.add(current)
@@ -57,22 +134,54 @@ class StatementTopoSort:
             if child in self.ignored_variables:
                 continue
             if child not in visited:
-                self.recursive_order_search(child, visited)
+                self._recursive_order_search(child, visited)
         if current not in self.sorted_order:
             self.sorted_order.append(current)
 
-    def sort(self, reversed=False):
+    def sort(self) -> list[str]:
         """
-        reversed=False(default) means it will sort according to LHS given RHS
-        so a = b + c would mean b, c will come before a
+        Perform the sorting and return the list of variable names according to order.
+        Sorts based on dependency, meaning that if given `a = b + c`, returns `[b, c, a]`
+
+        Returns
+        -------
+        sorted_order : list[str]
+            List of sorted variable names
         """
+        self.sorted_order = []
         for key in self.dependency_graph.keys():
-            self.recursive_order_search(key, set())
+            self._recursive_order_search(key, set())
 
-        return self.sorted_order if not reversed else self.sorted_order[::-1]
+        return self.sorted_order
+
+    def find_required_variables(self, variable: str) -> set[str]:
+        """
+        Find the variables which are required to calculate the value of `variable`.
+
+        Parameters
+        ----------
+        variable : str
+            Target variable name
+
+        Returns
+        -------
+        set of variable names that are required
+        """
+        required_variables = set()
+        bfs_stack = [variable]
+        while len(bfs_stack) > 0:
+            variable = bfs_stack.pop(0)
+            required_variables.add(variable)
+            for next_var in self.dependency_graph[variable]:
+                if next_var in required_variables:
+                    continue
+                bfs_stack.append(next_var)
+            required_variables |= self.dependency_graph[variable]
+
+        return required_variables
 
 
-def vensim_name_to_identifier(name: str):
+def vensim_name_to_identifier(name: str) -> str:
     return name.lower().replace(" ", "_")
 
 def get_plot_path(model_name):
@@ -141,7 +250,7 @@ def diagnose(sbc_xr, test_quantity, matching_obs): #TODO variable-wise?
     prior_sample = sbc_xr.prior_sample #[dim: prior_draws (no chain, draws..)]
     posterior_sample = sbc_xr.posterior_sample
     matching_simulated = sbc_xr.matching_simulated
-    matching_simulated_obs = sbc_xr.matching_simulated_obs
+    matching_simulated_obs = sbc_xr.matching_simulated_obs4
     target_obs = sbc_xr.sbc_xr
     loglik = 1 #TODO
     return compare(test_quantity(prior_sample, target_simulated, target_simulated_obs, target_obs),
