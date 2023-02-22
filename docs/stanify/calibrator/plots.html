@@ -105,7 +105,7 @@
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="sd">    kwargs : Any</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="sd">        Any additional arguments to be passed to the `InferenceData.isel` method. This is for when the variable is</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">        subscripted and has named dimensions. For example, if a parameter `sigma` has an additional dimension named</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">        &quot;region&quot;, you need to pass something like `region=&quot;A&quot;` so that the variable is fully indexed.</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">        &quot;region&quot;, you need to pass `region=&quot;A&quot;` so that the variable is fully indexed.</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
 </span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="sd">    Returns</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">    -------</span>
@@ -115,9 +115,9 @@
 </span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>    <span class="n">post_draws</span> <span class="o">=</span> <span class="n">sbc_idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
 </span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>        <span class="c1"># Check that the subscript `prior_draws` and `posterior_draws` aren&#39;t present.</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="k">if</span> <span class="s2">&quot;prior_draws&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;posterior_draws&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="k">if</span> <span class="s2">&quot;prior_draw&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;posterior_draw&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>                <span class="s2">&quot;Dimensions &#39;prior_draws&#39; and/or &#39;posterior_draws&#39; shouldn&#39;t be passed as keyword arguments&quot;</span><span class="p">)</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>                <span class="s2">&quot;Dimensions &#39;prior_draw&#39; and/or &#39;posterior_draw&#39; shouldn&#39;t be passed as keyword arguments&quot;</span><span class="p">)</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
 </span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>        <span class="n">prior_draws</span> <span class="o">=</span> <span class="n">prior_draws</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">post_draws</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -236,7 +236,7 @@
 </span><span id="calculate_ranks-22"><a href="#calculate_ranks-22"><span class="linenos">22</span></a><span class="sd">    kwargs : Any</span>
 </span><span id="calculate_ranks-23"><a href="#calculate_ranks-23"><span class="linenos">23</span></a><span class="sd">        Any additional arguments to be passed to the `InferenceData.isel` method. This is for when the variable is</span>
 </span><span id="calculate_ranks-24"><a href="#calculate_ranks-24"><span class="linenos">24</span></a><span class="sd">        subscripted and has named dimensions. For example, if a parameter `sigma` has an additional dimension named</span>
-</span><span id="calculate_ranks-25"><a href="#calculate_ranks-25"><span class="linenos">25</span></a><span class="sd">        &quot;region&quot;, you need to pass something like `region=&quot;A&quot;` so that the variable is fully indexed.</span>
+</span><span id="calculate_ranks-25"><a href="#calculate_ranks-25"><span class="linenos">25</span></a><span class="sd">        &quot;region&quot;, you need to pass `region=&quot;A&quot;` so that the variable is fully indexed.</span>
 </span><span id="calculate_ranks-26"><a href="#calculate_ranks-26"><span class="linenos">26</span></a>
 </span><span id="calculate_ranks-27"><a href="#calculate_ranks-27"><span class="linenos">27</span></a><span class="sd">    Returns</span>
 </span><span id="calculate_ranks-28"><a href="#calculate_ranks-28"><span class="linenos">28</span></a><span class="sd">    -------</span>
@@ -246,9 +246,9 @@
 </span><span id="calculate_ranks-32"><a href="#calculate_ranks-32"><span class="linenos">32</span></a>    <span class="n">post_draws</span> <span class="o">=</span> <span class="n">sbc_idata</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
 </span><span id="calculate_ranks-33"><a href="#calculate_ranks-33"><span class="linenos">33</span></a>    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
 </span><span id="calculate_ranks-34"><a href="#calculate_ranks-34"><span class="linenos">34</span></a>        <span class="c1"># Check that the subscript `prior_draws` and `posterior_draws` aren&#39;t present.</span>
-</span><span id="calculate_ranks-35"><a href="#calculate_ranks-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="s2">&quot;prior_draws&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;posterior_draws&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+</span><span id="calculate_ranks-35"><a href="#calculate_ranks-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="s2">&quot;prior_draw&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;posterior_draw&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
 </span><span id="calculate_ranks-36"><a href="#calculate_ranks-36"><span class="linenos">36</span></a>            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-</span><span id="calculate_ranks-37"><a href="#calculate_ranks-37"><span class="linenos">37</span></a>                <span class="s2">&quot;Dimensions &#39;prior_draws&#39; and/or &#39;posterior_draws&#39; shouldn&#39;t be passed as keyword arguments&quot;</span><span class="p">)</span>
+</span><span id="calculate_ranks-37"><a href="#calculate_ranks-37"><span class="linenos">37</span></a>                <span class="s2">&quot;Dimensions &#39;prior_draw&#39; and/or &#39;posterior_draw&#39; shouldn&#39;t be passed as keyword arguments&quot;</span><span class="p">)</span>
 </span><span id="calculate_ranks-38"><a href="#calculate_ranks-38"><span class="linenos">38</span></a>
 </span><span id="calculate_ranks-39"><a href="#calculate_ranks-39"><span class="linenos">39</span></a>        <span class="n">prior_draws</span> <span class="o">=</span> <span class="n">prior_draws</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </span><span id="calculate_ranks-40"><a href="#calculate_ranks-40"><span class="linenos">40</span></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">post_draws</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -288,7 +288,7 @@ Whether to calculate fractional ranks. Defaults to False.</li>
 <li><strong>kwargs</strong> (Any):
 Any additional arguments to be passed to the <code>InferenceData.isel</code> method. This is for when the variable is
 subscripted and has named dimensions. For example, if a parameter <code>sigma</code> has an additional dimension named
-"region", you need to pass something like <code>region="A"</code> so that the variable is fully indexed.</li>
+"region", you need to pass <code>region="A"</code> so that the variable is fully indexed.</li>
 </ul>
 
 <h6 id="returns">Returns</h6>
