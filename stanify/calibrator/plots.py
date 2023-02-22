@@ -21,7 +21,7 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
     kwargs : Any
         Any additional arguments to be passed to the `InferenceData.isel` method. This is for when the variable is
         subscripted and has named dimensions. For example, if a parameter `sigma` has an additional dimension named
-        "region", you need to pass something like `region="A"` so that the variable is fully indexed.
+        "region", you need to pass `region="A"` so that the variable is fully indexed.
 
     Returns
     -------
@@ -31,9 +31,9 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
     post_draws = sbc_idata.posterior[variable_name]
     if kwargs:
         # Check that the subscript `prior_draws` and `posterior_draws` aren't present.
-        if "prior_draws" in kwargs or "posterior_draws" in kwargs:
+        if "prior_draw" in kwargs or "posterior_draw" in kwargs:
             raise Exception(
-                "Dimensions 'prior_draws' and/or 'posterior_draws' shouldn't be passed as keyword arguments")
+                "Dimensions 'prior_draw' and/or 'posterior_draw' shouldn't be passed as keyword arguments")
 
         prior_draws = prior_draws.isel(**kwargs)
         post_draws = post_draws.isel(**kwargs)
