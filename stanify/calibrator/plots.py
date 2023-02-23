@@ -110,7 +110,6 @@ def plot_ecdf(sbc_idata: InferenceData, variable_name: str, gamma=0.8, **kwargs)
         return np.sum(fractional_ranks < x) / 200
 
     ecdf_xaxis = np.linspace(0, 0.99, 100)
-    gamma = 0.2
 
     ecdf_lower = binom.ppf(gamma / 2, 200, ecdf_xaxis) / 200
     ecdf_upper = binom.ppf(1 - gamma / 2, 200, ecdf_xaxis) / 200
