@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from .v2s_model import Vensim2StanCodeHandler
     from .vensim_model import VensimModelContext
 
-from .vensim_ast_walker import FindODERHSVariablesVensimWalker, ODEFunctionStatementCodegenVensimWalker
+from .vensim_ast_walker import FindODERHSVariablesVensimWalker, ODEFunctionStatementCodegenVensimWalker, LookupFunctionCodegenVensimWalker
 from .utilities import StatementTopoSort, vensim_name_to_identifier
 from .stan_block_codegen import StanFileCodegen, StanBlockCodegen
 from .stan_model_context import StanModelContext
@@ -97,6 +97,8 @@ class StanFunctionBuilder(StanBlockCodegen):
 
         for stock_name in vensim_model_context.integ_outcome_variables.keys():
             self.used_variables |= self.statement_sorter.find_required_variables(stock_name)
+
+        self._generate_lookupfunctions_code(v2s_code_handler, vensim_model_context, stan_model_context)
 
         self._generate_odefunction_code(v2s_code_handler, vensim_model_context, stan_model_context)
 
@@ -253,6 +255,35 @@ class StanFunctionBuilder(StanBlockCodegen):
 
         self._code.indent_level -= 1
         self._code += "}\n"
+
+    def _generate_lookupfunctions_code(self, v2s_code_handler: Vensim2StanCodeHandler,
+                                       vensim_model_context: VensimModelContext,
+                                       stan_model_context: StanModelContext) -> None:
+        """
+        Generate code for lookup functions
+
+        Parameters
+        ----------
+        v2s_code_handler
+        vensim_model_context
+        stan_model_context
+        """
+
+        n_lookups = 0
+        for element in vensim_model_context.first_section.elements:
+            # only process lookups
+            if not vensim_model_context.variables[element.name].is_lookup:
+                continue
+
+            for component in element.components:
+                used_subscripts, excluded_subscripts = component.subscripts
+                walker = LookupFunctionCodegenVensimWalker(v2s_code_handler, vensim_model_context, stan_model_context)
+                code = walker.walk(component.ast, element.name, tuple(used_subscripts))
+                self._code.add_raw(code, ignore_indent=True)
+                n_lookups += 1
+
+        if n_lookups > 0:
+            self._code.add_raw("\n")
 
     def _generate_datafunctions_code(self) -> str:
         """

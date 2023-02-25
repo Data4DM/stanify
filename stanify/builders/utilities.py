@@ -31,7 +31,15 @@ class IndentedString:
         prefix = " " * 4 * self.indent_level
         if other != "\n":
             self.string += prefix
-        self.string += other
+
+        # If the string ends with a newline, remove the last newline before adding tabs since it breaks the indent
+        # of the next line
+        if other.endswith("\n"):
+            other = other[:-1]
+            replaced = other.replace("\n", "\n" + prefix) + "\n"
+        else:
+            replaced = other.replace("\n", "\n" + prefix)
+        self.string += replaced
         return self
 
     def add_raw(self, string: str, ignore_indent: bool = False) -> None:

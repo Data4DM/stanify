@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from .vensim_model import VensimModelContext
     from .stan_model_context import StanModelContext
 
-
+from .utilities import IndentedString
 from itertools import chain
 from numbers import Number
 from abc import ABC, abstractmethod
@@ -384,92 +384,109 @@ class ODEFunctionStatementCodegenVensimWalker(BaseVensimWalker):
             case _:
                 raise Exception(f"ODEFunctionStatementCodegenWalker - got unknown node type {type(component_ast)} for node {node_name}.")
 
-# @dataclass
-# class DataStructureVensimWalker(BaseVensimWalker):
-#     """
-#     Walks the Vensim AST for data structures, and generates stan code for them
-#
-#     Attributes
-#     ----------
-#     function_name_dict : dict[str, str]
-#         Maps the names of Vensim variable identifiers to their corresponding Stan function names
-#     code : IndentedString
-#         The `IndentedString` object that holds the generated code for the data functions.
-#
-#     """
-#     function_name_dict: dict[str, str] = field(init=False, default_factory=dict)
-#     # This dict holds the generated function names of each individual data function.
-#     # Key is x + y + x_limits + y_limits, value is function name
-#
-#     @staticmethod
-#     def get_function_name(variable_name) -> str:
-#         return f"dataFunc__{vensim_name_to_identifier(variable_name)}"
-#
-#     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None) -> None:
-#         if isinstance(component_ast, pysd_ast.DataStructure):
-#             function_name = f"dataFunc__{node_name}"
-#             self.data_variable_names.add(node_name)
-#             try:
-#                 data_vector = self.input_data_dict[vensim_name_to_identifier(node_name)]
-#                 n_intervals = len(data_vector) # only defined in vensim
-#             except KeyError:
-#                 raise Exception(f"Data variable {node_name} must be passed into the data dictionary, but isn't present!")
-#
-#             # if node_name == "time_saveper":
-#             #     self.code += f"real cum_time (real time, data vector times){{\n"
-#             #     self.code.indent_level += 1
-#             #     # Enter function body
-#             #     self.code += f"// DataStructure for variable cum_time\n"
-#             #     self.code += "real slope;\n"
-#             #     self.code += "real intercept;\n\n"
-#             #     for time_index in range(n_intervals):
-#             #         if time_index == 0:
-#             #             continue
-#             #         if time_index == 1:
-#             #             self.code += f"if(time <= times[{time_index-1}]){{\n"
-#             #         else:
-#             #             self.code += f"else if(time <= times[{time_index}]){{\n"
-#             #
-#             #         self.code.indent_level += 1
-#             #         # enter conditional body
-#             #         self.code += f"intercept = {data_vector[time_index - 1]};\n"
-#             #         self.code += f"real time_saveper = times[{time_index}] - times[{time_index-1}];\n"
-#             #         self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / time_saveper;\n"
-#             #         self.code += f"return intercept + slope * (time - times[{time_index-1}]);\n"
-#             #         self.code.indent_level -= 1
-#             #         # exit conditional body
-#             #         self.code += "}\n"
-#
-#             # else:
-#             self.code += f"real {function_name}(real time, real time_saveper){{\n"
-#             self.code.indent_level += 1
-#             # Enter function body
-#             self.code += f"// DataStructure for variable {node_name}\n"
-#             self.code += "real slope;\n"
-#             self.code += "real intercept;\n\n"
-#             for time_index in range(n_intervals):
-#                 if time_index == 0:
-#                     continue
-#                 if time_index == 1:
-#                     self.code += f"if(time <= time_saveper * {time_index}){{\n"
-#                 else:
-#                     self.code += f"else if(time <= time_saveper * {time_index}){{\n"
-#
-#                 self.code.indent_level += 1
-#                 # enter conditional body
-#                 self.code += f"intercept = {data_vector[time_index - 1]};\n"
-#                 self.code += f"real local_time_saveper = time_saveper * {time_index} - time_saveper * {time_index-1};\n"
-#                 self.code += f"slope = ({data_vector[time_index]} - {data_vector[time_index - 1]}) / local_time_saveper;\n"
-#                 self.code += f"return intercept + slope * (time - time_saveper * {time_index-1});\n"
-#                 self.code.indent_level -= 1
-#                 # exit conditional body
-#                 self.code += "}\n"
-#
-#             # Handle out-of-bounds input
-#             self.code += f"return {data_vector[-1]};\n"
-#
-#             self.code.indent_level -= 1
-#             # exit function body
-#             self.code += "}\n\n"
-#         else:
-#             return None
+@dataclass
+class LookupFunctionCodegenVensimWalker(BaseVensimWalker):
+    """
+    Walks the Vensim AST for lookup structures, and generates a stan function for them
+
+    """
+
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
+        if isinstance(component_ast, pysd_ast.LookupsStructure):
+            # Two strategies for implementing the lookup efficiently: If there are 4 or less x values, then we
+            # just write 4(or less) comparison statements to calculate the correct slope and intercept.
+            # But if there are more than 4 values, we use a binary search.
+            function_name = node_name
+            n_domains = len(component_ast.x)
+            code = IndentedString()
+            code += f"real {function_name}(real x){{\n"
+
+            # Enter function body
+            code.indent_level += 1
+            if n_domains <= 4:
+                code += self.codgen_comparison_functionbody(component_ast.x, component_ast.y)
+            else:
+                code += self.codegen_binarysearch_functionbody(component_ast.x, component_ast.y)
+
+            # exit function body
+            code.indent_level -= 1
+            code += "}\n\n"
+            return str(code)
+        else:
+            return ""
+
+    def codgen_comparison_functionbody(self, x_values: tuple[float], y_values: tuple[float]) -> str:
+        code = IndentedString()
+        n_domains = len(x_values)
+        code += "real slope;\n"
+        code += "real intercept;\n\n"
+        for x in range(n_domains):
+            if x == 0:
+                code += f"if(x <= {x_values[x]}) {{\n"
+                code.indent_level += 1
+                code += f"return {y_values[0]};\n"
+                code.indent_level -= 1
+                code += "}}\n\n"
+                continue
+
+            code += f"else if(x <= {x}) {{\n"
+            code.indent_level += 1
+            # enter conditional body
+            code += f"intercept = {y_values[x - 1]};\n"
+            code += f"slope = ({y_values[x]} - {y_values[x - 1]})/({x_values[x]} - {x_values[x - 1]});\n"
+            code += f"return intercept + slope * (x - {x_values[x - 1]});\n"
+            code.indent_level -= 1
+            # exit conditional body
+            code += "}\n"
+
+        # Handle out-of-bounds input
+        code += f"return {y_values[-1]};\n"
+
+        return str(code)
+
+    def codegen_binarysearch_functionbody(self, x_values: tuple[float], y_values: tuple[float]) -> str:
+        code = IndentedString()
+        n_domains = len(x_values)
+        code += f"array[{n_domains}] real x_values = {{ {', '.join([str(x) for x in x_values])} }};\n"
+        code += f"array[{n_domains}] real y_values = {{ {', '.join([str(y) for y in y_values])} }};\n\n"
+
+        # define the search bound values. Stan integer division floors to the integer result
+        code += f"int lower = 1, upper = {n_domains}, middle = (lower + upper) / 2;\n"
+
+        # Check that we're within bounds first
+        code += "if (x >= x_values[upper]) { return y_values[upper]; }\n"
+        code += "if (x <= x_values[lower]) { return y_values[lower]; }\n"
+
+        # create the while loop
+        code += "while(upper - lower > 1){\n"
+        code.indent_level += 1
+
+        # calculate midpoint (stan integer division floors the result to integer)
+        code += "middle = (lower + upper) / 2;\n\n"
+
+        # check if upper needs to be lowered
+        code += "if (x <= x_values[middle]){\n"
+        code.indent_level += 1
+        code += "upper = middle;\n"
+        code.indent_level -= 1
+        code += "}\n"
+
+        # check if lower needs to be raised
+        code += "else if(x > x_values[middle]){\n"
+        code.indent_level += 1
+        code += "lower = middle;\n"
+        code.indent_level -= 1
+        code += "}\n"
+
+        # exit while loop
+        code.indent_level -= 1
+        code += "}\n\n"
+
+        # Now, lower is the index of the beginning of the step, and upper is the index of the end of it
+        code += "real intercept = y_values[lower];\n"
+        code += "real slope = (y_values[upper] - y_values[lower]) / (x_values[upper] - x_values[lower]);\n"
+
+        # calculate the function value
+        code += "return intercept + slope * (x - y_values[lower]);\n"
+
+        return str(code)
