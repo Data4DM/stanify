@@ -399,9 +399,9 @@ class StanFunctionBuilder(StanBlockCodegen):
 
         # Now, lower is the index of the beginning of the step, and upper is the index of the end of it
         code += f"real intercept = data_values[lower_index{subscript_args}];\n"
-        code += f"real slope = (data_values[upper_index{subscript_args}] - data_values[lower_index{subscript_args}]) / (tiemsteps[upper_index] - timesteps[lower_index]);\n"
+        code += f"real slope = (data_values[upper_index{subscript_args}] - data_values[lower_index{subscript_args}]) / (timesteps[upper_index] - timesteps[lower_index]);\n"
 
         # calculate the function value
-        code += f"return intercept + slope * (x - data_values[lower_index{subscript_args}]);\n"
+        code += f"return intercept + slope * (time - data_values[lower_index{subscript_args}]);\n"
 
         return str(code)
