@@ -286,6 +286,8 @@ def walk_ReferenceStructure(walk_callback: Callable, component_ast: pysd_ast.Ref
 def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
     output_string = ""
     function_name = walk_callback(component_ast.function, node_name, subscripts)
+
+    # Some special vensim functions correspond to special stan functions or syntax.
     if function_name == "min":
         function_name = "fmin"
     elif function_name == "max":

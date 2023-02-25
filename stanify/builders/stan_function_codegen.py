@@ -279,7 +279,7 @@ class StanFunctionBuilder(StanBlockCodegen):
                 used_subscripts, excluded_subscripts = component.subscripts
                 walker = LookupFunctionCodegenVensimWalker(v2s_code_handler, vensim_model_context, stan_model_context)
                 code = walker.walk(component.ast, element.name, tuple(used_subscripts))
-                self._code.add_raw(code, ignore_indent=True)
+                self._code += code
                 n_lookups += 1
 
         if n_lookups > 0:
