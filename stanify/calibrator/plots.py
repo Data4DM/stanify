@@ -29,6 +29,7 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
     """
     prior_draws = sbc_idata.prior[variable_name]
     post_draws = sbc_idata.posterior[variable_name]
+    n_post_draws = post_draws.sizes["posterior_draw"]
     if kwargs:
         # Check that the subscript `prior_draws` and `posterior_draws` aren't present.
         if "prior_draw" in kwargs or "posterior_draw" in kwargs:
@@ -42,7 +43,7 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
         return np.sum(theta_xr > post_theta_xr)
 
     def _calculate_fractional_ranks(theta_xr, post_theta_xr):
-        return (1 + np.sum(theta_xr > post_theta_xr)) / (1 + 2000)
+        return (1 + np.sum(theta_xr > post_theta_xr)) / (1 + n_post_draws)
 
     prior_input_core_dims = [] if not kwargs else list(kwargs.keys())
     post_input_core_dims = ["posterior_draw"] if not kwargs else ["posterior_draw"] + list(kwargs.keys())
@@ -106,13 +107,15 @@ def plot_ecdf(sbc_idata: InferenceData, variable_name: str, gamma=0.8, **kwargs)
     """
     fractional_ranks = calculate_ranks(sbc_idata, variable_name, fractional=True, **kwargs)
 
+    n_prior_draw = sbc_idata.prior.sizes["prior_draw"]
+
     def rank_ecdf(x):
-        return np.sum(fractional_ranks < x) / 200
+        return np.sum(fractional_ranks < x) / n_prior_draw
 
     ecdf_xaxis = np.linspace(0, 0.99, 100)
 
-    ecdf_lower = binom.ppf(gamma / 2, 200, ecdf_xaxis) / 200
-    ecdf_upper = binom.ppf(1 - gamma / 2, 200, ecdf_xaxis) / 200
+    ecdf_lower = binom.ppf(gamma / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
+    ecdf_upper = binom.ppf(1 - gamma / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
 
     plt.plot(ecdf_xaxis, np.vectorize(rank_ecdf)(ecdf_xaxis), "-", ms=2, color="black")
     plt.plot(ecdf_xaxis, ecdf_lower, "-", color="green")
