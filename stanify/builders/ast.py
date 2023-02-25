@@ -72,5 +72,10 @@ class Constraints(ModelBase):
 
 
 @dataclass(eq=False)
+class Array(ModelBase):
+    values: Any = None
+
+
+@dataclass(eq=False)
 class Literal(ModelBase):
     value: Any = None
