@@ -12,6 +12,8 @@ from itertools import chain
 from numbers import Number
 from abc import ABC, abstractmethod
 import numpy as np
+import warnings
+import xarray
 
 
 def get_subscripts_ReferenceStructure(reference_structure: pysd_ast.ReferenceStructure) -> tuple[str]:
@@ -93,9 +95,20 @@ class FindStaticDataVariablesWalker(BaseVensimWalker):
     """
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> None:
         match component_ast:
-            case int() | float() | np.ndarray:
+            case int() | float() | np.ndarray():
                 if node_name not in self.v2s_code_handler.declared_variables:
                     self.stan_model_context.transformed_data_variables.add(node_name)
+
+                if node_name in self.stan_model_context.static_data_variable_values:
+                    warnings.warn(f"Values for variable {node_name} exists in the Vensim model, but other values already exist. Ignoring values defines within the Vensim model...")
+
+                if isinstance(component_ast, np.ndarray):
+                    # Variables with subscripts needs to be transformed into a xarray.DataArray with subscript info.
+                    self.stan_model_context.static_data_variable_values[node_name] = xarray.DataArray(component_ast, coords={subscript: list(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts}, dims=subscripts)
+
+                else:
+                    self.stan_model_context.static_data_variable_values[node_name] = component_ast
+
 
 
 class FindODERHSVariablesVensimWalker:
@@ -198,7 +211,6 @@ def walk_ArithmeticStructure(walk_callback: Callable, component_ast: pysd_ast.Ar
         /\
        1  b (b is treated as reference structure)
 
-
     """
 
     output_string = ""
@@ -284,6 +296,32 @@ def walk_ReferenceStructure(walk_callback: Callable, component_ast: pysd_ast.Ref
 
 
 def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStructure, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
+    """
+
+    Parameters
+    ----------
+    walk_callback : Callable
+        This is the function that will be called with a `walk()` function needs to be called. Normally this would be
+        the caller of this function. This way, the original caller retains the execution trace and is allowed to
+        resume running its own code.
+    component_ast : CallStructure
+        A `CallStructure` object. The arguments for this function onwards are exactly the same as
+        `BaseVensimWalker.walk()`
+    node_name : str
+        Name of the Vensim element(variable name)
+    subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+            `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
+    current_precedence : int
+        Current precedence level of the AST. Only relevant for ArithmeticStructure.
+
+    Returns
+    -------
+    A string of the generated code
+
+    """
     output_string = ""
     function_name = walk_callback(component_ast.function, node_name, subscripts)
 
@@ -316,6 +354,33 @@ def walk_CallStructure(walk_callback: Callable, component_ast: pysd_ast.CallStru
 
 
 def walk_NumericLiteral(walk_callback: Callable, component_ast: Number, node_name: str, subscripts: tuple[str] = None, current_precedence: int = 100) -> str:
+    """
+    Base handler for numeric constants.
+
+    Parameters
+    ----------
+    walk_callback : Callable
+        This is the function that will be called with a `walk()` function needs to be called. Normally this would be
+        the caller of this function. This way, the original caller retains the execution trace and is allowed to
+        resume running its own code.
+    component_ast : Number
+        A Python number. The arguments for this function onwards are exactly the same as
+        `BaseVensimWalker.walk()`
+    node_name : str
+        Name of the Vensim element(variable name)
+    subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should be
+            `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
+    current_precedence : int
+        Current precedence level of the AST. Only relevant for ArithmeticStructure.
+
+    Returns
+    -------
+    A string of the generated code
+
+    """
     code = f"{component_ast}"
     if subscripts:
         if isinstance(subscripts, dict):
@@ -328,6 +393,9 @@ def walk_NumericLiteral(walk_callback: Callable, component_ast: Number, node_nam
 
 @dataclass
 class InitialValueCodegenVensimWalker(BaseVensimWalker):
+    """
+    Generates code for initial state variables. The resulting code goes into the "transformed parameters" block.
+    """
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
@@ -360,6 +428,9 @@ class InitialValueCodegenVensimWalker(BaseVensimWalker):
 
 @dataclass
 class ODEFunctionStatementCodegenVensimWalker(BaseVensimWalker):
+    """
+    Generates code for **assignment** statements which belong to the ODE stan function.
+    """
 
     def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
         match component_ast:
@@ -389,11 +460,35 @@ class ODEFunctionStatementCodegenVensimWalker(BaseVensimWalker):
 @dataclass
 class LookupFunctionCodegenVensimWalker(BaseVensimWalker):
     """
-    Walks the Vensim AST for lookup structures, and generates a stan function for them
+    Walks the Vensim AST for lookup structures, and generates a stan function for them.
 
     """
 
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (), current_precedence: int = 100) -> str:
+    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: tuple[str] = (),
+             current_precedence: int = 100) -> str:
+        """
+        Given a PySD Vensim component ast, generate and return code that corresponds to a single lookup variable.
+        The code returned is a full stan function declaration.
+
+        Parameters
+        ----------
+        component_ast : LookupsStructure
+            A `LookupsStructure` object. The arguments are exactly the same as `BaseVensimWalker.walk()`
+        node_name : str
+            Name of the Vensim element(variable name)
+        subscripts : tuple[str] or dict[str, str]
+            Normally a Tuple indicating subscripts the AST possesses, if any. By the above element hierarchy, should
+            be `component.subscripts`.
+            However, for codegen walkers, if a dictionary is given with the format dict[original_subscript, alias],
+            in any places the subscript is to be used(i.e., for indexing), instead the alis will  be used.
+        current_precedence : int
+            Current precedence level of the AST. Only relevant for ArithmeticStructure, and hence not used within
+            this walker.
+
+        Returns
+        -------
+
+        """
         if isinstance(component_ast, pysd_ast.LookupsStructure):
             # Two strategies for implementing the lookup efficiently: If there are 4 or less x values, then we
             # just write 4(or less) comparison statements to calculate the correct slope and intercept.
@@ -417,7 +512,22 @@ class LookupFunctionCodegenVensimWalker(BaseVensimWalker):
         else:
             return ""
 
-    def codgen_comparison_functionbody(self, x_values: tuple[float], y_values: tuple[float]) -> str:
+    @staticmethod
+    def codgen_comparison_functionbody(x_values: tuple[float], y_values: tuple[float]) -> str:
+        """
+        Generate function body for a lookup stepwise linear function with chained if statements.
+
+        Parameters
+        ----------
+        x_values : tuple[float]
+            Values of the steps for the domain of the function.
+        y_values : tuple[float]
+            Values of the steps for the range of the function
+
+        Returns
+        -------
+        String of the generated code
+        """
         code = IndentedString()
         n_domains = len(x_values)
         code += "real slope;\n"
@@ -446,7 +556,22 @@ class LookupFunctionCodegenVensimWalker(BaseVensimWalker):
 
         return str(code)
 
-    def codegen_binarysearch_functionbody(self, x_values: tuple[float], y_values: tuple[float]) -> str:
+    @staticmethod
+    def codegen_binarysearch_functionbody(x_values: tuple[float], y_values: tuple[float]) -> str:
+        """
+        Generate function body for a lookup stepwise linear function employing a binary search.
+
+        Parameters
+        ----------
+        x_values : tuple[float]
+            Values of the steps for the domain of the function.
+        y_values : tuple[float]
+            Values of the steps for the range of the function
+
+        Returns
+        -------
+        String of the generated code
+        """
         code = IndentedString()
         n_domains = len(x_values)
         code += f"array[{n_domains}] real x_values = {{ {', '.join([str(x) for x in x_values])} }};\n"

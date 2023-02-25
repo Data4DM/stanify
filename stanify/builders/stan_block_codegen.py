@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 from abc import ABC, abstractmethod
 from pathlib import Path
 import numpy as np
+import xarray
 from .vensim_ast_walker import BaseVensimWalker, InitialValueCodegenVensimWalker
 from .vensim2stan_walker import Vensim2StanWalker, FindAllUsedVariablesWalker
 import pysd.translators.structures.abstract_expressions as pysd_ast
@@ -69,6 +70,7 @@ class StanBlockCodegen(ABC):
 
     @property
     def code(self):
+        # Add the block enclosing braces
         if not self._omit_block:
             return str(self._code) + "\n}\n"
         else:
@@ -129,23 +131,36 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
 
         self._code += "// static Vensim variables\n"
 
-        # Walk through the Vensim model
-        for element in vensim_model_context.first_section.elements:
-            if element.name == "initial_time":
-                warnings.warn("initial time was defined in vensim. It will be ignored in favor for the initial time setting passed to vensim2stan.")
+        # Write static data variables that are timestep-invariant
+        for variable_name in stan_model_context.transformed_data_variables:
+            if variable_name not in stan_model_context.static_data_variable_values:
+                raise Exception(f"Variable value for '{variable_name}' is not present!!")
+
+            variable_value = stan_model_context.static_data_variable_values[variable_name]
+
+            if variable_name == "initial_time":
+                warnings.warn("initial time was defined in vensim. It will be ignored in favor for the initial time setting passed to Vensim2Stan.")
                 continue
 
             # Skip the SBC data variable if it's requested
-            if omit_sbc_data_variable and element.name == v2s_code_handler.v2s_settings.data_variable:
+            if omit_sbc_data_variable and variable_name == v2s_code_handler.v2s_settings.data_variable:
                 continue
 
-            # if some variables are written as parameters, don't generate code
-            if element.name in stan_model_context.parameter_variables:
-                continue
+            match variable_value:
+                case int():
+                    self._code += f"int {variable_name} = {variable_value};\n"
+                case float():
+                    self._code += f"real {variable_name} = {variable_name};\n"
+                case xarray.DataArray():
+                    stan_dtype = "int" if np.issubdtype(variable_value.dtype, np.integer) else "real"
+                    subscripts = (str(subscript) for subscript in variable_value.dims)
 
-            for component in element.components:
-                declared_subscripts = component.subscripts[0]
-                self.walk(component.ast, element.name, declared_subscripts)
+                    # Stan requires that array values be initialized with braces, instead of brackets.
+                    # We take the numpy array values, convert them to a python list, and then replace all brackets in the
+                    # string-ified list with braces.
+                    stan_array_init = str(variable_value.data.tolist()).replace("[", "{").replace("]", "}")
+
+                    self._code += f"array[{', '.join(subscripts)}] {stan_dtype} {variable_name} = {stan_array_init};\n"
 
         # Calculate the initial values for the stock variables.
         self._code += "\n"
@@ -181,34 +196,6 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
             else:
                 indices = ""
             self._code += f"initial_state[{index}] = {index_obj.name}_initial{indices};\n"
-
-    def walk(self, component_ast: pysd_ast.AbstractSyntax, node_name: str, subscripts: list[str] = None,
-             current_precedence: int = 100) -> None:
-        # Find constant data declarations.
-        match component_ast:
-            case int():
-                if subscripts:
-                    self._code += f"array[{'. '.join(subscripts)}] int {node_name} = rep_array({component_ast}, {', '.join(subscripts)});\n"
-                else:
-                    self._code += f"int {node_name} = {component_ast};\n"
-            case float():
-                if subscripts:
-                    self._code += f"array[{'. '.join(subscripts)}] real {node_name} = rep_array({component_ast}, {', '.join(subscripts)});\n"
-                else:
-                    self._code += f"real {node_name} = {component_ast};\n"
-            case np.ndarray():
-                # Check if the shape of the array matches the declared subscripts
-                assert component_ast.shape == self.vensim_model_context.get_variable_shape(node_name), \
-                    f"Vensim node {node_name} has subscript(s) {subscripts} of dimension {self.vensim_model_context.get_variable_shape(node_name)}, its length not matching the shape of the declared value array with shape {component_ast.shape}"
-
-                stan_dtype = "int" if np.issubdtype(component_ast.dtype, np.integer) else "real"
-
-                # Stan requires that array values be initialized with braces, instead of brackets.
-                # We take the numpy array values, convert them to a python list, and then replace all brackets in the
-                # stringified list with braces.
-                stan_array_init = str(component_ast.tolist()).replace("[", "{").replace("]", "}")
-
-                self._code += f"array[{', '.join(subscripts)}] {stan_dtype} {node_name} = {stan_array_init};\n"
 
 
 @dataclass
@@ -444,7 +431,7 @@ class ModelBlockCodegen(StanBlockCodegen):
                     if subtracted:
                         self_removed.append(subtracted)
 
-                # We run the functoin again, but this time with the child subscripts(that doesnn't have the current
+                # We run the function again, but this time with the child subscripts(that doesn't have the current
                 # value anymore), and parent becomes the current subscript value.
                 find_order(self_removed, current_node)
 
@@ -452,7 +439,7 @@ class ModelBlockCodegen(StanBlockCodegen):
                 if required:
                     parent.children.add(current_node)
 
-        # Create a dummy node to hold the results
+        # Create the root node to hold the results
         root = Node("")
         find_order(list(used_subscripts), root)
 
@@ -550,6 +537,7 @@ class Draws2DataGeneratedQuantitiesDrawV2SWalker(ModelBlockStatementV2SWalker):
         self._code += ";\n"
 
     def walk_FunctionCall(self, node: ast.FunctionCall):
+        # generated quantities use RNG functions of their distribution counterparts
         distributions = ("bernoulli", "binomial", "neg_binomial", "poisson", "normal", "cauchy", "lognormal",
                          "exponential", "gamma", "weibull", "beta")
         if node.name in distributions:
@@ -570,8 +558,8 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
 
         # Draw the parameters. Sort the sampling statements in topological order
         # Variables defined in transformed data and stock variables are never a parameter
-        # statement_sorter = StatementTopoSort(tuple(stan_model_context.transformed_data_variables.union(tuple(vensim_model_context.integ_outcome_variables.keys()))))
         statement_sorter = StatementTopoSort(tuple(stan_model_context.transformed_data_variables))
+
         # We also add stock variables to be dependent on the ODE argument parameters, so we know which parameters
         # need to be sampled before running the ODE function
         for stock_varname in vensim_model_context.integ_outcome_variables.keys():

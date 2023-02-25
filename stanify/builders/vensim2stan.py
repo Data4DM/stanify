@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 import pathlib
 from .vensim_model import VensimModelContext
 from dataclasses import dataclass
@@ -11,6 +11,8 @@ from .stan_function_codegen import FunctionsFileCodegen
 from .v2s_model import Vensim2StanCodeHandler
 from .vensim_ast_walker import FindStaticDataVariablesWalker
 from .sbc_runner import SBCRunner
+from .utilities import vensim_name_to_identifier
+import xarray
 if TYPE_CHECKING:
     import arviz
 
@@ -56,6 +58,24 @@ class Vensim2Stan:
     stan_file_directory : pathlib.Path
         Path to the root directory for storing stan files and related artifacts. Defaults to `$CWD/stan_files`. A child
         directory will be created for each individual vensim model.
+    additional_data : dict[str, Union[Number, xarray.DataArray]]
+        A dictionary that contains any *static* values which are to be used.
+        The keys indicate the variable name, and values  contain the Python object which holds the value of the
+        variable. Its behavior differs according to the variable:
+
+        - If the variable is already present in the Vensim model, its value is overriden and this dictionary's value is
+          used instead.
+
+        - If the variable is already present in the Vensim model, and in Vensim it's defined to be a **Data** variable,
+          the value of the variable must be a `xarray.DataArray` with a `timesteps` dimension  and coordinate which
+          indicate the ODE integration timestep.
+
+        - If the variable is new, it's declared within the `transformed data` block of the generated code and used
+          accordingly.
+
+        In addition, *subscripts are taken into account*. That means that if it's an existing Vensim variable, the dict
+        value must be a `xarray.DataArray` which has coordinates and dimensions that correctly correspond to the
+        original Vensim variable's subscript names/values.
     model_name : str
         A string denoting a unique identifier for the model. Defaults to using a combination of the current datetime and
         the vensim model filename.
@@ -66,7 +86,8 @@ class Vensim2Stan:
         docs on `stanify.builders.stan_model_context.StanModelContext` class for more information.
     """
     def __init__(self, vensim2stan_code: str, vensim_file_path: str, data_variable: str, initial_time: Number,
-                 integration_times: list[Number], model_name: str = "", stan_file_directory: str = ""):
+                 integration_times: list[Number], additional_data: dict[str, Union[Number, xarray.DataArray]] = {},
+                 model_name: str = "", stan_file_directory: str = ""):
         """
 
         Parameters
@@ -83,6 +104,8 @@ class Vensim2Stan:
             List of numbers that indicate the times in which the differential equations will be integrated for.
             See https://mc-stan.org/docs/functions-reference/functions-ode-solver.html for details. Note that
             `initial_time` **shouldn't be included**.
+        additional_data : dict[str, Union[Number, xarray.DataArray]]
+            Refer to class attribute documentation.
         model_name : str
             Refer to class attribute documentation
         stan_file_directory : str or pathlib.Path
@@ -100,7 +123,14 @@ class Vensim2Stan:
 
         self.stan_model_context = StanModelContext()
 
-        self.v2s_code_handler = Vensim2StanCodeHandler(self.v2s_model_code, self.v2s_model_settings, self.vensim_model_context)
+        # convert key names to identifiers
+        for key in additional_data.keys():
+            additional_data[vensim_name_to_identifier(key)] = additional_data.pop(key)
+
+        self.stan_model_context.static_data_variable_values = additional_data
+
+        self.v2s_code_handler = Vensim2StanCodeHandler(self.v2s_model_code, self.v2s_model_settings,
+                                                       self.vensim_model_context)
 
         if not model_name:
             self.model_name = vensim_file_path.stem
@@ -114,7 +144,42 @@ class Vensim2Stan:
         else:
             self.stan_file_directory = pathlib.Path(stan_file_directory).expanduser().joinpath(self.model_name)
 
+        self._verify_input_additional_data()
         self._populate_stan_model_context()
+
+    def _verify_input_additional_data(self) -> None:
+        """
+        This function check that for any additional data variables that already exist in the Vensim model, and are
+        subscripted, its inputted xarray dimensions and coords match with subscripts defined in Vensim.
+        """
+        for key in self.stan_model_context.static_data_variable_values.keys():
+            value = self.stan_model_context.static_data_variable_values[key]
+            if not isinstance(value, xarray.DataArray):
+                continue
+
+            if key not in self.vensim_model_context.variables:
+                continue
+
+            vensim_var_context = self.vensim_model_context.variables[key]
+            vensim_subscripts = vensim_var_context.subscripts
+
+            # This variable indicates whether the xarray requires the "timesteps" dimension
+            requires_timesteps_dim = "timesteps" in vensim_subscripts or vensim_var_context.is_vensim_datastructure
+
+            assert set(value.dims) - {"timesteps"} == set(vensim_subscripts) - {"timesteps"}, F"Additional data input dimensions must match the subscripts of those defined on Vensim. xarray has dims {value.dims}, expected {vensim_subscripts}"
+
+            # Since there's no guarantee that the user inputted the dimensions and coordinates as the same order as
+            # defined in Vensim, we're going to make sure that the xarray matches the subscripts in Vensim
+
+            # Make sure the dimension order matches the subscript order
+            if requires_timesteps_dim:
+                self.stan_model_context.static_data_variable_values[key] = self.stan_model_context.static_data_variable_values[key].transpose("timesteps", *vensim_subscripts)
+            else:
+                self.stan_model_context.static_data_variable_values[key] = self.stan_model_context.static_data_variable_values[key].transpose(*vensim_subscripts)
+
+            # make sure the coords matches the value order for each subscript
+            coord_args = {subscript: self.vensim_model_context.get_subscript_values(str(subscript)) for subscript in value.dims}
+            self.stan_model_context.static_data_variable_values[key] = self.stan_model_context.static_data_variable_values[key].reindex(**coord_args)
 
     def _populate_stan_model_context(self) -> None:
         """
@@ -135,8 +200,8 @@ class Vensim2Stan:
         for element in self.vensim_model_context.first_section.elements:
             name = element.name
             for component in element.components:
-                subscripts = component.subscripts
-                walker.walk(component.ast, name, tuple(subscripts[0]))
+                used_subscripts, excluded_subscripts = component.subscripts
+                walker.walk(component.ast, name, tuple(used_subscripts))
 
         # Find Vensim variables which have been used in the V2S code, meaning it needs to be a parameter.
         for var_name, variable_context in self.v2s_code_handler.declared_variables.items():
@@ -148,7 +213,17 @@ class Vensim2Stan:
             if not variable_context.sampled:
                 # check that the variable is static
                 if var_name in self.vensim_model_context.variables:
-                    assert var_name in self.stan_model_context.transformed_data_variables, f"Variable {var_name} was marked as data, but isn't a static Vensim variable!"
+                    # if the variable is declared as a Vensim data variable, depending on if it's timestep-variant,
+                    # it goes into either transformed data or as a timestep-variant data function.
+                    if self.vensim_model_context.variables[var_name].is_vensim_datastructure:
+                        if "timesteps" in variable_context.subscripts:
+                            # needs to be a time-variant function
+                            self.stan_model_context.timestep_variant_datafunc_variables.add(var_name)
+                        else:
+                            # timestep-invariant and just an array/scalar; belongs to transformed data
+                            self.stan_model_context.transformed_data_variables.add(var_name)
+                    else:
+                        assert var_name in self.stan_model_context.transformed_data_variables, f"Variable {var_name} was marked as data, but isn't a static Vensim variable!"
                 continue
 
             self.stan_model_context.parameter_variables.add(var_name)

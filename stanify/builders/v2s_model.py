@@ -61,6 +61,11 @@ class Vensim2StanCodeHandler:
         self.program_ast = (lambda: parser_obj.parse(self.v2s_code))()
 
     def preliminary_passes(self):
+        """
+        These are AST passes that may be run whenever, without any restrictions. It's called immediately after
+        instantiation of the class.
+
+        """
         # 1. Find declarations
         walker = FindDeclarationsWalker()
         walker.walk(self.program_ast)
@@ -69,3 +74,15 @@ class Vensim2StanCodeHandler:
         # 2. Verify declared subscripts
         walker = VerifySubscriptsWalker(self.vensim_model_context, self)
         walker.walk(self.program_ast)
+
+    def post_stancontext_passes(self):
+        """
+        These are passes that **must be run after `stan_model_context.StanModelContext` is populated**. Normally
+        `vensim2stan.Vensim2Stan` will call this function.
+        """
+
+        # 1. Find any Vensim Data declarations. These are V2S array variables which correspond to Vensim data variables
+        # within the vensim model.
+        #walker = FindDataStructureValueDeclarationsWalker()
+        #walker.walk(self.program_ast)
+        pass
