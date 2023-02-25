@@ -17,7 +17,7 @@ class V2SVariableContext:
     lower : float
         Lower bound constraint. Defaults to $-\infty$
     upper : float
-        Upper bould constraint. Defaults to $\infty$
+        Upper bound constraint. Defaults to $\infty$
     sampled : bool
         Whether the variable is sampled or assigned
     """
