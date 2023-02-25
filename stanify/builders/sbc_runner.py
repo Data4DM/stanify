@@ -58,6 +58,7 @@ class SBCRunner:
         draws2data_dataset = draws2data_idata.prior_predictive
 
         for fit in range(self.n_fits):
+            print(f"Running SBC for dataset # {fit + 1} of {self.n_fits}")
             fit_dataset = draws2data_dataset.isel(prior_draw=fit)
             input_data = {self.target_data_variable: fit_dataset[self.target_data_variable]}
 
