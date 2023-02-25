@@ -124,7 +124,8 @@ class Vensim2Stan:
         self.stan_model_context = StanModelContext()
 
         # convert key names to identifiers
-        for key in additional_data.keys():
+        keys = list(additional_data.keys())
+        for key in keys:
             additional_data[vensim_name_to_identifier(key)] = additional_data.pop(key)
 
         self.stan_model_context.static_data_variable_values = additional_data
@@ -146,6 +147,7 @@ class Vensim2Stan:
 
         self._verify_input_additional_data()
         self._populate_stan_model_context()
+        self._pre_codegen_checks()
 
     def _verify_input_additional_data(self) -> None:
         """
@@ -164,7 +166,10 @@ class Vensim2Stan:
             vensim_subscripts = vensim_var_context.subscripts
 
             # This variable indicates whether the xarray requires the "timesteps" dimension
-            requires_timesteps_dim = "timesteps" in vensim_subscripts or vensim_var_context.is_vensim_datastructure
+            requires_timesteps_dim = vensim_var_context.is_vensim_datastructure
+
+            if requires_timesteps_dim and "timesteps" not in value.dims:
+                raise Exception(f"Since Vensim variable {key} is a Data variable, additional data xarray for it requires the dimension 'timesteps', which wasn't present")
 
             assert set(value.dims) - {"timesteps"} == set(vensim_subscripts) - {"timesteps"}, F"Additional data input dimensions must match the subscripts of those defined on Vensim. xarray has dims {value.dims}, expected {vensim_subscripts}"
 
@@ -178,7 +183,7 @@ class Vensim2Stan:
                 self.stan_model_context.static_data_variable_values[key] = self.stan_model_context.static_data_variable_values[key].transpose(*vensim_subscripts)
 
             # make sure the coords matches the value order for each subscript
-            coord_args = {subscript: self.vensim_model_context.get_subscript_values(str(subscript)) for subscript in value.dims}
+            coord_args = {subscript: self.vensim_model_context.get_subscript_values(str(subscript)) for subscript in value.dims if subscript != "timesteps"}
             self.stan_model_context.static_data_variable_values[key] = self.stan_model_context.static_data_variable_values[key].reindex(**coord_args)
 
     def _populate_stan_model_context(self) -> None:
@@ -190,9 +195,7 @@ class Vensim2Stan:
         nightmare if we had to create `transformed parameters, parameters` block and then the functions file? XD).
         We just resort to doing a couple extra passes to collect the information.
 
-        This method should be called every time you wish to re-run the code generation process.
         """
-        self.stan_model_context = StanModelContext()
         # Find Vensim variables that are static data
         walker = FindStaticDataVariablesWalker(self.v2s_code_handler, self.vensim_model_context,
                                                self.stan_model_context)
@@ -227,6 +230,16 @@ class Vensim2Stan:
                 continue
 
             self.stan_model_context.parameter_variables.add(var_name)
+
+    def _pre_codegen_checks(self) -> None:
+        """
+        This function runs final checks before codegen begins
+        """
+        # 1. Check that for all Vensim data variables, its values are given in additional_data
+        for name, context in self.vensim_model_context.variables.items():
+            if context.is_vensim_datastructure:
+                if name not in self.stan_model_context.static_data_variable_values:
+                    raise Exception(f"Vensim variable {name} is declared to be a Data variable, but its actual values weren't passed into additonal_data.")
 
     def run_sbc(self, n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4,
                 overwrite: bool = True) -> arviz.InferenceData:

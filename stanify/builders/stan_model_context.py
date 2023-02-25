@@ -34,6 +34,8 @@ class StanModelContext:
     timestep_variant_datafunc_variables : set[str]
         A set that holds the names of any variables that are defined to be ODE timestep-variant. This means that the
         variable is declared as a function of timestep and thus has varying values.
+    lookupfunc_variables : set[str]
+        Set that holds the names of any variables that are defined as a lookup and hence defined in stan as a function.
     static_data_variable_values : dict[str, Union[Number, xarray.DataArray]]
         This dict holds the names and actual values of any static data variables. This is effectively created from the
         `additional_data` argument of `stanify.builders.vensim2stan.Vensim2Stan`, parsing the Vensim model
@@ -45,4 +47,17 @@ class StanModelContext:
     odefunc_variable_args: list[str] = field(init=False, default_factory=list)
     array_dims_subscript_map: dict[str, tuple[str]] = field(init=False, default_factory=dict)
     timestep_variant_datafunc_variables: set[str] = field(init=False, default_factory=set)
+    lookupfunc_variables: set[str] = field(init=False, default_factory=set)
     static_data_variable_values: dict[str, Union[Number, xarray.DataArray]] = field(init=False, default_factory=dict)
+
+    def get_stan_declared_variables(self) -> set[str]:
+        """
+        Return a set of variables that are defined within Stan.
+
+        Returns
+        -------
+        A set containing the variable names
+        """
+
+        return self.transformed_data_variables.union(self.parameter_variables, self.timestep_variant_datafunc_variables,
+                                                     self.lookupfunc_variables)

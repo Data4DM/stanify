@@ -87,7 +87,8 @@ class StatementTopoSort:
         The result of the sort. Holds variable names
     ignored_variables : tuple[str]
         Tuple of variable names which should be ignored during the sort. This is useful when you have some variables
-        that require special treatment.
+        that require special treatment. This means that the dependencies for ignored variables are not taken into
+        account.
     """
     def __init__(self, ignored_variables: tuple[str] = tuple()):
         """
