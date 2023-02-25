@@ -45,14 +45,14 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
         return (1 + np.sum(theta_xr > post_theta_xr)) / (1 + 2000)
 
     prior_input_core_dims = [] if not kwargs else list(kwargs.keys())
-    post_input_core_dims = ["posterior_draws"] if not kwargs else ["posterior_draws"] + list(kwargs.keys())
+    post_input_core_dims = ["posterior_draw"] if not kwargs else ["posterior_draw"] + list(kwargs.keys())
 
     if fractional:
         ranks = xr.apply_ufunc(_calculate_fractional_ranks, prior_draws, post_draws,
                                input_core_dims=[prior_input_core_dims, post_input_core_dims], vectorize=True)
     else:
         ranks = xr.apply_ufunc(_calculate_ranks, prior_draws, post_draws,
-                               input_core_dims=[prior_input_core_dims, post_input_core_dims], vectorize=TRue)
+                               input_core_dims=[prior_input_core_dims, post_input_core_dims], vectorize=True)
 
     return ranks
 
