@@ -78,7 +78,7 @@ class StanBlockCodegen(ABC):
 
 
 @dataclass
-class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
+class TransformedDataCodegenVensimWalker(StanBlockCodegen):
     """
     Generates code for the `transformed data` Stan block. This block includes variable declarations
     for constant variables.
@@ -150,7 +150,7 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen, BaseVensimWalker):
                 case int():
                     self._code += f"int {variable_name} = {variable_value};\n"
                 case float():
-                    self._code += f"real {variable_name} = {variable_name};\n"
+                    self._code += f"real {variable_name} = {variable_value};\n"
                 case xarray.DataArray():
                     stan_dtype = "int" if np.issubdtype(variable_value.dtype, np.integer) else "real"
                     subscripts = (str(subscript) for subscript in variable_value.dims)
@@ -736,10 +736,7 @@ class Data2DrawsCodegen(StanFileCodegen):
             data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(data_gen.code)
 
-            transformed_data_gen = TransformedDataCodegenVensimWalker(v2s_code_handler=self.v2s_code_handler,
-                                                                      vensim_model_context=self.vensim_model_context,
-                                                                      stan_model_context=self.stan_model_context,
-                                                                      block_name="transformed data")
+            transformed_data_gen = TransformedDataCodegenVensimWalker(block_name="transformed data")
             transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)
@@ -764,10 +761,7 @@ class Draws2DataCodegen(StanFileCodegen):
             # Write the function file include.
             f.write(f"#include {functions_file_name}\n\n")
 
-            transformed_data_gen = TransformedDataCodegenVensimWalker(v2s_code_handler=self.v2s_code_handler,
-                                                                      vensim_model_context=self.vensim_model_context,
-                                                                      stan_model_context=self.stan_model_context,
-                                                                      block_name="transformed data")
+            transformed_data_gen = TransformedDataCodegenVensimWalker(block_name="transformed data")
             transformed_data_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
 
             f.write(transformed_data_gen.code)

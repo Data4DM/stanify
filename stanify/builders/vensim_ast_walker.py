@@ -107,7 +107,17 @@ class FindStaticDataVariablesWalker(BaseVensimWalker):
                     self.stan_model_context.static_data_variable_values[node_name] = xarray.DataArray(component_ast, coords={subscript: list(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts}, dims=subscripts)
 
                 else:
-                    self.stan_model_context.static_data_variable_values[node_name] = component_ast
+                    if subscripts:
+                        # If there are subscripts, it needs to be expanded into a xarray
+
+                        # tile the scalar value into an array
+                        values = np.tile(component_ast, self.vensim_model_context.get_variable_shape(node_name))
+
+                        # Create the dataarray with the subscript information
+                        self.stan_model_context.static_data_variable_values[node_name] = xarray.DataArray(values, coords={subscript: list(self.vensim_model_context.get_subscript_values(subscript)) for subscript in subscripts}, dims=subscripts)
+                    else:
+                        # just a scalar :)
+                        self.stan_model_context.static_data_variable_values[node_name] = component_ast
 
 
 
