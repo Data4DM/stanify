@@ -36,8 +36,8 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
             raise Exception(
                 "Dimensions 'prior_draw' and/or 'posterior_draw' shouldn't be passed as keyword arguments")
 
-        prior_draws = prior_draws.isel(**kwargs)
-        post_draws = post_draws.isel(**kwargs)
+        prior_draws = prior_draws.sel(**kwargs)
+        post_draws = post_draws.sel(**kwargs)
 
     def _calculate_ranks(theta_xr, post_theta_xr):
         return np.sum(theta_xr > post_theta_xr)
@@ -45,8 +45,8 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
     def _calculate_fractional_ranks(theta_xr, post_theta_xr):
         return (1 + np.sum(theta_xr > post_theta_xr)) / (1 + n_post_draws)
 
-    prior_input_core_dims = [] if not kwargs else list(kwargs.keys())
-    post_input_core_dims = ["posterior_draw"] if not kwargs else ["posterior_draw"] + list(kwargs.keys())
+    prior_input_core_dims = []# if not kwargs else list(kwargs.keys())
+    post_input_core_dims = ["posterior_draw"]# if not kwargs else ["posterior_draw"] + list(kwargs.keys())
 
     if fractional:
         ranks = xr.apply_ufunc(_calculate_fractional_ranks, prior_draws, post_draws,

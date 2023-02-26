@@ -40,7 +40,7 @@ class StanModelContext:
         This dict holds the names and actual values of any static data variables. This is effectively created from the
         `additional_data` argument of `stanify.builders.vensim2stan.Vensim2Stan`, parsing the Vensim model
         for static data declarations, and also parsing the V2S code for static declarations. This is used during
-        `transformed data` block generation and for creating data functions.
+        `transformed data` block generation and for creating data functions. AKA assumed parameters.
     """
     transformed_data_variables: set[str] = field(init=False, default_factory=set)
     parameter_variables: set[str] = field(init=False, default_factory=set)
