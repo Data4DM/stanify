@@ -56,7 +56,7 @@
                     <a class="class" href="#StanModelContext">StanModelContext</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#StanModelContext.__init__">StanModelContext</a>
+                                <a class="function" href="#StanModelContext.get_stan_declared_variables">get_stan_declared_variables</a>
                         </li>
                 </ul>
 
@@ -84,38 +84,67 @@
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="nd">@dataclass</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="k">class</span> <span class="nc">StanModelContext</span><span class="p">:</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">    This dataclass is intended to hold information about the stan model which must be modified and passed around to</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    multiple builders. The Attributes are intended to be modified while multiple builders construct blocks/pass</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">    through the AST.</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    Attributes</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    ----------</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    transformed_data_variables : set[str]</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">        A set that holds information about which Vensim variables are initialized in the `transformed data`</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">        block. Written during instantiation of `stanify.builders.vensim2stan.Vensim2Stan`, accessed while creating</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">        the ODE function.</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">    parameter_variables : set[str]</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        Set that holds the variable names that have been defined as a paramter. Written during instantiation of</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        `stanify.builders.vensim2stan.Vensim2Stan` accessed while creating the ODE function.</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">    odefunc_variable_args : list[str]</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">        List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">        function can be called with the appropriate arguments. Written when creating the ODE function, accessed when</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">        creating `transformed parameters` block.</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">    array_dims_subscript_map : dict[str, tuple[str]]</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">        Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">        of each index. `dict[variable_name, subscript_tuples)` where `variable_name` is the array stan variable and</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">        `subscript_tuples` which holds the actual subscript names that correspond to each dimension of the declared</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">        array.</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="n">transformed_data_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="n">parameter_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="n">odefunc_variable_args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="n">array_dims_subscript_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>    <span class="kn">import</span> <span class="nn">xarray</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="nd">@dataclass</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="k">class</span> <span class="nc">StanModelContext</span><span class="p">:</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    This dataclass is intended to hold information about the stan model which must be modified and passed around to</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    multiple builders. The Attributes are intended to be modified while multiple builders construct blocks/pass</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    through the AST.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    Attributes</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    ----------</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">    transformed_data_variables : set[str]</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        A set that holds information about which Vensim variables are initialized in the `transformed data`</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        block. Written during instantiation of `stanify.builders.vensim2stan.Vensim2Stan`, accessed while creating</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">        the ODE function.</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    parameter_variables : set[str]</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">        Set that holds the variable names that have been defined as a parameter. Written during instantiation of</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">        `stanify.builders.vensim2stan.Vensim2Stan` accessed while creating the ODE function.</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">    odefunc_variable_args : list[str]</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">        List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">        function can be called with the appropriate arguments. Written when creating the ODE function, accessed when</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">        creating `transformed parameters` block.</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">    array_dims_subscript_map : dict[str, tuple[str]]</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">        Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">        of each index. `dict[variable_name, subscript_tuples]` where `variable_name` is the array stan variable and</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">        `subscript_tuples` which holds the actual subscript names that correspond to each dimension of the declared</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">        array.</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="sd">    timestep_variant_datafunc_variables : set[str]</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="sd">        A set that holds the names of any variables that are defined to be ODE timestep-variant. This means that the</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">        variable is declared as a function of timestep and thus has varying values.</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="sd">    lookupfunc_variables : set[str]</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="sd">        Set that holds the names of any variables that are defined as a lookup and hence defined in stan as a function.</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="sd">    static_data_variable_values : dict[str, Union[Number, xarray.DataArray]]</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="sd">        This dict holds the names and actual values of any static data variables. This is effectively created from the</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="sd">        `additional_data` argument of `stanify.builders.vensim2stan.Vensim2Stan`, parsing the Vensim model</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">        for static data declarations, and also parsing the V2S code for static declarations. This is used during</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="sd">        `transformed data` block generation and for creating data functions. AKA assumed parameters.</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>    <span class="n">transformed_data_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>    <span class="n">parameter_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>    <span class="n">odefunc_variable_args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>    <span class="n">array_dims_subscript_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>    <span class="n">timestep_variant_datafunc_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>    <span class="n">lookupfunc_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>    <span class="n">static_data_variable_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Number</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>    <span class="k">def</span> <span class="nf">get_stan_declared_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a><span class="sd">        Return a set of variables that are defined within Stan.</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">        Returns</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a><span class="sd">        -------</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a><span class="sd">        A set containing the variable names</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_data_variables</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_variables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_variant_datafunc_variables</span><span class="p">,</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>                                                     <span class="bp">self</span><span class="o">.</span><span class="n">lookupfunc_variables</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -132,36 +161,61 @@
 
     </div>
     <a class="headerlink" href="#StanModelContext"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="StanModelContext-6"><a href="#StanModelContext-6"><span class="linenos"> 6</span></a><span class="nd">@dataclass</span>
-</span><span id="StanModelContext-7"><a href="#StanModelContext-7"><span class="linenos"> 7</span></a><span class="k">class</span> <span class="nc">StanModelContext</span><span class="p">:</span>
-</span><span id="StanModelContext-8"><a href="#StanModelContext-8"><span class="linenos"> 8</span></a>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span id="StanModelContext-9"><a href="#StanModelContext-9"><span class="linenos"> 9</span></a><span class="sd">    This dataclass is intended to hold information about the stan model which must be modified and passed around to</span>
-</span><span id="StanModelContext-10"><a href="#StanModelContext-10"><span class="linenos">10</span></a><span class="sd">    multiple builders. The Attributes are intended to be modified while multiple builders construct blocks/pass</span>
-</span><span id="StanModelContext-11"><a href="#StanModelContext-11"><span class="linenos">11</span></a><span class="sd">    through the AST.</span>
-</span><span id="StanModelContext-12"><a href="#StanModelContext-12"><span class="linenos">12</span></a>
-</span><span id="StanModelContext-13"><a href="#StanModelContext-13"><span class="linenos">13</span></a><span class="sd">    Attributes</span>
-</span><span id="StanModelContext-14"><a href="#StanModelContext-14"><span class="linenos">14</span></a><span class="sd">    ----------</span>
-</span><span id="StanModelContext-15"><a href="#StanModelContext-15"><span class="linenos">15</span></a><span class="sd">    transformed_data_variables : set[str]</span>
-</span><span id="StanModelContext-16"><a href="#StanModelContext-16"><span class="linenos">16</span></a><span class="sd">        A set that holds information about which Vensim variables are initialized in the `transformed data`</span>
-</span><span id="StanModelContext-17"><a href="#StanModelContext-17"><span class="linenos">17</span></a><span class="sd">        block. Written during instantiation of `stanify.builders.vensim2stan.Vensim2Stan`, accessed while creating</span>
-</span><span id="StanModelContext-18"><a href="#StanModelContext-18"><span class="linenos">18</span></a><span class="sd">        the ODE function.</span>
-</span><span id="StanModelContext-19"><a href="#StanModelContext-19"><span class="linenos">19</span></a><span class="sd">    parameter_variables : set[str]</span>
-</span><span id="StanModelContext-20"><a href="#StanModelContext-20"><span class="linenos">20</span></a><span class="sd">        Set that holds the variable names that have been defined as a paramter. Written during instantiation of</span>
-</span><span id="StanModelContext-21"><a href="#StanModelContext-21"><span class="linenos">21</span></a><span class="sd">        `stanify.builders.vensim2stan.Vensim2Stan` accessed while creating the ODE function.</span>
-</span><span id="StanModelContext-22"><a href="#StanModelContext-22"><span class="linenos">22</span></a><span class="sd">    odefunc_variable_args : list[str]</span>
-</span><span id="StanModelContext-23"><a href="#StanModelContext-23"><span class="linenos">23</span></a><span class="sd">        List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE</span>
-</span><span id="StanModelContext-24"><a href="#StanModelContext-24"><span class="linenos">24</span></a><span class="sd">        function can be called with the appropriate arguments. Written when creating the ODE function, accessed when</span>
-</span><span id="StanModelContext-25"><a href="#StanModelContext-25"><span class="linenos">25</span></a><span class="sd">        creating `transformed parameters` block.</span>
-</span><span id="StanModelContext-26"><a href="#StanModelContext-26"><span class="linenos">26</span></a><span class="sd">    array_dims_subscript_map : dict[str, tuple[str]]</span>
-</span><span id="StanModelContext-27"><a href="#StanModelContext-27"><span class="linenos">27</span></a><span class="sd">        Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension</span>
-</span><span id="StanModelContext-28"><a href="#StanModelContext-28"><span class="linenos">28</span></a><span class="sd">        of each index. `dict[variable_name, subscript_tuples)` where `variable_name` is the array stan variable and</span>
-</span><span id="StanModelContext-29"><a href="#StanModelContext-29"><span class="linenos">29</span></a><span class="sd">        `subscript_tuples` which holds the actual subscript names that correspond to each dimension of the declared</span>
-</span><span id="StanModelContext-30"><a href="#StanModelContext-30"><span class="linenos">30</span></a><span class="sd">        array.</span>
-</span><span id="StanModelContext-31"><a href="#StanModelContext-31"><span class="linenos">31</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="StanModelContext-32"><a href="#StanModelContext-32"><span class="linenos">32</span></a>    <span class="n">transformed_data_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
-</span><span id="StanModelContext-33"><a href="#StanModelContext-33"><span class="linenos">33</span></a>    <span class="n">parameter_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
-</span><span id="StanModelContext-34"><a href="#StanModelContext-34"><span class="linenos">34</span></a>    <span class="n">odefunc_variable_args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-</span><span id="StanModelContext-35"><a href="#StanModelContext-35"><span class="linenos">35</span></a>    <span class="n">array_dims_subscript_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StanModelContext-10"><a href="#StanModelContext-10"><span class="linenos">10</span></a><span class="nd">@dataclass</span>
+</span><span id="StanModelContext-11"><a href="#StanModelContext-11"><span class="linenos">11</span></a><span class="k">class</span> <span class="nc">StanModelContext</span><span class="p">:</span>
+</span><span id="StanModelContext-12"><a href="#StanModelContext-12"><span class="linenos">12</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StanModelContext-13"><a href="#StanModelContext-13"><span class="linenos">13</span></a><span class="sd">    This dataclass is intended to hold information about the stan model which must be modified and passed around to</span>
+</span><span id="StanModelContext-14"><a href="#StanModelContext-14"><span class="linenos">14</span></a><span class="sd">    multiple builders. The Attributes are intended to be modified while multiple builders construct blocks/pass</span>
+</span><span id="StanModelContext-15"><a href="#StanModelContext-15"><span class="linenos">15</span></a><span class="sd">    through the AST.</span>
+</span><span id="StanModelContext-16"><a href="#StanModelContext-16"><span class="linenos">16</span></a>
+</span><span id="StanModelContext-17"><a href="#StanModelContext-17"><span class="linenos">17</span></a><span class="sd">    Attributes</span>
+</span><span id="StanModelContext-18"><a href="#StanModelContext-18"><span class="linenos">18</span></a><span class="sd">    ----------</span>
+</span><span id="StanModelContext-19"><a href="#StanModelContext-19"><span class="linenos">19</span></a><span class="sd">    transformed_data_variables : set[str]</span>
+</span><span id="StanModelContext-20"><a href="#StanModelContext-20"><span class="linenos">20</span></a><span class="sd">        A set that holds information about which Vensim variables are initialized in the `transformed data`</span>
+</span><span id="StanModelContext-21"><a href="#StanModelContext-21"><span class="linenos">21</span></a><span class="sd">        block. Written during instantiation of `stanify.builders.vensim2stan.Vensim2Stan`, accessed while creating</span>
+</span><span id="StanModelContext-22"><a href="#StanModelContext-22"><span class="linenos">22</span></a><span class="sd">        the ODE function.</span>
+</span><span id="StanModelContext-23"><a href="#StanModelContext-23"><span class="linenos">23</span></a><span class="sd">    parameter_variables : set[str]</span>
+</span><span id="StanModelContext-24"><a href="#StanModelContext-24"><span class="linenos">24</span></a><span class="sd">        Set that holds the variable names that have been defined as a parameter. Written during instantiation of</span>
+</span><span id="StanModelContext-25"><a href="#StanModelContext-25"><span class="linenos">25</span></a><span class="sd">        `stanify.builders.vensim2stan.Vensim2Stan` accessed while creating the ODE function.</span>
+</span><span id="StanModelContext-26"><a href="#StanModelContext-26"><span class="linenos">26</span></a><span class="sd">    odefunc_variable_args : list[str]</span>
+</span><span id="StanModelContext-27"><a href="#StanModelContext-27"><span class="linenos">27</span></a><span class="sd">        List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE</span>
+</span><span id="StanModelContext-28"><a href="#StanModelContext-28"><span class="linenos">28</span></a><span class="sd">        function can be called with the appropriate arguments. Written when creating the ODE function, accessed when</span>
+</span><span id="StanModelContext-29"><a href="#StanModelContext-29"><span class="linenos">29</span></a><span class="sd">        creating `transformed parameters` block.</span>
+</span><span id="StanModelContext-30"><a href="#StanModelContext-30"><span class="linenos">30</span></a><span class="sd">    array_dims_subscript_map : dict[str, tuple[str]]</span>
+</span><span id="StanModelContext-31"><a href="#StanModelContext-31"><span class="linenos">31</span></a><span class="sd">        Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension</span>
+</span><span id="StanModelContext-32"><a href="#StanModelContext-32"><span class="linenos">32</span></a><span class="sd">        of each index. `dict[variable_name, subscript_tuples]` where `variable_name` is the array stan variable and</span>
+</span><span id="StanModelContext-33"><a href="#StanModelContext-33"><span class="linenos">33</span></a><span class="sd">        `subscript_tuples` which holds the actual subscript names that correspond to each dimension of the declared</span>
+</span><span id="StanModelContext-34"><a href="#StanModelContext-34"><span class="linenos">34</span></a><span class="sd">        array.</span>
+</span><span id="StanModelContext-35"><a href="#StanModelContext-35"><span class="linenos">35</span></a><span class="sd">    timestep_variant_datafunc_variables : set[str]</span>
+</span><span id="StanModelContext-36"><a href="#StanModelContext-36"><span class="linenos">36</span></a><span class="sd">        A set that holds the names of any variables that are defined to be ODE timestep-variant. This means that the</span>
+</span><span id="StanModelContext-37"><a href="#StanModelContext-37"><span class="linenos">37</span></a><span class="sd">        variable is declared as a function of timestep and thus has varying values.</span>
+</span><span id="StanModelContext-38"><a href="#StanModelContext-38"><span class="linenos">38</span></a><span class="sd">    lookupfunc_variables : set[str]</span>
+</span><span id="StanModelContext-39"><a href="#StanModelContext-39"><span class="linenos">39</span></a><span class="sd">        Set that holds the names of any variables that are defined as a lookup and hence defined in stan as a function.</span>
+</span><span id="StanModelContext-40"><a href="#StanModelContext-40"><span class="linenos">40</span></a><span class="sd">    static_data_variable_values : dict[str, Union[Number, xarray.DataArray]]</span>
+</span><span id="StanModelContext-41"><a href="#StanModelContext-41"><span class="linenos">41</span></a><span class="sd">        This dict holds the names and actual values of any static data variables. This is effectively created from the</span>
+</span><span id="StanModelContext-42"><a href="#StanModelContext-42"><span class="linenos">42</span></a><span class="sd">        `additional_data` argument of `stanify.builders.vensim2stan.Vensim2Stan`, parsing the Vensim model</span>
+</span><span id="StanModelContext-43"><a href="#StanModelContext-43"><span class="linenos">43</span></a><span class="sd">        for static data declarations, and also parsing the V2S code for static declarations. This is used during</span>
+</span><span id="StanModelContext-44"><a href="#StanModelContext-44"><span class="linenos">44</span></a><span class="sd">        `transformed data` block generation and for creating data functions. AKA assumed parameters.</span>
+</span><span id="StanModelContext-45"><a href="#StanModelContext-45"><span class="linenos">45</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="StanModelContext-46"><a href="#StanModelContext-46"><span class="linenos">46</span></a>    <span class="n">transformed_data_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="StanModelContext-47"><a href="#StanModelContext-47"><span class="linenos">47</span></a>    <span class="n">parameter_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="StanModelContext-48"><a href="#StanModelContext-48"><span class="linenos">48</span></a>    <span class="n">odefunc_variable_args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span id="StanModelContext-49"><a href="#StanModelContext-49"><span class="linenos">49</span></a>    <span class="n">array_dims_subscript_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="StanModelContext-50"><a href="#StanModelContext-50"><span class="linenos">50</span></a>    <span class="n">timestep_variant_datafunc_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="StanModelContext-51"><a href="#StanModelContext-51"><span class="linenos">51</span></a>    <span class="n">lookupfunc_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+</span><span id="StanModelContext-52"><a href="#StanModelContext-52"><span class="linenos">52</span></a>    <span class="n">static_data_variable_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Number</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span id="StanModelContext-53"><a href="#StanModelContext-53"><span class="linenos">53</span></a>
+</span><span id="StanModelContext-54"><a href="#StanModelContext-54"><span class="linenos">54</span></a>    <span class="k">def</span> <span class="nf">get_stan_declared_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="StanModelContext-55"><a href="#StanModelContext-55"><span class="linenos">55</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StanModelContext-56"><a href="#StanModelContext-56"><span class="linenos">56</span></a><span class="sd">        Return a set of variables that are defined within Stan.</span>
+</span><span id="StanModelContext-57"><a href="#StanModelContext-57"><span class="linenos">57</span></a>
+</span><span id="StanModelContext-58"><a href="#StanModelContext-58"><span class="linenos">58</span></a><span class="sd">        Returns</span>
+</span><span id="StanModelContext-59"><a href="#StanModelContext-59"><span class="linenos">59</span></a><span class="sd">        -------</span>
+</span><span id="StanModelContext-60"><a href="#StanModelContext-60"><span class="linenos">60</span></a><span class="sd">        A set containing the variable names</span>
+</span><span id="StanModelContext-61"><a href="#StanModelContext-61"><span class="linenos">61</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="StanModelContext-62"><a href="#StanModelContext-62"><span class="linenos">62</span></a>
+</span><span id="StanModelContext-63"><a href="#StanModelContext-63"><span class="linenos">63</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_data_variables</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_variables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_variant_datafunc_variables</span><span class="p">,</span>
+</span><span id="StanModelContext-64"><a href="#StanModelContext-64"><span class="linenos">64</span></a>                                                     <span class="bp">self</span><span class="o">.</span><span class="n">lookupfunc_variables</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -177,7 +231,7 @@ A set that holds information about which Vensim variables are initialized in the
 block. Written during instantiation of <code><a href="vensim2stan.html#Vensim2Stan">stanify.builders.vensim2stan.Vensim2Stan</a></code>, accessed while creating
 the ODE function.</li>
 <li><strong>parameter_variables</strong> (set[str]):
-Set that holds the variable names that have been defined as a paramter. Written during instantiation of
+Set that holds the variable names that have been defined as a parameter. Written during instantiation of
 <code><a href="vensim2stan.html#Vensim2Stan">stanify.builders.vensim2stan.Vensim2Stan</a></code> accessed while creating the ODE function.</li>
 <li><strong>odefunc_variable_args</strong> (list[str]):
 List that holds what Stan variables are passed into the ODE function. This must be known so that the ODE
@@ -185,23 +239,57 @@ function can be called with the appropriate arguments. Written when creating the
 creating <code>transformed parameters</code> block.</li>
 <li><strong>array_dims_subscript_map</strong> (dict[str, tuple[str]]):
 Holds the dimension order for array variables. This dict holds the subscripts corresponding to each dimension
-of each index. <code>dict[variable_name, subscript_tuples)</code> where <code>variable_name</code> is the array stan variable and
+of each index. <code>dict[variable_name, subscript_tuples]</code> where <code>variable_name</code> is the array stan variable and
 <code>subscript_tuples</code> which holds the actual subscript names that correspond to each dimension of the declared
 array.</li>
+<li><strong>timestep_variant_datafunc_variables</strong> (set[str]):
+A set that holds the names of any variables that are defined to be ODE timestep-variant. This means that the
+variable is declared as a function of timestep and thus has varying values.</li>
+<li><strong>lookupfunc_variables</strong> (set[str]):
+Set that holds the names of any variables that are defined as a lookup and hence defined in stan as a function.</li>
+<li><strong>static_data_variable_values</strong> (dict[str, Union[Number, xarray.DataArray]]):
+This dict holds the names and actual values of any static data variables. This is effectively created from the
+<code>additional_data</code> argument of <code><a href="vensim2stan.html#Vensim2Stan">stanify.builders.vensim2stan.Vensim2Stan</a></code>, parsing the Vensim model
+for static data declarations, and also parsing the V2S code for static declarations. This is used during
+<code>transformed data</code> block generation and for creating data functions. AKA assumed parameters.</li>
 </ul>
 </div>
 
 
-                            <div id="StanModelContext.__init__" class="classattr">
-                                <div class="attr function">
+                            <div id="StanModelContext.get_stan_declared_variables" class="classattr">
+                                        <input id="StanModelContext.get_stan_declared_variables-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
             
-        <span class="name">StanModelContext</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">array_dims_subscript_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">factory</span><span class="o">&gt;</span></span>)</span>
+        <span class="def">def</span>
+        <span class="name">get_stan_declared_variables</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>:</span></span>
 
-        
+                <label class="view-source-button" for="StanModelContext.get_stan_declared_variables-view-source"><span>View Source</span></label>
+
     </div>
-    <a class="headerlink" href="#StanModelContext.__init__"></a>
-    
-    
+    <a class="headerlink" href="#StanModelContext.get_stan_declared_variables"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StanModelContext.get_stan_declared_variables-54"><a href="#StanModelContext.get_stan_declared_variables-54"><span class="linenos">54</span></a>    <span class="k">def</span> <span class="nf">get_stan_declared_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="StanModelContext.get_stan_declared_variables-55"><a href="#StanModelContext.get_stan_declared_variables-55"><span class="linenos">55</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StanModelContext.get_stan_declared_variables-56"><a href="#StanModelContext.get_stan_declared_variables-56"><span class="linenos">56</span></a><span class="sd">        Return a set of variables that are defined within Stan.</span>
+</span><span id="StanModelContext.get_stan_declared_variables-57"><a href="#StanModelContext.get_stan_declared_variables-57"><span class="linenos">57</span></a>
+</span><span id="StanModelContext.get_stan_declared_variables-58"><a href="#StanModelContext.get_stan_declared_variables-58"><span class="linenos">58</span></a><span class="sd">        Returns</span>
+</span><span id="StanModelContext.get_stan_declared_variables-59"><a href="#StanModelContext.get_stan_declared_variables-59"><span class="linenos">59</span></a><span class="sd">        -------</span>
+</span><span id="StanModelContext.get_stan_declared_variables-60"><a href="#StanModelContext.get_stan_declared_variables-60"><span class="linenos">60</span></a><span class="sd">        A set containing the variable names</span>
+</span><span id="StanModelContext.get_stan_declared_variables-61"><a href="#StanModelContext.get_stan_declared_variables-61"><span class="linenos">61</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="StanModelContext.get_stan_declared_variables-62"><a href="#StanModelContext.get_stan_declared_variables-62"><span class="linenos">62</span></a>
+</span><span id="StanModelContext.get_stan_declared_variables-63"><a href="#StanModelContext.get_stan_declared_variables-63"><span class="linenos">63</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_data_variables</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_variables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_variant_datafunc_variables</span><span class="p">,</span>
+</span><span id="StanModelContext.get_stan_declared_variables-64"><a href="#StanModelContext.get_stan_declared_variables-64"><span class="linenos">64</span></a>                                                     <span class="bp">self</span><span class="o">.</span><span class="n">lookupfunc_variables</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Return a set of variables that are defined within Stan.</p>
+
+<h6 id="returns">Returns</h6>
+
+<ul>
+<li><strong>A set containing the variable names</strong></li>
+</ul>
+</div>
+
 
                             </div>
                 </section>

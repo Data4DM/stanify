@@ -125,6 +125,15 @@
 
             </li>
             <li>
+                    <a class="class" href="#Array">Array</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#Array.__init__">Array</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
                     <a class="class" href="#Literal">Literal</a>
                             <ul class="memberlist">
                         <li>
@@ -228,8 +237,13 @@
 </span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>
 </span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>
 </span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a><span class="k">class</span> <span class="nc">Literal</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>    <span class="n">values</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>
+</span><span id="L-78"><a href="#L-78"><span class="linenos">78</span></a>
+</span><span id="L-79"><a href="#L-79"><span class="linenos">79</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos">80</span></a><span class="k">class</span> <span class="nc">Literal</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos">81</span></a>    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
 </span></pre></div>
 
 
@@ -622,6 +636,53 @@ rule, and synthesizes the class/type if it's not known.</p>
                                 </dl>
                             </div>
                 </section>
+                <section id="Array">
+                            <input id="Array-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+                    <div class="decorator">@dataclass(eq=False)</div>
+
+    <span class="def">class</span>
+    <span class="name">Array</span><wbr>(<span class="base"><a href="#ModelBase">ModelBase</a></span>):
+
+                <label class="view-source-button" for="Array-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Array"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Array-75"><a href="#Array-75"><span class="linenos">75</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="Array-76"><a href="#Array-76"><span class="linenos">76</span></a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+</span><span id="Array-77"><a href="#Array-77"><span class="linenos">77</span></a>    <span class="n">values</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span></pre></div>
+
+
+    
+
+                            <div id="Array.__init__" class="classattr">
+                                <div class="attr function">
+            
+        <span class="name">Array</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">_parent</span><span class="p">:</span> <span class="n">tatsu</span><span class="o">.</span><span class="n">objectmodel</span><span class="o">.</span><span class="n">Node</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">_children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">tatsu</span><span class="o">.</span><span class="n">objectmodel</span><span class="o">.</span><span class="n">Node</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">ast</span><span class="p">:</span> <span class="s1">&#39;AST | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">ctx</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">parseinfo</span><span class="p">:</span> <span class="s1">&#39;ParseInfo | None&#39;</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">values</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Array.__init__"></a>
+    
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>tatsu.objectmodel.Node</dt>
+                                <dd id="Array.text_lines" class="function">text_lines</dd>
+                <dd id="Array.line_index" class="function">line_index</dd>
+                <dd id="Array.children_list" class="function">children_list</dd>
+                <dd id="Array.children_set" class="function">children_set</dd>
+                <dd id="Array.children" class="function">children</dd>
+                <dd id="Array.asjson" class="function">asjson</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
                 <section id="Literal">
                             <input id="Literal-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
@@ -634,9 +695,9 @@ rule, and synthesizes the class/type if it's not known.</p>
 
     </div>
     <a class="headerlink" href="#Literal"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Literal-75"><a href="#Literal-75"><span class="linenos">75</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span id="Literal-76"><a href="#Literal-76"><span class="linenos">76</span></a><span class="k">class</span> <span class="nc">Literal</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
-</span><span id="Literal-77"><a href="#Literal-77"><span class="linenos">77</span></a>    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Literal-80"><a href="#Literal-80"><span class="linenos">80</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="Literal-81"><a href="#Literal-81"><span class="linenos">81</span></a><span class="k">class</span> <span class="nc">Literal</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+</span><span id="Literal-82"><a href="#Literal-82"><span class="linenos">82</span></a>    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
 </span></pre></div>
 
 
