@@ -26,6 +26,7 @@ multiplication::Binary = left:factor op:('*' | '/') ~ right:multiplication_expre
 
 factor
     =
+    | array
     | function_call
     | subexpression
     | variable
@@ -39,6 +40,14 @@ constraint = name:('lower'|'upper') ~ '=' ~ value:literal;
 arglist = @+:expression {',' ~ @+:expression}*;
 subscript = @+:identifier {',' ~ @+:identifier}*;
 subexpression = '(' ~ @:expression ')';
+
+array::Array = '{' values:array_values '}';
+array_values = @+:array_element {',' ~ @+:array_element}*;
+array_element =
+    | literal
+    | array
+;
+
 
 literal::Literal = value:(real | integer);
 

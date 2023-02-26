@@ -31,7 +31,15 @@ class IndentedString:
         prefix = " " * 4 * self.indent_level
         if other != "\n":
             self.string += prefix
-        self.string += other
+
+        # If the string ends with a newline, remove the last newline before adding tabs since it breaks the indent
+        # of the next line
+        if other.endswith("\n"):
+            other = other[:-1]
+            replaced = other.replace("\n", "\n" + prefix) + "\n"
+        else:
+            replaced = other.replace("\n", "\n" + prefix)
+        self.string += replaced
         return self
 
     def add_raw(self, string: str, ignore_indent: bool = False) -> None:
@@ -79,7 +87,8 @@ class StatementTopoSort:
         The result of the sort. Holds variable names
     ignored_variables : tuple[str]
         Tuple of variable names which should be ignored during the sort. This is useful when you have some variables
-        that require special treatment.
+        that require special treatment. This means that the dependencies for ignored variables are not taken into
+        account.
     """
     def __init__(self, ignored_variables: tuple[str] = tuple()):
         """

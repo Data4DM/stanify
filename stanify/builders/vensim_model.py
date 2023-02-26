@@ -4,7 +4,7 @@ import numpy as np
 
 from .utilities import vensim_name_to_identifier
 from pysd.translators.structures.abstract_model import AbstractModel, AbstractSection
-from pysd.translators.structures.abstract_expressions import IntegStructure
+from pysd.translators.structures.abstract_expressions import IntegStructure, LookupsStructure, DataStructure
 from pysd.translators.vensim.vensim_file import VensimFile
 from typing import Union, Any
 from dataclasses import dataclass, field
@@ -28,11 +28,17 @@ class VensimVariableContext:
         Whether the variable is a stock variable. Default is `False`
     is_static_data : bool
         Whether the variable is static data.
+    is_lookup : bool
+        Whether the variable is defined as a LookupStructure.
+    is_vensim_datastructure : bool
+        Whether the variable is defined within Vensim as a DataStructure.
     """
     name: str
     subscripts: tuple[str] = field(default_factory=tuple)
     is_stock: bool = field(default=False)
     is_static_data: bool = field(default=False)
+    is_lookup: bool = field(default=False)
+    is_vensim_datastructure: bool = field(default=False)
 
     def __hash__(self) -> int:
         return hash(self.name)
@@ -40,6 +46,24 @@ class VensimVariableContext:
 
 @dataclass
 class StateVectorIndexMap:
+    """
+    This class is used as an element for indicating the map between the indices of a 1d-array to multiple named
+    nd-arrays. Its usage will be normally be through a list `list[StateVectorIndexMap]`, declared as
+    `VensimModelContext.state_vector_index_map`. Then, each index of the
+    `StateVectorIndexMap` in the list, will correspond to the actual variable name and its subscript index held by it.
+    For example, if we had `[None, StateVectorIndexMap(name="A", indices=(0, 0)]`, this means that the 1st
+    (note that we don't use the 0th element since stan starts arrays with index 1) element corresponds to the variable
+    named "A". But since A is subscripted with two subscripts, the indices attribute tells us that it's the 0th value
+    of the zero-th and first subscript.
+
+    Attributes
+    ----------
+    name : str
+        Variable name
+    indices : tuple[int]
+        If the variable has subscripts, this corresponds to the index of subscript values the index of the 1d-array
+        is mapped to. The specific order within the tuple follows `VensimVariableContext.subscripts`
+    """
     name: str
     indices: tuple[int]
 
@@ -100,10 +124,18 @@ class VensimModelContext:
             # Check if the variable is just static data
             is_static_data = isinstance(component.ast, (int, float, np.ndarray))
 
+            # Check if the variable is a lookup
+            is_lookup = isinstance(component.ast, LookupsStructure)
+
+            # Check if the variable is a Vensim datastructure
+            is_datastructure = isinstance(component.ast, DataStructure)
+
             variable_name = vensim_name_to_identifier(element.name)
             is_stock = isinstance(component.ast, IntegStructure)
             self.variables[variable_name] = VensimVariableContext(vensim_name_to_identifier(element.name), subscripts,
-                                                                  is_stock=is_stock, is_static_data=is_static_data)
+                                                                  is_stock=is_stock, is_static_data=is_static_data,
+                                                                  is_lookup=is_lookup,
+                                                                  is_vensim_datastructure=is_datastructure)
 
             # Additionally record the stock variables
             if is_stock:
@@ -165,8 +197,9 @@ class VensimModelContext:
         """
         Return the required dimension of vensim variables.
 
-        If a Vensim variable is equipped with a subscript 'a' that has 2 values, it would need to be allocated as a
+        If a Vensim variable is equipped with a subscript 'A' that has 2 values, it would need to be allocated as a
         length-2 vector. In this case, this method will return `(2, )` indicating what its shape should be.
+
         Parameters
         ----------
         variable_name : str

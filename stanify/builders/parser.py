@@ -149,9 +149,9 @@ class Vensim2StanParser(Parser):
                 self._factor_()
             self._error(
                 'expecting one of: '
-                '<factor> <function_call> <literal>'
-                '<multiplication> <subexpression>'
-                '<variable>'
+                '<array> <factor> <function_call>'
+                '<literal> <multiplication>'
+                '<subexpression> <variable>'
             )
 
     @tatsumasu('Binary')
@@ -182,6 +182,8 @@ class Vensim2StanParser(Parser):
     def _factor_(self):  # noqa
         with self._choice():
             with self._option():
+                self._array_()
+            with self._option():
                 self._function_call_()
             with self._option():
                 self._subexpression_()
@@ -191,8 +193,8 @@ class Vensim2StanParser(Parser):
                 self._literal_()
             self._error(
                 'expecting one of: '
-                "'(' '@' <function_call> <identifier>"
-                '<integer> <literal> <real>'
+                "'(' '@' '{' <array> <function_call>"
+                '<identifier> <integer> <literal> <real>'
                 '<subexpression> <variable>'
             )
 
@@ -315,6 +317,42 @@ class Vensim2StanParser(Parser):
         self.name_last_node('@')
         self._token(')')
 
+    @tatsumasu('Array')
+    def _array_(self):  # noqa
+        self._token('{')
+        self._array_values_()
+        self.name_last_node('values')
+        self._token('}')
+
+        self._define(
+            ['values'],
+            []
+        )
+
+    @tatsumasu()
+    def _array_values_(self):  # noqa
+        self._array_element_()
+        self.add_last_node_to_name('@')
+
+        def block1():
+            self._token(',')
+            self._cut()
+            self._array_element_()
+            self.add_last_node_to_name('@')
+        self._closure(block1)
+
+    @tatsumasu()
+    def _array_element_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._literal_()
+            with self._option():
+                self._array_()
+            self._error(
+                'expecting one of: '
+                "'{' <array> <integer> <literal> <real>"
+            )
+
     @tatsumasu('Literal')
     def _literal_(self):  # noqa
         with self._group():
@@ -397,6 +435,15 @@ class Vensim2StanSemantics:
         return ast
 
     def subexpression(self, ast):  # noqa
+        return ast
+
+    def array(self, ast):  # noqa
+        return ast
+
+    def array_values(self, ast):  # noqa
+        return ast
+
+    def array_element(self, ast):  # noqa
         return ast
 
     def literal(self, ast):  # noqa
