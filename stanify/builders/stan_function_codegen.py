@@ -110,8 +110,6 @@ class StanFunctionBuilder(StanBlockCodegen):
                                    stan_model_context: StanModelContext) -> None:
         # sort the AST elements according to the sorted order
         statement_eval_order = self.statement_sorter.sort()
-        print(self.statement_sorter.dependency_graph)
-        print(statement_eval_order)
         elements = [element for element in vensim_model_context.first_section.elements if vensim_name_to_identifier(element.name) in statement_eval_order]
 
         elements = sorted(elements, key=lambda x: statement_eval_order.index(vensim_name_to_identifier(x.name)))
