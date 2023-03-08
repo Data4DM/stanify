@@ -129,7 +129,7 @@
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="k">class</span> <span class="nc">VensimVariableContext</span><span class="p">:</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">    Holds information about a given Vensim variable</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="sd">    Attributes</span>
@@ -160,7 +160,7 @@
 </span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>
 </span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="nd">@dataclass</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="k">class</span> <span class="nc">StateVectorIndexMap</span><span class="p">:</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">    This class is used as an element for indicating the map between the indices of a 1d-array to multiple named</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">    nd-arrays. Its usage will be normally be through a list `list[StateVectorIndexMap]`, declared as</span>
 </span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">    `VensimModelContext.state_vector_index_map`. Then, each index of the</span>
@@ -183,7 +183,7 @@
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>
 </span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
 </span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="k">class</span> <span class="nc">VensimModelContext</span><span class="p">:</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">    This class holds information about the Vensim model.</span>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>
 </span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">    Attributes</span>
@@ -210,7 +210,7 @@
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">        indexing starts from 1, the 0&#39;th index has `None` to indicate that it is not used.</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vensim_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">        Parameters</span>
 </span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="sd">        ----------</span>
 </span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">        vensim_model_path : string or pathlib.Path</span>
@@ -273,7 +273,7 @@
 </span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">state_vector_index_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StateVectorIndexMap</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">indices</span><span class="p">))</span>
 </span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="k">def</span> <span class="nf">set_timesteps_subscript</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Number</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">        This function is used to register the &quot;timesteps&quot; subscript. The timesteps subscript is used for stock variables</span>
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="sd">        to indicate the time index.</span>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>
@@ -293,7 +293,7 @@
 </span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abstract_model</span>
 </span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>
 </span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>    <span class="k">def</span> <span class="nf">get_subscript_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscript_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a><span class="sd">        Return the values of a given subscript.</span>
 </span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>
 </span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a><span class="sd">        Parameters</span>
@@ -308,7 +308,7 @@
 </span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a>        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscripts</span><span class="p">[</span><span class="n">subscript_name</span><span class="p">])</span>
 </span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>
 </span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>    <span class="k">def</span> <span class="nf">get_variable_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="sd">        Return the required dimension of vensim variables.</span>
 </span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>
 </span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a><span class="sd">        If a Vensim variable is equipped with a subscript &#39;A&#39; that has 2 values, it would need to be allocated as a</span>
@@ -331,7 +331,7 @@
 </span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 </span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>
 </span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>    <span class="k">def</span> <span class="nf">print_variable_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a><span class="sd">        Print some debug information about the variables present in the Vensim model.</span>
 </span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[]</span>
@@ -369,7 +369,7 @@
     <a class="headerlink" href="#VensimVariableContext"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimVariableContext-17"><a href="#VensimVariableContext-17"><span class="linenos">17</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="VensimVariableContext-18"><a href="#VensimVariableContext-18"><span class="linenos">18</span></a><span class="k">class</span> <span class="nc">VensimVariableContext</span><span class="p">:</span>
-</span><span id="VensimVariableContext-19"><a href="#VensimVariableContext-19"><span class="linenos">19</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimVariableContext-19"><a href="#VensimVariableContext-19"><span class="linenos">19</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimVariableContext-20"><a href="#VensimVariableContext-20"><span class="linenos">20</span></a><span class="sd">    Holds information about a given Vensim variable</span>
 </span><span id="VensimVariableContext-21"><a href="#VensimVariableContext-21"><span class="linenos">21</span></a>
 </span><span id="VensimVariableContext-22"><a href="#VensimVariableContext-22"><span class="linenos">22</span></a><span class="sd">    Attributes</span>
@@ -447,7 +447,7 @@ Whether the variable is defined within Vensim as a DataStructure.</li>
     <a class="headerlink" href="#StateVectorIndexMap"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StateVectorIndexMap-48"><a href="#StateVectorIndexMap-48"><span class="linenos">48</span></a><span class="nd">@dataclass</span>
 </span><span id="StateVectorIndexMap-49"><a href="#StateVectorIndexMap-49"><span class="linenos">49</span></a><span class="k">class</span> <span class="nc">StateVectorIndexMap</span><span class="p">:</span>
-</span><span id="StateVectorIndexMap-50"><a href="#StateVectorIndexMap-50"><span class="linenos">50</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StateVectorIndexMap-50"><a href="#StateVectorIndexMap-50"><span class="linenos">50</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StateVectorIndexMap-51"><a href="#StateVectorIndexMap-51"><span class="linenos">51</span></a><span class="sd">    This class is used as an element for indicating the map between the indices of a 1d-array to multiple named</span>
 </span><span id="StateVectorIndexMap-52"><a href="#StateVectorIndexMap-52"><span class="linenos">52</span></a><span class="sd">    nd-arrays. Its usage will be normally be through a list `list[StateVectorIndexMap]`, declared as</span>
 </span><span id="StateVectorIndexMap-53"><a href="#StateVectorIndexMap-53"><span class="linenos">53</span></a><span class="sd">    `VensimModelContext.state_vector_index_map`. Then, each index of the</span>
@@ -516,7 +516,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
     </div>
     <a class="headerlink" href="#VensimModelContext"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext-72"><a href="#VensimModelContext-72"><span class="linenos"> 72</span></a><span class="k">class</span> <span class="nc">VensimModelContext</span><span class="p">:</span>
-</span><span id="VensimModelContext-73"><a href="#VensimModelContext-73"><span class="linenos"> 73</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-73"><a href="#VensimModelContext-73"><span class="linenos"> 73</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-74"><a href="#VensimModelContext-74"><span class="linenos"> 74</span></a><span class="sd">    This class holds information about the Vensim model.</span>
 </span><span id="VensimModelContext-75"><a href="#VensimModelContext-75"><span class="linenos"> 75</span></a>
 </span><span id="VensimModelContext-76"><a href="#VensimModelContext-76"><span class="linenos"> 76</span></a><span class="sd">    Attributes</span>
@@ -543,7 +543,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
 </span><span id="VensimModelContext-97"><a href="#VensimModelContext-97"><span class="linenos"> 97</span></a><span class="sd">        indexing starts from 1, the 0&#39;th index has `None` to indicate that it is not used.</span>
 </span><span id="VensimModelContext-98"><a href="#VensimModelContext-98"><span class="linenos"> 98</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-99"><a href="#VensimModelContext-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vensim_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext-100"><a href="#VensimModelContext-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-100"><a href="#VensimModelContext-100"><span class="linenos">100</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-101"><a href="#VensimModelContext-101"><span class="linenos">101</span></a><span class="sd">        Parameters</span>
 </span><span id="VensimModelContext-102"><a href="#VensimModelContext-102"><span class="linenos">102</span></a><span class="sd">        ----------</span>
 </span><span id="VensimModelContext-103"><a href="#VensimModelContext-103"><span class="linenos">103</span></a><span class="sd">        vensim_model_path : string or pathlib.Path</span>
@@ -606,7 +606,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
 </span><span id="VensimModelContext-160"><a href="#VensimModelContext-160"><span class="linenos">160</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">state_vector_index_map</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StateVectorIndexMap</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">indices</span><span class="p">))</span>
 </span><span id="VensimModelContext-161"><a href="#VensimModelContext-161"><span class="linenos">161</span></a>
 </span><span id="VensimModelContext-162"><a href="#VensimModelContext-162"><span class="linenos">162</span></a>    <span class="k">def</span> <span class="nf">set_timesteps_subscript</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Number</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext-163"><a href="#VensimModelContext-163"><span class="linenos">163</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-163"><a href="#VensimModelContext-163"><span class="linenos">163</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-164"><a href="#VensimModelContext-164"><span class="linenos">164</span></a><span class="sd">        This function is used to register the &quot;timesteps&quot; subscript. The timesteps subscript is used for stock variables</span>
 </span><span id="VensimModelContext-165"><a href="#VensimModelContext-165"><span class="linenos">165</span></a><span class="sd">        to indicate the time index.</span>
 </span><span id="VensimModelContext-166"><a href="#VensimModelContext-166"><span class="linenos">166</span></a>
@@ -626,7 +626,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
 </span><span id="VensimModelContext-180"><a href="#VensimModelContext-180"><span class="linenos">180</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abstract_model</span>
 </span><span id="VensimModelContext-181"><a href="#VensimModelContext-181"><span class="linenos">181</span></a>
 </span><span id="VensimModelContext-182"><a href="#VensimModelContext-182"><span class="linenos">182</span></a>    <span class="k">def</span> <span class="nf">get_subscript_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscript_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-</span><span id="VensimModelContext-183"><a href="#VensimModelContext-183"><span class="linenos">183</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-183"><a href="#VensimModelContext-183"><span class="linenos">183</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-184"><a href="#VensimModelContext-184"><span class="linenos">184</span></a><span class="sd">        Return the values of a given subscript.</span>
 </span><span id="VensimModelContext-185"><a href="#VensimModelContext-185"><span class="linenos">185</span></a>
 </span><span id="VensimModelContext-186"><a href="#VensimModelContext-186"><span class="linenos">186</span></a><span class="sd">        Parameters</span>
@@ -641,7 +641,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
 </span><span id="VensimModelContext-195"><a href="#VensimModelContext-195"><span class="linenos">195</span></a>        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscripts</span><span class="p">[</span><span class="n">subscript_name</span><span class="p">])</span>
 </span><span id="VensimModelContext-196"><a href="#VensimModelContext-196"><span class="linenos">196</span></a>
 </span><span id="VensimModelContext-197"><a href="#VensimModelContext-197"><span class="linenos">197</span></a>    <span class="k">def</span> <span class="nf">get_variable_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="VensimModelContext-198"><a href="#VensimModelContext-198"><span class="linenos">198</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-198"><a href="#VensimModelContext-198"><span class="linenos">198</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-199"><a href="#VensimModelContext-199"><span class="linenos">199</span></a><span class="sd">        Return the required dimension of vensim variables.</span>
 </span><span id="VensimModelContext-200"><a href="#VensimModelContext-200"><span class="linenos">200</span></a>
 </span><span id="VensimModelContext-201"><a href="#VensimModelContext-201"><span class="linenos">201</span></a><span class="sd">        If a Vensim variable is equipped with a subscript &#39;A&#39; that has 2 values, it would need to be allocated as a</span>
@@ -664,7 +664,7 @@ is mapped to. The specific order within the tuple follows <code>VensimVariableCo
 </span><span id="VensimModelContext-218"><a href="#VensimModelContext-218"><span class="linenos">218</span></a>        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 </span><span id="VensimModelContext-219"><a href="#VensimModelContext-219"><span class="linenos">219</span></a>
 </span><span id="VensimModelContext-220"><a href="#VensimModelContext-220"><span class="linenos">220</span></a>    <span class="k">def</span> <span class="nf">print_variable_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext-221"><a href="#VensimModelContext-221"><span class="linenos">221</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext-221"><a href="#VensimModelContext-221"><span class="linenos">221</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-222"><a href="#VensimModelContext-222"><span class="linenos">222</span></a><span class="sd">        Print some debug information about the variables present in the Vensim model.</span>
 </span><span id="VensimModelContext-223"><a href="#VensimModelContext-223"><span class="linenos">223</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="VensimModelContext-224"><a href="#VensimModelContext-224"><span class="linenos">224</span></a>        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[]</span>
@@ -727,7 +727,7 @@ indexing starts from 1, the 0'th index has <code>None</code> to indicate that it
     </div>
     <a class="headerlink" href="#VensimModelContext.__init__"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext.__init__-99"><a href="#VensimModelContext.__init__-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vensim_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext.__init__-100"><a href="#VensimModelContext.__init__-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext.__init__-100"><a href="#VensimModelContext.__init__-100"><span class="linenos">100</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.__init__-101"><a href="#VensimModelContext.__init__-101"><span class="linenos">101</span></a><span class="sd">        Parameters</span>
 </span><span id="VensimModelContext.__init__-102"><a href="#VensimModelContext.__init__-102"><span class="linenos">102</span></a><span class="sd">        ----------</span>
 </span><span id="VensimModelContext.__init__-103"><a href="#VensimModelContext.__init__-103"><span class="linenos">103</span></a><span class="sd">        vensim_model_path : string or pathlib.Path</span>
@@ -812,7 +812,7 @@ indexing starts from 1, the 0'th index has <code>None</code> to indicate that it
     </div>
     <a class="headerlink" href="#VensimModelContext.set_timesteps_subscript"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext.set_timesteps_subscript-162"><a href="#VensimModelContext.set_timesteps_subscript-162"><span class="linenos">162</span></a>    <span class="k">def</span> <span class="nf">set_timesteps_subscript</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Number</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext.set_timesteps_subscript-163"><a href="#VensimModelContext.set_timesteps_subscript-163"><span class="linenos">163</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext.set_timesteps_subscript-163"><a href="#VensimModelContext.set_timesteps_subscript-163"><span class="linenos">163</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.set_timesteps_subscript-164"><a href="#VensimModelContext.set_timesteps_subscript-164"><span class="linenos">164</span></a><span class="sd">        This function is used to register the &quot;timesteps&quot; subscript. The timesteps subscript is used for stock variables</span>
 </span><span id="VensimModelContext.set_timesteps_subscript-165"><a href="#VensimModelContext.set_timesteps_subscript-165"><span class="linenos">165</span></a><span class="sd">        to indicate the time index.</span>
 </span><span id="VensimModelContext.set_timesteps_subscript-166"><a href="#VensimModelContext.set_timesteps_subscript-166"><span class="linenos">166</span></a>
@@ -850,7 +850,7 @@ values of the subscript</li>
     </div>
     <a class="headerlink" href="#VensimModelContext.get_subscript_values"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext.get_subscript_values-182"><a href="#VensimModelContext.get_subscript_values-182"><span class="linenos">182</span></a>    <span class="k">def</span> <span class="nf">get_subscript_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscript_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-</span><span id="VensimModelContext.get_subscript_values-183"><a href="#VensimModelContext.get_subscript_values-183"><span class="linenos">183</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext.get_subscript_values-183"><a href="#VensimModelContext.get_subscript_values-183"><span class="linenos">183</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.get_subscript_values-184"><a href="#VensimModelContext.get_subscript_values-184"><span class="linenos">184</span></a><span class="sd">        Return the values of a given subscript.</span>
 </span><span id="VensimModelContext.get_subscript_values-185"><a href="#VensimModelContext.get_subscript_values-185"><span class="linenos">185</span></a>
 </span><span id="VensimModelContext.get_subscript_values-186"><a href="#VensimModelContext.get_subscript_values-186"><span class="linenos">186</span></a><span class="sd">        Parameters</span>
@@ -896,7 +896,7 @@ Subscript name</li>
     </div>
     <a class="headerlink" href="#VensimModelContext.get_variable_shape"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext.get_variable_shape-197"><a href="#VensimModelContext.get_variable_shape-197"><span class="linenos">197</span></a>    <span class="k">def</span> <span class="nf">get_variable_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="VensimModelContext.get_variable_shape-198"><a href="#VensimModelContext.get_variable_shape-198"><span class="linenos">198</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext.get_variable_shape-198"><a href="#VensimModelContext.get_variable_shape-198"><span class="linenos">198</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.get_variable_shape-199"><a href="#VensimModelContext.get_variable_shape-199"><span class="linenos">199</span></a><span class="sd">        Return the required dimension of vensim variables.</span>
 </span><span id="VensimModelContext.get_variable_shape-200"><a href="#VensimModelContext.get_variable_shape-200"><span class="linenos">200</span></a>
 </span><span id="VensimModelContext.get_variable_shape-201"><a href="#VensimModelContext.get_variable_shape-201"><span class="linenos">201</span></a><span class="sd">        If a Vensim variable is equipped with a subscript &#39;A&#39; that has 2 values, it would need to be allocated as a</span>
@@ -953,7 +953,7 @@ Variable name, must be an identifier</li>
     </div>
     <a class="headerlink" href="#VensimModelContext.print_variable_info"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="VensimModelContext.print_variable_info-220"><a href="#VensimModelContext.print_variable_info-220"><span class="linenos">220</span></a>    <span class="k">def</span> <span class="nf">print_variable_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="VensimModelContext.print_variable_info-221"><a href="#VensimModelContext.print_variable_info-221"><span class="linenos">221</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="VensimModelContext.print_variable_info-221"><a href="#VensimModelContext.print_variable_info-221"><span class="linenos">221</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.print_variable_info-222"><a href="#VensimModelContext.print_variable_info-222"><span class="linenos">222</span></a><span class="sd">        Print some debug information about the variables present in the Vensim model.</span>
 </span><span id="VensimModelContext.print_variable_info-223"><a href="#VensimModelContext.print_variable_info-223"><span class="linenos">223</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="VensimModelContext.print_variable_info-224"><a href="#VensimModelContext.print_variable_info-224"><span class="linenos">224</span></a>        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[]</span>

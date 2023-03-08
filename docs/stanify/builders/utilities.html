@@ -154,11 +154,11 @@
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="k">class</span> <span class="nc">IndentedString</span><span class="p">:</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="sd">    This can be seen as a stateful `textwrap.indent()`.</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>
 </span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="sd">        Parameters</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">        ----------</span>
@@ -184,7 +184,7 @@
 </span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>        <span class="k">return</span> <span class="bp">self</span>
 </span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>
 </span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>    <span class="k">def</span> <span class="nf">add_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_indent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        Directly append a string, potentially overriding the indentation.</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">        Parameters</span>
 </span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">        ----------</span>
@@ -203,7 +203,7 @@
 </span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>
 </span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="k">class</span> <span class="nc">StatementTopoSort</span><span class="p">:</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">    Topologically sort a group of statements, based on their usage.</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">    This is useful when you&#39;re working with unordered statements, and need to</span>
 </span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">    order them for declarations.</span>
@@ -232,7 +232,7 @@
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">        account.</span>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">        Parameters</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">        ----------</span>
@@ -244,7 +244,7 @@
 </span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>    <span class="k">def</span> <span class="nf">add_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs_var</span><span class="p">,</span> <span class="n">rhs_vars</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">        Add an edge to the dependency graph.</span>
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="sd">        Edge being added is the form `lhs_var -&gt; rhs_var` and read as &quot;`lhs_var` depends on `rhs_var`&quot;.</span>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
@@ -265,7 +265,7 @@
 </span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 </span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
 </span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>    <span class="k">def</span> <span class="nf">_recursive_order_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">        Search through the dependency graph depth-first.</span>
 </span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>
 </span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">        Parameters</span>
@@ -289,7 +289,7 @@
 </span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
 </span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>
 </span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="sd">        Perform the sorting and return the list of variable names according to order.</span>
 </span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="sd">        Sorts based on dependency, meaning that if given `a = b + c`, returns `[b, c, a]`</span>
 </span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>
@@ -305,7 +305,7 @@
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>
 </span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>    <span class="k">def</span> <span class="nf">find_required_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a><span class="sd">        Find the variables which are required to calculate the value of `variable`.</span>
 </span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>
 </span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a><span class="sd">        Parameters</span>
@@ -358,7 +358,7 @@
 </span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>
 </span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a><span class="c1"># TODO @Dashadower caching</span>
 </span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="k">def</span> <span class="nf">StanModel_cache</span><span class="p">(</span><span class="n">model_code</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>    <span class="sd">&quot;&quot;&quot;Use just as you would `stan`&quot;&quot;&quot;</span>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use just as you would `stan`&quot;&quot;&quot;</span>
 </span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>    <span class="n">code_hash</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">model_code</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 </span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>        <span class="n">cache_fn</span> <span class="o">=</span> <span class="s1">&#39;cached-model-</span><span class="si">{}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code_hash</span><span class="p">)</span>
@@ -510,11 +510,11 @@
     </div>
     <a class="headerlink" href="#IndentedString"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="IndentedString-16"><a href="#IndentedString-16"><span class="linenos">16</span></a><span class="k">class</span> <span class="nc">IndentedString</span><span class="p">:</span>
-</span><span id="IndentedString-17"><a href="#IndentedString-17"><span class="linenos">17</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="IndentedString-17"><a href="#IndentedString-17"><span class="linenos">17</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="IndentedString-18"><a href="#IndentedString-18"><span class="linenos">18</span></a><span class="sd">    This can be seen as a stateful `textwrap.indent()`.</span>
 </span><span id="IndentedString-19"><a href="#IndentedString-19"><span class="linenos">19</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="IndentedString-20"><a href="#IndentedString-20"><span class="linenos">20</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-</span><span id="IndentedString-21"><a href="#IndentedString-21"><span class="linenos">21</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="IndentedString-21"><a href="#IndentedString-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="IndentedString-22"><a href="#IndentedString-22"><span class="linenos">22</span></a>
 </span><span id="IndentedString-23"><a href="#IndentedString-23"><span class="linenos">23</span></a><span class="sd">        Parameters</span>
 </span><span id="IndentedString-24"><a href="#IndentedString-24"><span class="linenos">24</span></a><span class="sd">        ----------</span>
@@ -540,7 +540,7 @@
 </span><span id="IndentedString-44"><a href="#IndentedString-44"><span class="linenos">44</span></a>        <span class="k">return</span> <span class="bp">self</span>
 </span><span id="IndentedString-45"><a href="#IndentedString-45"><span class="linenos">45</span></a>
 </span><span id="IndentedString-46"><a href="#IndentedString-46"><span class="linenos">46</span></a>    <span class="k">def</span> <span class="nf">add_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_indent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IndentedString-47"><a href="#IndentedString-47"><span class="linenos">47</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="IndentedString-47"><a href="#IndentedString-47"><span class="linenos">47</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="IndentedString-48"><a href="#IndentedString-48"><span class="linenos">48</span></a><span class="sd">        Directly append a string, potentially overriding the indentation.</span>
 </span><span id="IndentedString-49"><a href="#IndentedString-49"><span class="linenos">49</span></a><span class="sd">        Parameters</span>
 </span><span id="IndentedString-50"><a href="#IndentedString-50"><span class="linenos">50</span></a><span class="sd">        ----------</span>
@@ -574,7 +574,7 @@
     </div>
     <a class="headerlink" href="#IndentedString.__init__"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="IndentedString.__init__-20"><a href="#IndentedString.__init__-20"><span class="linenos">20</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-</span><span id="IndentedString.__init__-21"><a href="#IndentedString.__init__-21"><span class="linenos">21</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="IndentedString.__init__-21"><a href="#IndentedString.__init__-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="IndentedString.__init__-22"><a href="#IndentedString.__init__-22"><span class="linenos">22</span></a>
 </span><span id="IndentedString.__init__-23"><a href="#IndentedString.__init__-23"><span class="linenos">23</span></a><span class="sd">        Parameters</span>
 </span><span id="IndentedString.__init__-24"><a href="#IndentedString.__init__-24"><span class="linenos">24</span></a><span class="sd">        ----------</span>
@@ -608,7 +608,7 @@ The initial indentation level. Default is 0. Note that it indicates the number o
     </div>
     <a class="headerlink" href="#IndentedString.add_raw"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="IndentedString.add_raw-46"><a href="#IndentedString.add_raw-46"><span class="linenos">46</span></a>    <span class="k">def</span> <span class="nf">add_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_indent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IndentedString.add_raw-47"><a href="#IndentedString.add_raw-47"><span class="linenos">47</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="IndentedString.add_raw-47"><a href="#IndentedString.add_raw-47"><span class="linenos">47</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="IndentedString.add_raw-48"><a href="#IndentedString.add_raw-48"><span class="linenos">48</span></a><span class="sd">        Directly append a string, potentially overriding the indentation.</span>
 </span><span id="IndentedString.add_raw-49"><a href="#IndentedString.add_raw-49"><span class="linenos">49</span></a><span class="sd">        Parameters</span>
 </span><span id="IndentedString.add_raw-50"><a href="#IndentedString.add_raw-50"><span class="linenos">50</span></a><span class="sd">        ----------</span>
@@ -651,7 +651,7 @@ Default is False. If set to True, will not add the indentation.</li>
     </div>
     <a class="headerlink" href="#StatementTopoSort"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort-65"><a href="#StatementTopoSort-65"><span class="linenos"> 65</span></a><span class="k">class</span> <span class="nc">StatementTopoSort</span><span class="p">:</span>
-</span><span id="StatementTopoSort-66"><a href="#StatementTopoSort-66"><span class="linenos"> 66</span></a>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-66"><a href="#StatementTopoSort-66"><span class="linenos"> 66</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-67"><a href="#StatementTopoSort-67"><span class="linenos"> 67</span></a><span class="sd">    Topologically sort a group of statements, based on their usage.</span>
 </span><span id="StatementTopoSort-68"><a href="#StatementTopoSort-68"><span class="linenos"> 68</span></a><span class="sd">    This is useful when you&#39;re working with unordered statements, and need to</span>
 </span><span id="StatementTopoSort-69"><a href="#StatementTopoSort-69"><span class="linenos"> 69</span></a><span class="sd">    order them for declarations.</span>
@@ -680,7 +680,7 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-92"><a href="#StatementTopoSort-92"><span class="linenos"> 92</span></a><span class="sd">        account.</span>
 </span><span id="StatementTopoSort-93"><a href="#StatementTopoSort-93"><span class="linenos"> 93</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-94"><a href="#StatementTopoSort-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
-</span><span id="StatementTopoSort-95"><a href="#StatementTopoSort-95"><span class="linenos"> 95</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-95"><a href="#StatementTopoSort-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-96"><a href="#StatementTopoSort-96"><span class="linenos"> 96</span></a>
 </span><span id="StatementTopoSort-97"><a href="#StatementTopoSort-97"><span class="linenos"> 97</span></a><span class="sd">        Parameters</span>
 </span><span id="StatementTopoSort-98"><a href="#StatementTopoSort-98"><span class="linenos"> 98</span></a><span class="sd">        ----------</span>
@@ -692,7 +692,7 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-104"><a href="#StatementTopoSort-104"><span class="linenos">104</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
 </span><span id="StatementTopoSort-105"><a href="#StatementTopoSort-105"><span class="linenos">105</span></a>
 </span><span id="StatementTopoSort-106"><a href="#StatementTopoSort-106"><span class="linenos">106</span></a>    <span class="k">def</span> <span class="nf">add_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs_var</span><span class="p">,</span> <span class="n">rhs_vars</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="StatementTopoSort-107"><a href="#StatementTopoSort-107"><span class="linenos">107</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-107"><a href="#StatementTopoSort-107"><span class="linenos">107</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-108"><a href="#StatementTopoSort-108"><span class="linenos">108</span></a><span class="sd">        Add an edge to the dependency graph.</span>
 </span><span id="StatementTopoSort-109"><a href="#StatementTopoSort-109"><span class="linenos">109</span></a><span class="sd">        Edge being added is the form `lhs_var -&gt; rhs_var` and read as &quot;`lhs_var` depends on `rhs_var`&quot;.</span>
 </span><span id="StatementTopoSort-110"><a href="#StatementTopoSort-110"><span class="linenos">110</span></a>
@@ -713,7 +713,7 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-125"><a href="#StatementTopoSort-125"><span class="linenos">125</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 </span><span id="StatementTopoSort-126"><a href="#StatementTopoSort-126"><span class="linenos">126</span></a>
 </span><span id="StatementTopoSort-127"><a href="#StatementTopoSort-127"><span class="linenos">127</span></a>    <span class="k">def</span> <span class="nf">_recursive_order_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="StatementTopoSort-128"><a href="#StatementTopoSort-128"><span class="linenos">128</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-128"><a href="#StatementTopoSort-128"><span class="linenos">128</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-129"><a href="#StatementTopoSort-129"><span class="linenos">129</span></a><span class="sd">        Search through the dependency graph depth-first.</span>
 </span><span id="StatementTopoSort-130"><a href="#StatementTopoSort-130"><span class="linenos">130</span></a>
 </span><span id="StatementTopoSort-131"><a href="#StatementTopoSort-131"><span class="linenos">131</span></a><span class="sd">        Parameters</span>
@@ -737,7 +737,7 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-149"><a href="#StatementTopoSort-149"><span class="linenos">149</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
 </span><span id="StatementTopoSort-150"><a href="#StatementTopoSort-150"><span class="linenos">150</span></a>
 </span><span id="StatementTopoSort-151"><a href="#StatementTopoSort-151"><span class="linenos">151</span></a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="StatementTopoSort-152"><a href="#StatementTopoSort-152"><span class="linenos">152</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-152"><a href="#StatementTopoSort-152"><span class="linenos">152</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-153"><a href="#StatementTopoSort-153"><span class="linenos">153</span></a><span class="sd">        Perform the sorting and return the list of variable names according to order.</span>
 </span><span id="StatementTopoSort-154"><a href="#StatementTopoSort-154"><span class="linenos">154</span></a><span class="sd">        Sorts based on dependency, meaning that if given `a = b + c`, returns `[b, c, a]`</span>
 </span><span id="StatementTopoSort-155"><a href="#StatementTopoSort-155"><span class="linenos">155</span></a>
@@ -753,7 +753,7 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-165"><a href="#StatementTopoSort-165"><span class="linenos">165</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span>
 </span><span id="StatementTopoSort-166"><a href="#StatementTopoSort-166"><span class="linenos">166</span></a>
 </span><span id="StatementTopoSort-167"><a href="#StatementTopoSort-167"><span class="linenos">167</span></a>    <span class="k">def</span> <span class="nf">find_required_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="StatementTopoSort-168"><a href="#StatementTopoSort-168"><span class="linenos">168</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort-168"><a href="#StatementTopoSort-168"><span class="linenos">168</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-169"><a href="#StatementTopoSort-169"><span class="linenos">169</span></a><span class="sd">        Find the variables which are required to calculate the value of `variable`.</span>
 </span><span id="StatementTopoSort-170"><a href="#StatementTopoSort-170"><span class="linenos">170</span></a>
 </span><span id="StatementTopoSort-171"><a href="#StatementTopoSort-171"><span class="linenos">171</span></a><span class="sd">        Parameters</span>
@@ -823,7 +823,7 @@ account.</li>
     </div>
     <a class="headerlink" href="#StatementTopoSort.__init__"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.__init__-94"><a href="#StatementTopoSort.__init__-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
-</span><span id="StatementTopoSort.__init__-95"><a href="#StatementTopoSort.__init__-95"><span class="linenos"> 95</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort.__init__-95"><a href="#StatementTopoSort.__init__-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.__init__-96"><a href="#StatementTopoSort.__init__-96"><span class="linenos"> 96</span></a>
 </span><span id="StatementTopoSort.__init__-97"><a href="#StatementTopoSort.__init__-97"><span class="linenos"> 97</span></a><span class="sd">        Parameters</span>
 </span><span id="StatementTopoSort.__init__-98"><a href="#StatementTopoSort.__init__-98"><span class="linenos"> 98</span></a><span class="sd">        ----------</span>
@@ -858,7 +858,7 @@ Refer to attribute documentation.</li>
     </div>
     <a class="headerlink" href="#StatementTopoSort.add_stmt"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.add_stmt-106"><a href="#StatementTopoSort.add_stmt-106"><span class="linenos">106</span></a>    <span class="k">def</span> <span class="nf">add_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs_var</span><span class="p">,</span> <span class="n">rhs_vars</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="StatementTopoSort.add_stmt-107"><a href="#StatementTopoSort.add_stmt-107"><span class="linenos">107</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort.add_stmt-107"><a href="#StatementTopoSort.add_stmt-107"><span class="linenos">107</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.add_stmt-108"><a href="#StatementTopoSort.add_stmt-108"><span class="linenos">108</span></a><span class="sd">        Add an edge to the dependency graph.</span>
 </span><span id="StatementTopoSort.add_stmt-109"><a href="#StatementTopoSort.add_stmt-109"><span class="linenos">109</span></a><span class="sd">        Edge being added is the form `lhs_var -&gt; rhs_var` and read as &quot;`lhs_var` depends on `rhs_var`&quot;.</span>
 </span><span id="StatementTopoSort.add_stmt-110"><a href="#StatementTopoSort.add_stmt-110"><span class="linenos">110</span></a>
@@ -907,7 +907,7 @@ An Iterable of strings denoting the RHS variable names</li>
     </div>
     <a class="headerlink" href="#StatementTopoSort.sort"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.sort-151"><a href="#StatementTopoSort.sort-151"><span class="linenos">151</span></a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="StatementTopoSort.sort-152"><a href="#StatementTopoSort.sort-152"><span class="linenos">152</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort.sort-152"><a href="#StatementTopoSort.sort-152"><span class="linenos">152</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.sort-153"><a href="#StatementTopoSort.sort-153"><span class="linenos">153</span></a><span class="sd">        Perform the sorting and return the list of variable names according to order.</span>
 </span><span id="StatementTopoSort.sort-154"><a href="#StatementTopoSort.sort-154"><span class="linenos">154</span></a><span class="sd">        Sorts based on dependency, meaning that if given `a = b + c`, returns `[b, c, a]`</span>
 </span><span id="StatementTopoSort.sort-155"><a href="#StatementTopoSort.sort-155"><span class="linenos">155</span></a>
@@ -949,7 +949,7 @@ List of sorted variable names</li>
     </div>
     <a class="headerlink" href="#StatementTopoSort.find_required_variables"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.find_required_variables-167"><a href="#StatementTopoSort.find_required_variables-167"><span class="linenos">167</span></a>    <span class="k">def</span> <span class="nf">find_required_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="StatementTopoSort.find_required_variables-168"><a href="#StatementTopoSort.find_required_variables-168"><span class="linenos">168</span></a>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span id="StatementTopoSort.find_required_variables-168"><a href="#StatementTopoSort.find_required_variables-168"><span class="linenos">168</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.find_required_variables-169"><a href="#StatementTopoSort.find_required_variables-169"><span class="linenos">169</span></a><span class="sd">        Find the variables which are required to calculate the value of `variable`.</span>
 </span><span id="StatementTopoSort.find_required_variables-170"><a href="#StatementTopoSort.find_required_variables-170"><span class="linenos">170</span></a>
 </span><span id="StatementTopoSort.find_required_variables-171"><a href="#StatementTopoSort.find_required_variables-171"><span class="linenos">171</span></a><span class="sd">        Parameters</span>
@@ -1096,7 +1096,7 @@ Target variable name</li>
     </div>
     <a class="headerlink" href="#StanModel_cache"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="StanModel_cache-220"><a href="#StanModel_cache-220"><span class="linenos">220</span></a><span class="k">def</span> <span class="nf">StanModel_cache</span><span class="p">(</span><span class="n">model_code</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span id="StanModel_cache-221"><a href="#StanModel_cache-221"><span class="linenos">221</span></a>    <span class="sd">&quot;&quot;&quot;Use just as you would `stan`&quot;&quot;&quot;</span>
+</span><span id="StanModel_cache-221"><a href="#StanModel_cache-221"><span class="linenos">221</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use just as you would `stan`&quot;&quot;&quot;</span>
 </span><span id="StanModel_cache-222"><a href="#StanModel_cache-222"><span class="linenos">222</span></a>    <span class="n">code_hash</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">model_code</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 </span><span id="StanModel_cache-223"><a href="#StanModel_cache-223"><span class="linenos">223</span></a>    <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="StanModel_cache-224"><a href="#StanModel_cache-224"><span class="linenos">224</span></a>        <span class="n">cache_fn</span> <span class="o">=</span> <span class="s1">&#39;cached-model-</span><span class="si">{}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code_hash</span><span class="p">)</span>
