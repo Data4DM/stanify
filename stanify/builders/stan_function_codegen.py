@@ -116,6 +116,9 @@ class StanFunctionBuilder(StanBlockCodegen):
 
         elements = sorted(elements, key=lambda x: statement_eval_order.index(vensim_name_to_identifier(x.name)))
 
+        # Since the stock variables were excluded during the topological sort, add them manually
+        elements.extend([element for element in vensim_model_context.first_section.elements if vensim_name_to_identifier(element.name) in vensim_model_context.integ_outcome_variables])
+
         # find what stan variables need to be passed into the ODE function as an argument
         odefunc_variable_arguments = []
         for variable_name in self.stan_initialized_variables:
@@ -269,7 +272,7 @@ class StanFunctionBuilder(StanBlockCodegen):
             if vec_index.indices:
                 self._code += f"dydt[{index}] = {vec_index.name}_dydt[{', '.join([str(i) for i in vec_index.indices])}];\n"
             else:
-                self._code += f"dydt[{index}] = {vec_index.name};\n"
+                self._code += f"dydt[{index}] = {vec_index.name}_dydt;\n"
 
         # Return the derivative vector
         self._code += "return dydt;\n"
