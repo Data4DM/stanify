@@ -45,7 +45,7 @@ class SBCRunner:
         self.arviz_coords = arviz_coords
         self.target_data_variables = target_data_variables
 
-    def run_sbc(self, clear_ipython_outputs=True, **kwargs) -> az.InferenceData:
+    def run_sbc(self, clear_ipython_outputs: bool = True, **kwargs) -> az.InferenceData:
         """
         This is the driving function for running SBC.
         Information on some dimensions:
