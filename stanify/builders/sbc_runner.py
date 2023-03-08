@@ -3,6 +3,10 @@ import pathlib
 import cmdstanpy
 import arviz as az
 import xarray as xr
+try:
+    from IPython.display import clear_output
+except ModuleNotFoundError:
+    pass
 
 
 class SBCRunner:
@@ -41,7 +45,7 @@ class SBCRunner:
         self.arviz_coords = arviz_coords
         self.target_data_variable = target_data_variable
 
-    def run_sbc(self, **kwargs) -> az.InferenceData:
+    def run_sbc(self, clear_ipython_outputs=True, **kwargs) -> az.InferenceData:
         """
         This is the driving function for running SBC.
         Information on some dimensions:
@@ -51,6 +55,11 @@ class SBCRunner:
 
         Parameters
         ----------
+        clear_ipython_outputs : bool
+            If running stanify in a Jupyter environment, Cmdstan outputs may clog up the cell output, which leads to
+            extreme lag. If this argument is set to True, once every SBC fit-iteration is finished, it will attempt to
+            clear the current cell's output. This should be set to True if you wish to see the outputs of the Stan
+            Program.
         kwargs : Any
             Any additional arguments to pass to `cmdstanpy.sample` **during data2draws**. Note that data, chains, and
             iter_sampling is automatically passed in.
@@ -70,6 +79,13 @@ class SBCRunner:
 
             data2draws_idata = self.data2draws(input_data, **kwargs)
             data2draws_idatas.append(data2draws_idata)
+
+            if clear_ipython_outputs and fit != self.n_fits - 1:
+                # If it's not the last iteration, try to clear any Jupyter output
+                try:
+                    clear_output()
+                except NameError:
+                    pass
 
         # We're disabling posterior predictive for now since generated quantities for data2draws isn't added
         posterior = xr.concat((postfit.posterior for postfit in data2draws_idatas), dim="prior_draw")
