@@ -32,9 +32,9 @@ class SBCRunner:
         The coords for arviz inferencedata. This dictionary corresponds to the `coords` argument of
         https://python.arviz.org/en/stable/api/generated/arviz.from_cmdstanpy.html#arviz-from-cmdstanpy
     """
-    def __init__(self, draws2data_stan_file: pathlib.Path, data2draws_stan_file: pathlib.Path,target_data_variable: str,
-                 n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4, arviz_dims: dict = {},
-                 arviz_coords: dict = {}):
+    def __init__(self, draws2data_stan_file: pathlib.Path, data2draws_stan_file: pathlib.Path,
+                 target_data_variables: list[str], n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4,
+                 arviz_dims: dict = {}, arviz_coords: dict = {}):
         self.draws2data_path = draws2data_stan_file
         self.data2draws_path = data2draws_stan_file
         self.n_fits = n_fits
@@ -43,7 +43,7 @@ class SBCRunner:
         assert self.n_draws % n_chains == 0, "n_draws must be a multiple of n_chains!"
         self.arviz_dims = arviz_dims
         self.arviz_coords = arviz_coords
-        self.target_data_variable = target_data_variable
+        self.target_data_variables = target_data_variables
 
     def run_sbc(self, clear_ipython_outputs=True, **kwargs) -> az.InferenceData:
         """
@@ -75,7 +75,7 @@ class SBCRunner:
         for fit in range(self.n_fits):
             print(f"Running SBC for dataset # {fit + 1} of {self.n_fits}")
             fit_dataset = draws2data_dataset.isel(prior_draw=fit)
-            input_data = {self.target_data_variable: fit_dataset[self.target_data_variable]}
+            input_data = {data_var_name: fit_dataset[data_var_name] for data_var_name in self.target_data_variables}
 
             data2draws_idata = self.data2draws(input_data, **kwargs)
             data2draws_idatas.append(data2draws_idata)
@@ -99,7 +99,7 @@ class SBCRunner:
     def draws2data(self) -> az.InferenceData:
         draws2data_model = cmdstanpy.CmdStanModel(stan_file=str(self.draws2data_path))
         draws2data_fit = draws2data_model.sample(chains=1, iter_sampling=self.n_fits, fixed_param=True)
-        draws2data_idata = az.from_cmdstanpy(prior=draws2data_fit, prior_predictive=[self.target_data_variable],
+        draws2data_idata = az.from_cmdstanpy(prior=draws2data_fit, prior_predictive=self.target_data_variables,
                                              coords=self.arviz_coords, dims=self.arviz_dims)
         draws2data_idata = draws2data_idata.stack(prior_draw=["chain", "draw"], groups="prior_groups",
                                                   create_index=False)

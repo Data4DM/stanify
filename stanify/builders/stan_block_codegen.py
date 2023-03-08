@@ -197,7 +197,7 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen):
         omit_sbc_data_variable : bool
             If a SBC data variable(`stanify.builders.vensim2stan.V2SModelSettings`) is a Vensim static
             data, will not generate code for it if the parameter is set to `True`. This should only be set to true
-            during data2draws, since during draws2data the `data_variable` option is irrelevant.
+            during data2draws, since during draws2data the `data_variables` option is irrelevant.
         """
         # Write initial time
         self._code += f"real initial_time = {v2s_code_handler.v2s_settings.initial_time};\n"
@@ -237,7 +237,7 @@ class TransformedDataCodegenVensimWalker(StanBlockCodegen):
                 continue
 
             # Skip the SBC data variable if it's requested
-            if omit_sbc_data_variable and variable_name == v2s_code_handler.v2s_settings.data_variable:
+            if omit_sbc_data_variable and variable_name in v2s_code_handler.v2s_settings.data_variables:
                 continue
 
             match variable_value:
@@ -271,7 +271,7 @@ class ParametersBlockCodegen(StanBlockCodegen):
         # iterate through the variables belonging in the parameter block
         for variable_name in stan_model_context.parameter_variables:
             # If variable is a SBC data variable, don't make it a variable but instead it comes from data
-            if variable_name == v2s_code_handler.v2s_settings.data_variable:
+            if variable_name in v2s_code_handler.v2s_settings.data_variables:
                 continue
             variable_context = v2s_code_handler.declared_variables[variable_name]
 
@@ -566,23 +566,25 @@ class ModelBlockCodegen(StanBlockCodegen):
 class Data2DrawsDataBlockCodegen(StanBlockCodegen):
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
-        data_variable = v2s_code_handler.v2s_settings.data_variable
-        if data_variable in vensim_model_context.variables:
-            data_subscripts = vensim_model_context.variables[data_variable].subscripts
-            data_subscript_dim = vensim_model_context.get_variable_shape(data_variable)
-        else:
-            data_subscripts = v2s_code_handler.declared_variables[data_variable].subscripts
-            data_subscript_dim = (len(vensim_model_context.get_subscript_values(i)) for i in data_subscripts)
+        data_variables = v2s_code_handler.v2s_settings.data_variables
 
-        if data_subscripts:
-            stan_dtype = f"array[{', '.join(str(x) for x in data_subscript_dim)}] real"
-            stan_model_context.array_dims_subscript_map[data_variable] = data_subscripts
-            stan_comments = f"  // subscripts: {', '.join(data_subscripts)}"
-        else:
-            stan_dtype = "real"
-            stan_comments = ""
+        for data_variable in data_variables:
+            if data_variable in vensim_model_context.variables:
+                data_subscripts = vensim_model_context.variables[data_variable].subscripts
+                data_subscript_dim = vensim_model_context.get_variable_shape(data_variable)
+            else:
+                data_subscripts = v2s_code_handler.declared_variables[data_variable].subscripts
+                data_subscript_dim = (len(vensim_model_context.get_subscript_values(i)) for i in data_subscripts)
 
-        self._code += f"{stan_dtype} {data_variable};{stan_comments}\n"
+            if data_subscripts:
+                stan_dtype = f"array[{', '.join(str(x) for x in data_subscript_dim)}] real"
+                stan_model_context.array_dims_subscript_map[data_variable] = data_subscripts
+                stan_comments = f"  // subscripts: {', '.join(data_subscripts)}"
+            else:
+                stan_dtype = "real"
+                stan_comments = ""
+
+            self._code += f"{stan_dtype} {data_variable};{stan_comments}\n"
 
 
 @dataclass
