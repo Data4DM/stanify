@@ -105,7 +105,7 @@ class InitialValueStatementsCodegen:
         ignored_variables.update(stan_model_context.timestep_variant_datafunc_variables)
         ignored_variables.update(stan_model_context.transformed_data_variables)
 
-        statement_sorter = StatementTopoSort(tuple(ignored_variables))
+        statement_sorter = StatementTopoSort(ignored_variables)
 
         walker = FindODEInitialRHSVariablesVensimWalker()
         for element in vensim_model_context.first_section.elements:
@@ -622,7 +622,7 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
         # Variables defined in transformed data, functions block, and stocks are never a parameter
         ignored_variables = stan_model_context.transformed_data_variables.union(stan_model_context.timestep_variant_datafunc_variables,
                                                                                 stan_model_context.lookupfunc_variables)
-        statement_sorter = StatementTopoSort(tuple(ignored_variables))
+        statement_sorter = StatementTopoSort(ignored_variables)
 
         # We also add stock variables to be dependent on the ODE argument parameters, so we know which parameters
         # need to be sampled before running the ODE function
