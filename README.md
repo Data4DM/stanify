@@ -12,7 +12,7 @@ Stanify also focuses on applying simulation-based calibration(SBC) to the genera
 For a quick introduction to the library, check out the docs at https://data4dm.github.io/stanify/
 
 ## Map 🗺
-reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}
+reversible mapping between $theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}$
 
 
 |                         | command in stanify                  | definition                                                               | in vensim                                                                             | usecase in demo                                                                                                                                            |
@@ -81,75 +81,6 @@ def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
 
 ## Line by line Mechanism ⚙️ (tbc)
 ![image](https://user-images.githubusercontent.com/30194633/196929921-5c26a53d-15ab-4362-afad-593b4821c31c.png)
-
-Stanify maps vensim file to stan files. From snippet below, 
-
-Read vensim,
-
-```{python}
-# generator with process noise
-# equations from vensim
-vf = VensimFile('vensim_models/prey_predator/prey_predator.mdl')
-vf.parse()
-structural_assumption = vf.get_abstract_model()
-```
-Setting and numeric assumptions
-```
-# data for stan blocks
-setting_assumption = {
-    "est_param" : ("alpha", "beta", "gamma", "delta"),
-    "driving_vector_names" : ("process_noise_uniform_driving"),
-    "target_simulated_vector_names" : ("prey", "predator"),
-    "model_name": "prey_predator_1020",
-}
-
-n_t = 200
-numeric_data_assumption = {
-    "n_t":n_t,
-    "time_step": .03,
-    "process_noise_uniform_driving": np.random.uniform(low=-.5, high=.5, size=n_t),
-    'process_noise_scale': 0.1
-}
-for key in setting_assumption['target_simulated_vector_names']:
-    numeric_data_assumption[f"{key}_obs"] = [0]*n_t
-```
-Define model and prior
-```
-model = StanVensimModel(structural_assumption)
-model.set_numeric(numeric_data_assumption)
-model.set_setting(**setting_assumption)
-
-# parameter setting for good posterior space 
-model.set_prior("alpha", "normal", 0.8, 0.08, lower = 0)
-model.set_prior("beta", "normal", 0.05, 0.005, lower = 0)
-model.set_prior("delta", "normal", 0.05, 0.005, lower = 0)
-model.set_prior("gamma", "normal", 0.8, 0.08, lower = 0)
-
-model.set_prior("m_noise_scale", "normal", 0.5, 0.05, lower = 0)
-
-for key in setting_assumption['target_simulated_vector_names']:
-    model.set_prior(f"{key}_obs", "normal", f"{key}", "m_noise_scale")
-
-model.build_stan_functions()
-```
-Generate
-```
-prior_pred_obs_xr = draws2data(model, numeric_data_assumption, iter_sampling = 1) # run this only once; it compiles and stores data
-prior_pred_obs = {k: v.values.flatten() for (k,v) in prior_pred_obs_xr[['prey_obs','predator_obs']].items()}
-prior_pred_check(setting_assumption)
-```
-Estimate with process noise turned off
-```
-# estimator without process noise
-numeric_data_assumption["process_noise_scale"] = 0.0
-for key, value in prior_pred_obs.items():
-    numeric_data_assumption[key] = value
-```
-Numeric value from generate step above is passed on for estimation
-```
-model.update_numeric({'prey_obs': prior_pred_obs['prey_obs'], 'predator_obs': prior_pred_obs['predator_obs'],'process_noise_scale': 0.0 })
-posterior = data2draws(model, numeric_data_assumption, iter_sampling = 1000)
-```
 
 ## Theoretical background
 ### Bayesian self-consistency and Simulation-based Calibration Checks 
