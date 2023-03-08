@@ -242,7 +242,7 @@ class Vensim2Stan:
                     raise Exception(f"Vensim variable {name} is declared to be a Data variable, but its actual values weren't passed into additonal_data.")
 
     def run_sbc(self, n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4,
-                overwrite: bool = True) -> arviz.InferenceData:
+                overwrite: bool = True, **kwargs) -> arviz.InferenceData:
         """
         generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
         SBC.
@@ -258,6 +258,8 @@ class Vensim2Stan:
         overwrite : bool
             Whether to actually write the generated code to the files. This is useful when you want to personally
             modify the stancode and run SBC on it. defaults to True
+        kwargs : Dict
+            Additional args to pass to `cmdstanpy.sample` during data2draws. See `sbc_runner.run_sbc` for details.
         Returns
         -------
         An `arviz.InferenceData object`
@@ -280,7 +282,7 @@ class Vensim2Stan:
                                self.v2s_model_settings.data_variable, n_fits=n_fits, n_draws=n_draws, n_chains=n_chains,
                                arviz_dims=arviz_dims, arviz_coords=arviz_coords)
 
-        return sbc_runner.run_sbc()
+        return sbc_runner.run_sbc(**kwargs)
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(self.get_functions_stanfile_name())

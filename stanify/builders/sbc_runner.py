@@ -41,13 +41,19 @@ class SBCRunner:
         self.arviz_coords = arviz_coords
         self.target_data_variable = target_data_variable
 
-    def run_sbc(self) -> az.InferenceData:
+    def run_sbc(self, **kwargs) -> az.InferenceData:
         """
         This is the driving function for running SBC.
         Information on some dimensions:
 
         - prior_draw : This is the dimension which indicates the fit index
         - posterior_draw : This is the draw index for each posterior fit
+
+        Parameters
+        ----------
+        kwargs : Any
+            Any additional arguments to pass to `cmdstanpy.sample` **during data2draws**. Note that data, chains, and
+            iter_sampling is automatically passed in.
 
         Returns
         -------
@@ -62,7 +68,7 @@ class SBCRunner:
             fit_dataset = draws2data_dataset.isel(prior_draw=fit)
             input_data = {self.target_data_variable: fit_dataset[self.target_data_variable]}
 
-            data2draws_idata = self.data2draws(input_data)
+            data2draws_idata = self.data2draws(input_data, **kwargs)
             data2draws_idatas.append(data2draws_idata)
 
         # We're disabling posterior predictive for now since generated quantities for data2draws isn't added
@@ -84,10 +90,25 @@ class SBCRunner:
 
         return draws2data_idata
 
-    def data2draws(self, data_dict) -> az.InferenceData:
+    def data2draws(self, data_dict, **kwargs) -> az.InferenceData:
+        """
+        Runs data2draws once.
+
+        Parameters
+        ----------
+        data_dict : Dict
+            Dictionary to pass to `cmdstanpy.sample` as data.
+        kwargs : Dict
+            Any additional arguments to pass to the sample method. Note that data, chains, and
+            iter_sampling is automatically passed in.
+
+        Returns
+        -------
+
+        """
         data2draws_model = cmdstanpy.CmdStanModel(stan_file=str(self.data2draws_path))
         data2draws_fit = data2draws_model.sample(data=data_dict, chains=self.n_chains,
-                                                 iter_sampling=self.n_draws // self.n_chains)
+                                                 iter_sampling=self.n_draws // self.n_chains, **kwargs)
 
         data2draws_idata = az.from_cmdstanpy(posterior=data2draws_fit, coords=self.arviz_coords, dims=self.arviz_dims)
         data2draws_idata = data2draws_idata.stack(posterior_draw=["chain", "draw"], groups="posterior_groups",
