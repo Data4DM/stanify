@@ -1,6 +1,16 @@
 # stanify 
 Bridge from System dynamics ecosystem to Bayesian computation ecosystem on [Stan](mc-stan.org)
 
+## Introduction
+
+stanify is a library for translating Vensim models into probabilistic programs defined with the Stan language. It is composed of two parts: a source-to-source code translator for model conversion and a miniature modeling language for specifying bayesian models on top of the Vensim model.
+
+Stanify aims to bring together the powerful, intuitive interface for designing dynamic models of Vensim and the robust inference performance of Stan. By using Stanify users can specify priors for Vensim variables, declare observational models, and much more on top of their existing Vensim model without having to write any Stan code.
+
+Stanify also focuses on applying simulation-based calibration(SBC) to the generated stan models; it provides a suite of methods to easily run SBC and analyze results.
+
+For a quick introduction to the library, check out the docs at https://data4dm.github.io/stanify/
+
 ## Map 🗺
 reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}
 
