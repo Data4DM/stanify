@@ -12,7 +12,7 @@ Stanify also focuses on applying simulation-based calibration(SBC) to the genera
 For a quick introduction to the library, check out the docs at https://data4dm.github.io/stanify/
 
 ## Map 🗺
-reversible mapping between $theta_tilde_{P, S}, Y_{Q, N}, theta_{P, SM}$
+reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, \theta_{P, SM}
 
 
 |                         | command in stanify                  | definition                                                               | in vensim                                                                             | usecase in demo                                                                                                                                            |
