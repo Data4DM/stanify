@@ -226,22 +226,22 @@
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">        In other words, &quot;key is dependent on values&quot;.</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">    sorted_order : list[str]</span>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">        The result of the sort. Holds variable names</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">    ignored_variables : tuple[str]</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">        Tuple of variable names which should be ignored during the sort. This is useful when you have some variables</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">    ignored_variables : set[str]</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">        set of variable names which should be ignored during the sort. This is useful when you have some variables</span>
 </span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        that require special treatment. This means that the dependencies for ignored variables are not taken into</span>
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">        account.</span>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()):</span>
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">        Parameters</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">        ----------</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">        ignored_variables : tuple[str]</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">        ignored_variables : set[str]</span>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">            Refer to attribute documentation.</span>
 </span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 </span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>    <span class="k">def</span> <span class="nf">add_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs_var</span><span class="p">,</span> <span class="n">rhs_vars</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -674,22 +674,22 @@ Default is False. If set to True, will not add the indentation.</li>
 </span><span id="StatementTopoSort-86"><a href="#StatementTopoSort-86"><span class="linenos"> 86</span></a><span class="sd">        In other words, &quot;key is dependent on values&quot;.</span>
 </span><span id="StatementTopoSort-87"><a href="#StatementTopoSort-87"><span class="linenos"> 87</span></a><span class="sd">    sorted_order : list[str]</span>
 </span><span id="StatementTopoSort-88"><a href="#StatementTopoSort-88"><span class="linenos"> 88</span></a><span class="sd">        The result of the sort. Holds variable names</span>
-</span><span id="StatementTopoSort-89"><a href="#StatementTopoSort-89"><span class="linenos"> 89</span></a><span class="sd">    ignored_variables : tuple[str]</span>
-</span><span id="StatementTopoSort-90"><a href="#StatementTopoSort-90"><span class="linenos"> 90</span></a><span class="sd">        Tuple of variable names which should be ignored during the sort. This is useful when you have some variables</span>
+</span><span id="StatementTopoSort-89"><a href="#StatementTopoSort-89"><span class="linenos"> 89</span></a><span class="sd">    ignored_variables : set[str]</span>
+</span><span id="StatementTopoSort-90"><a href="#StatementTopoSort-90"><span class="linenos"> 90</span></a><span class="sd">        set of variable names which should be ignored during the sort. This is useful when you have some variables</span>
 </span><span id="StatementTopoSort-91"><a href="#StatementTopoSort-91"><span class="linenos"> 91</span></a><span class="sd">        that require special treatment. This means that the dependencies for ignored variables are not taken into</span>
 </span><span id="StatementTopoSort-92"><a href="#StatementTopoSort-92"><span class="linenos"> 92</span></a><span class="sd">        account.</span>
 </span><span id="StatementTopoSort-93"><a href="#StatementTopoSort-93"><span class="linenos"> 93</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="StatementTopoSort-94"><a href="#StatementTopoSort-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
+</span><span id="StatementTopoSort-94"><a href="#StatementTopoSort-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()):</span>
 </span><span id="StatementTopoSort-95"><a href="#StatementTopoSort-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-96"><a href="#StatementTopoSort-96"><span class="linenos"> 96</span></a>
 </span><span id="StatementTopoSort-97"><a href="#StatementTopoSort-97"><span class="linenos"> 97</span></a><span class="sd">        Parameters</span>
 </span><span id="StatementTopoSort-98"><a href="#StatementTopoSort-98"><span class="linenos"> 98</span></a><span class="sd">        ----------</span>
-</span><span id="StatementTopoSort-99"><a href="#StatementTopoSort-99"><span class="linenos"> 99</span></a><span class="sd">        ignored_variables : tuple[str]</span>
+</span><span id="StatementTopoSort-99"><a href="#StatementTopoSort-99"><span class="linenos"> 99</span></a><span class="sd">        ignored_variables : set[str]</span>
 </span><span id="StatementTopoSort-100"><a href="#StatementTopoSort-100"><span class="linenos">100</span></a><span class="sd">            Refer to attribute documentation.</span>
 </span><span id="StatementTopoSort-101"><a href="#StatementTopoSort-101"><span class="linenos">101</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort-102"><a href="#StatementTopoSort-102"><span class="linenos">102</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 </span><span id="StatementTopoSort-103"><a href="#StatementTopoSort-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="StatementTopoSort-104"><a href="#StatementTopoSort-104"><span class="linenos">104</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
+</span><span id="StatementTopoSort-104"><a href="#StatementTopoSort-104"><span class="linenos">104</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
 </span><span id="StatementTopoSort-105"><a href="#StatementTopoSort-105"><span class="linenos">105</span></a>
 </span><span id="StatementTopoSort-106"><a href="#StatementTopoSort-106"><span class="linenos">106</span></a>    <span class="k">def</span> <span class="nf">add_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs_var</span><span class="p">,</span> <span class="n">rhs_vars</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="StatementTopoSort-107"><a href="#StatementTopoSort-107"><span class="linenos">107</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -804,8 +804,8 @@ An adjacency list for a dependency graph. Key denotes the destination, value the
 In other words, "key is dependent on values".</li>
 <li><strong>sorted_order</strong> (list[str]):
 The result of the sort. Holds variable names</li>
-<li><strong>ignored_variables</strong> (tuple[str]):
-Tuple of variable names which should be ignored during the sort. This is useful when you have some variables
+<li><strong>ignored_variables</strong> (set[str]):
+set of variable names which should be ignored during the sort. This is useful when you have some variables
 that require special treatment. This means that the dependencies for ignored variables are not taken into
 account.</li>
 </ul>
@@ -816,30 +816,30 @@ account.</li>
                                         <input id="StatementTopoSort.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
-        <span class="name">StatementTopoSort</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span></span>)</span>
+        <span class="name">StatementTopoSort</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span></span>)</span>
 
                 <label class="view-source-button" for="StatementTopoSort.__init__-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#StatementTopoSort.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.__init__-94"><a href="#StatementTopoSort.__init__-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StatementTopoSort.__init__-94"><a href="#StatementTopoSort.__init__-94"><span class="linenos"> 94</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()):</span>
 </span><span id="StatementTopoSort.__init__-95"><a href="#StatementTopoSort.__init__-95"><span class="linenos"> 95</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.__init__-96"><a href="#StatementTopoSort.__init__-96"><span class="linenos"> 96</span></a>
 </span><span id="StatementTopoSort.__init__-97"><a href="#StatementTopoSort.__init__-97"><span class="linenos"> 97</span></a><span class="sd">        Parameters</span>
 </span><span id="StatementTopoSort.__init__-98"><a href="#StatementTopoSort.__init__-98"><span class="linenos"> 98</span></a><span class="sd">        ----------</span>
-</span><span id="StatementTopoSort.__init__-99"><a href="#StatementTopoSort.__init__-99"><span class="linenos"> 99</span></a><span class="sd">        ignored_variables : tuple[str]</span>
+</span><span id="StatementTopoSort.__init__-99"><a href="#StatementTopoSort.__init__-99"><span class="linenos"> 99</span></a><span class="sd">        ignored_variables : set[str]</span>
 </span><span id="StatementTopoSort.__init__-100"><a href="#StatementTopoSort.__init__-100"><span class="linenos">100</span></a><span class="sd">            Refer to attribute documentation.</span>
 </span><span id="StatementTopoSort.__init__-101"><a href="#StatementTopoSort.__init__-101"><span class="linenos">101</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="StatementTopoSort.__init__-102"><a href="#StatementTopoSort.__init__-102"><span class="linenos">102</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 </span><span id="StatementTopoSort.__init__-103"><a href="#StatementTopoSort.__init__-103"><span class="linenos">103</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sorted_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="StatementTopoSort.__init__-104"><a href="#StatementTopoSort.__init__-104"><span class="linenos">104</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
+</span><span id="StatementTopoSort.__init__-104"><a href="#StatementTopoSort.__init__-104"><span class="linenos">104</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_variables</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ignored_variables</span>
 </span></pre></div>
 
 
             <div class="docstring"><h6 id="parameters">Parameters</h6>
 
 <ul>
-<li><strong>ignored_variables</strong> (tuple[str]):
+<li><strong>ignored_variables</strong> (set[str]):
 Refer to attribute documentation.</li>
 </ul>
 </div>
