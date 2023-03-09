@@ -85,22 +85,22 @@ class StatementTopoSort:
         In other words, "key is dependent on values".
     sorted_order : list[str]
         The result of the sort. Holds variable names
-    ignored_variables : tuple[str]
-        Tuple of variable names which should be ignored during the sort. This is useful when you have some variables
+    ignored_variables : set[str]
+        set of variable names which should be ignored during the sort. This is useful when you have some variables
         that require special treatment. This means that the dependencies for ignored variables are not taken into
         account.
     """
-    def __init__(self, ignored_variables: tuple[str] = tuple()):
+    def __init__(self, ignored_variables: set[str] = set()):
         """
 
         Parameters
         ----------
-        ignored_variables : tuple[str]
+        ignored_variables : set[str]
             Refer to attribute documentation.
         """
         self.dependency_graph: dict[str, set[str]] = dict()
         self.sorted_order: list[str] = []
-        self.ignored_variables: tuple[str] = ignored_variables
+        self.ignored_variables: set[str] = ignored_variables
 
     def add_stmt(self, lhs_var, rhs_vars: Iterable[str]) -> None:
         """

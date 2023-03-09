@@ -24,8 +24,8 @@ class V2SModelSettings:
 
     Attributes
     ----------
-    data_variable : str
-        Name of the data variable. This corresponds to $y$ in SBC.
+    data_variables : list[str]
+        Name(s) of the data variable(s). This corresponds to $y$ in SBC.
     initial_time : Number
         Number indicating the start time simulation.
     integration_times : list[Number]
@@ -33,7 +33,7 @@ class V2SModelSettings:
         See https://mc-stan.org/docs/functions-reference/functions-ode-solver.html for details. Note that
         `initial_time` **shouldn't be included**.
     """
-    data_variable: str
+    data_variables: list[str]
     initial_time: Number
     integration_times: list[Number]
 
@@ -85,9 +85,10 @@ class Vensim2Stan:
         The `StanModelContext` object that will hold some information about the generated stan code. Refer to
         docs on `stanify.builders.stan_model_context.StanModelContext` class for more information.
     """
-    def __init__(self, vensim2stan_code: str, vensim_file_path: str, data_variable: str, initial_time: Number,
-                 integration_times: list[Number], additional_data: dict[str, Union[Number, xarray.DataArray]] = {},
-                 model_name: str = "", stan_file_directory: str = ""):
+    def __init__(self, vensim2stan_code: str, vensim_file_path: str, data_variable: Union[str, list[str]],
+                 initial_time: Number, integration_times: list[Number],
+                 additional_data: dict[str, Union[Number, xarray.DataArray]] = {}, model_name: str = "",
+                 stan_file_directory: str = ""):
         """
 
         Parameters
@@ -96,8 +97,8 @@ class Vensim2Stan:
             vensim2stan model specification code
         vensim_file_path : str or pathlib.Path
             Path to the vensim model file
-        data_variable : str
-            Variable that should be treated as data for SBC
+        data_variable : str or list[str]
+            Variable(s) that should be treated as data for SBC
         initial_time : Number
             Number indicating the start time simulation.
         integration_times : list[Number]
@@ -118,7 +119,10 @@ class Vensim2Stan:
         # Set the timesteps subscript explicitly
         self.vensim_model_context.set_timesteps_subscript(tuple(integration_times))
 
-        self.v2s_model_settings = V2SModelSettings(data_variable=data_variable, initial_time=initial_time,
+        if isinstance(data_variable, str):
+            data_variable = [data_variable]
+
+        self.v2s_model_settings = V2SModelSettings(data_variables=data_variable, initial_time=initial_time,
                                                    integration_times=integration_times)
 
         self.stan_model_context = StanModelContext()
@@ -242,7 +246,7 @@ class Vensim2Stan:
                     raise Exception(f"Vensim variable {name} is declared to be a Data variable, but its actual values weren't passed into additonal_data.")
 
     def run_sbc(self, n_fits: int = 100, n_draws: int = 1000, n_chains: int = 4,
-                overwrite: bool = True) -> arviz.InferenceData:
+                overwrite: bool = True, clear_ipython_outputs: bool = True, **kwargs) -> arviz.InferenceData:
         """
         generates the necessary stan files for running SBC, and executes the simulations and fits required to compute
         SBC.
@@ -258,6 +262,10 @@ class Vensim2Stan:
         overwrite : bool
             Whether to actually write the generated code to the files. This is useful when you want to personally
             modify the stancode and run SBC on it. defaults to True
+        clear_ipython_outputs : bool
+            Passed to `sbc_runner.SBCRunner.run_sbc`. See linked function docs.
+        kwargs : Dict
+            Additional args to pass to `cmdstanpy.sample` during data2draws. See `sbc_runner.run_sbc` for details.
         Returns
         -------
         An `arviz.InferenceData object`
@@ -277,10 +285,10 @@ class Vensim2Stan:
 
         # run SBC
         sbc_runner = SBCRunner(self.get_draws2data_stanfile_path(), self.get_data2draws_stanfile_path(),
-                               self.v2s_model_settings.data_variable, n_fits=n_fits, n_draws=n_draws, n_chains=n_chains,
+                               self.v2s_model_settings.data_variables, n_fits=n_fits, n_draws=n_draws, n_chains=n_chains,
                                arviz_dims=arviz_dims, arviz_coords=arviz_coords)
 
-        return sbc_runner.run_sbc()
+        return sbc_runner.run_sbc(clear_ipython_outputs=clear_ipython_outputs, **kwargs)
 
     def get_functions_stanfile_path(self) -> pathlib.Path:
         return self.stan_file_directory.joinpath(self.get_functions_stanfile_name())
