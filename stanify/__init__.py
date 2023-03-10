@@ -63,6 +63,10 @@ sigma_predator<lower=0> ~ lognormal(0, 1);
 """
 ```
 
+**Important**: Note that in Stanify all variable names defined in Vensim are converted into lowercase and then into an
+identifier. This means that if you had a variable named `AVG RETURN TIME` in Vensim, in V2S you need to reference it as
+`avg_return_time`.
+
 Since we now have the Vensim model and V2S code that describes the statistical model we wish to perform inference,
 we will invoke `Vensim2Stan`, which is the entry point for all things related to Stanify:
 
