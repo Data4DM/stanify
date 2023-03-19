@@ -57,6 +57,12 @@ class IndentedString:
         else:
             self.__iadd__(string)
 
+    def clear(self) -> None:
+        """
+        Flush the currently saved string
+        """
+        self.string = ""
+
     def __str__(self) -> str:
         return self.string
 
