@@ -12,15 +12,15 @@ transformed data {
     ///////////////
     
     // static Vensim variables
-    real s2d_frac6 = 0.33;
+    int final_time = 100;
+    real safety_stock_coverage_frac7 = 0.5;
+    real adj_frac1 = 0.25;
+    real adj_frac5 = 0.2;
     real ss2p_frac4 = 0.2;
     real time_step = 0.0625;
-    real adj_frac5 = 0.2;
+    real s2d_frac6 = 0.33;
     real adj_frac3 = 0.5;
     real adj_frac2 = 0.125;
-    int final_time = 100;
-    real adj_frac1 = 0.25;
-    real safety_stock_coverage_frac7 = 0.5;
     real saveper = 0.5;
 
 }
@@ -41,7 +41,7 @@ generated quantities {
     initial_state[3] = s_initial;
     initial_state[4] = ss_initial;
 
-    array[timesteps] vector[n_odes] ode_result = ode_rk45(ode_func, initial_state, initial_time, integration_times, s2d_frac6, ss2p_frac4, adj_frac5, adj_frac3, adj_frac2, adj_frac1, safety_stock_coverage_frac7, saveper);
+    array[timesteps] vector[n_odes] ode_result = ode_rk45(ode_func, initial_state, initial_time, integration_times, ss2p_frac4, safety_stock_coverage_frac7, adj_frac1, adj_frac5, s2d_frac6, adj_frac3, adj_frac2, saveper);
     array[timesteps] real b;
     array[timesteps] real eor;
     array[timesteps] real s;
@@ -53,10 +53,16 @@ generated quantities {
     ss[:] = ode_result[:, 4];
 
     real sigma;
-    sigma = normal_rng(0.1, 0.01);
+    sigma = lognormal_rng(0, 1);
     array[timesteps] real ss_obs;
     for (i in 1:timesteps){
         ss_obs[i] = normal_rng(ss[i], sigma);
+    }
+    real sigma_s;
+    sigma_s = lognormal_rng(0, 1);
+    array[timesteps] real s_obs;
+    for (i in 1:timesteps){
+        s_obs[i] = normal_rng(s[i], sigma_s);
     }
 
 }

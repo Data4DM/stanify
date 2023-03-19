@@ -24,11 +24,11 @@ functions {
     
 
     real exog_demand(real time){
-        // Declared timesteps array(10)
-        array[10] int timesteps = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        // Declared timesteps array(100)
+        array[100] int timesteps = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99};
         // data array dims: ('timesteps',)
-        array[10] real data_values = {1.0000020265579224, 3.000001907348633, 5.000001907348633, 7.000001907348633, 9.000001907348633, 11.000001907348633, 13.000001907348633, 15.000001907348633, 17.000001907348633, 19.000001907348633};
-        int lower_index = 1, upper_index = 10, middle = (lower_index + upper_index) %/% 2;
+        array[100] real data_values = {100.0, 102.0, 104.0, 106.0, 108.0, 110.0, 112.0, 114.0, 116.0, 118.0, 120.0, 122.0, 124.0, 126.0, 128.0, 130.0, 132.0, 134.0, 136.0, 138.0, 140.0, 142.0, 144.0, 146.0, 148.0, 150.0, 152.0, 154.0, 156.0, 158.0, 160.0, 162.0, 164.0, 166.0, 168.0, 170.0, 172.0, 174.0, 176.0, 178.0, 180.0, 182.0, 184.0, 186.0, 188.0, 190.0, 192.0, 194.0, 196.0, 198.0, 200.0, 202.0, 204.0, 206.0, 208.0, 210.0, 212.0, 214.0, 216.0, 218.0, 220.0, 222.0, 224.0, 226.0, 228.0, 230.0, 232.0, 234.0, 236.0, 238.0, 240.0, 242.0, 244.0, 246.0, 248.0, 250.0, 252.0, 254.0, 256.0, 258.0, 260.0, 262.0, 264.0, 266.0, 268.0, 270.0, 272.0, 274.0, 276.0, 278.0, 280.0, 282.0, 284.0, 286.0, 288.0, 290.0, 292.0, 294.0, 296.0, 298.0};
+        int lower_index = 1, upper_index = 100, middle = (lower_index + upper_index) %/% 2;
         if (time >= timesteps[upper_index]) { return data_values[upper_index]; }
         if (time <= timesteps[lower_index]) { return data_values[lower_index]; }
         while(upper_index - lower_index > 1){
@@ -47,7 +47,7 @@ functions {
         return intercept + slope * (time - data_values[lower_index]);
     }
 
-    vector ode_func(real time, vector outcome, real ss2p_frac4, real safety_stock_coverage_frac7, real adj_frac1, real adj_frac5, real s2d_frac6, real adj_frac3, real adj_frac2, real saveper){
+    vector ode_func(real time, vector outcome, real adj_frac3, real safety_stock_coverage_frac7, real adj_frac2, real s2d_frac6, real ss2p_frac4, real saveper, real adj_frac1, real adj_frac5){
         // previous time stock variables
         real b;
         real eor;

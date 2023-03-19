@@ -81,6 +81,14 @@ class StanBlockCodegen(ABC):
 class InitialValueStatementsCodegen:
     """
     Generates code for statements needed for calculating initial values
+
+    Attributes
+    ----------
+    requires_params : bool
+        Boolean indicating whether any of the initial value variables requires a stan parameter to calculate. This means
+         that the initial value can't be calculated at `transformed data`, but instead `transformed parameters`
+    required_params : set[str]
+        Set holding the stan parameters which are required for calculating initial values, if any.
     """
     _code: IndentedString = field(init=False, default_factory=IndentedString)
     requires_params: bool = field(init=False, default=True)
@@ -93,7 +101,6 @@ class InitialValueStatementsCodegen:
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
         # Calculate the initial values for the stock variables.
-        self._code += "\n"
         self._code += "// initial stock values\n"
 
         # Create the initial state vector. This will be passed to the ODE solver
@@ -393,6 +400,72 @@ class ModelBlockStatementV2SWalker(Vensim2StanWalker):
         return str(self._code)
 
 
+@dataclass
+class Data2DrawsGeneratedQuantitiesLogLikV2SWalker(ModelBlockStatementV2SWalker):
+    """
+    Generates code to generate `_loglik += "dist_lpdf(lhs_variate | arg1, arg2);`.
+    Since the LHS variable doesn't go to the LHS of the generated code, we first generate code for the LHS normally,
+    but after that cut the code into a temporary variable(`lhs_code`).
+    After that, we prepend the contents of the temporary variable as the first special argument of the distribution
+    function.
+
+    Attributes
+    ----------
+    lhs_code : str
+        The variable that holds the generated code for the LHS variable. The contents of this variable is then used
+        during codegen for the lpdf/lpmf distribution function, which adds the value as the first argument.
+    """
+    lhs_code: str = field(init=False, default="")
+
+    def walk_Statement(self, node: ast.Statement):
+        if node.op == "=":
+            return
+        self.walk(node.left)
+        self._code += "loglik += "
+        self.walk(node.right)
+        self._code += ";\n"
+
+    def walk_FunctionCall(self, node: ast.FunctionCall):
+        function_name_map = {
+            "bernoulli": "bernoulli_lpmf",
+            "binomial": "binomial_lpmf",
+            "neg_binomial": "neg_binomial_lpmf",
+            "poisson": "poisson_lpmf",
+            "normal": "normal_lpdf",
+            "cauchy": "caucly_lpdf",
+            "lognormal": "lognormal_lpdf",
+            "exponential": "exponential_lpdf",
+            "gamma": "gamma_lpdf",
+            "weibull": "weibull_lpdf",
+            "beta": "beta_lpdf"
+        }
+        if node.name in function_name_map:
+            self._code += f"{function_name_map[node.name]}("
+
+            # Add the LHS variable to the log probability function
+            self._code += f"{self.lhs_code} | "
+        else:
+            self._code += node.name
+
+        for index, arg in enumerate(node.arglist):
+            self.walk(arg)
+            if index < len(node.arglist) - 1:
+                self._code += ", "
+        self._code += ")"
+
+    def walk_Variable(self, node: ast.Variable):
+        # Check if we need to retrieve the code of the LHS variable
+        flush_lhs = False
+        if not self.lhs_code:
+            flush_lhs = True
+
+        super().walk_Variable(node)
+
+        if flush_lhs:
+            self.lhs_code = str(self._code)
+            self._code.clear()
+            
+
 class ModelBlockCodegen(StanBlockCodegen):
     """
     Generates code for the `model` Stan block. This includes prior and likelihood specifications.
@@ -563,6 +636,58 @@ class ModelBlockCodegen(StanBlockCodegen):
                 self._code += walker.code
 
 
+class Data2DrawsGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
+    """
+    For Data2Draws, the generated quantities block holds only the log likelihood calculations.
+    """
+    def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
+                 stan_model_context: StanModelContext) -> None:
+
+        # Insert the loglik variable
+        self._code += "real loglik = 0.0;\n"
+
+        for statement in v2s_code_handler.program_ast.statements:
+            if statement.op == "=":
+                continue
+
+            left_variable = statement.left
+
+            # If the LHS is a data variable, we ignore the sample statement
+            if left_variable.not_param:
+                continue
+
+            self.generate_code_for_statements(statement, v2s_code_handler, vensim_model_context, stan_model_context)
+
+    def generate_code_for_statements(self, statement: ast.Statement, v2s_code_handler: Vensim2StanCodeHandler,
+                                     vensim_model_context: VensimModelContext, stan_model_context: StanModelContext):
+        if statement.op == "=":
+            return
+
+        left_variable = statement.left
+
+        loop_variable_mapping = {}  # key is subscript name, value is loop variable
+        if left_variable.subscripts:
+            indent_levels = len(left_variable.subscripts)
+
+            for nest_level in range(indent_levels):
+                loop_variable = chr(ord("i") + nest_level)
+                loop_bound = left_variable.subscripts[nest_level]
+                self._code += f"for ({loop_variable} in 1:{loop_bound}){{\n"
+                self._code.indent_level += 1
+                loop_variable_mapping[loop_bound] = loop_variable
+
+        loglik_walker = Data2DrawsGeneratedQuantitiesLogLikV2SWalker(loop_variable_mapping,
+                                                                     stan_model_context.array_dims_subscript_map)
+        loglik_walker.walk(statement)
+        self._code += loglik_walker.code
+
+        if left_variable.subscripts:
+            for nest_level in range(len(left_variable.subscripts)):
+                self._code.indent_level -= 1
+                self._code += "}\n"
+
+
+
 class Data2DrawsDataBlockCodegen(StanBlockCodegen):
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
@@ -614,9 +739,19 @@ class Draws2DataGeneratedQuantitiesDrawV2SWalker(ModelBlockStatementV2SWalker):
         self._code += ")"
 
 
+class Draws2DataGeneratedQuantitiesLogLikV2SWalker(Data2DrawsGeneratedQuantitiesLogLikV2SWalker):
+    """
+    This class is the same as `Data2DrawsGeneratedQuantitiesLogLikV2SWalker`, and hence just inherits and does nothing
+    else.
+    """
+
+
 class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
     def generate(self, v2s_code_handler: Vensim2StanCodeHandler, vensim_model_context: VensimModelContext,
                  stan_model_context: StanModelContext) -> None:
+
+        # Insert the loglik variable
+        self._code += "real loglik = 0.0;\n"
 
         # Draw the parameters. Sort the sampling statements in topological order
         # Variables defined in transformed data, functions block, and stocks are never a parameter
@@ -753,6 +888,11 @@ class Draws2DataGeneratedQuantitiesBlockCodegen(StanBlockCodegen):
         walker.walk(statement)
         self._code += walker.code
 
+        loglik_walker = Draws2DataGeneratedQuantitiesLogLikV2SWalker(loop_variable_mapping,
+                                                                     stan_model_context.array_dims_subscript_map)
+        loglik_walker.walk(statement)
+        self._code += loglik_walker.code
+
         if left_variable.subscripts:
             for nest_level in range(len(left_variable.subscripts)):
                 self._code.indent_level -= 1
@@ -836,6 +976,10 @@ class Data2DrawsCodegen(StanFileCodegen):
             model_gen = ModelBlockCodegen("model")
             model_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
             f.write(model_gen.code)
+
+            gq_gen = Data2DrawsGeneratedQuantitiesBlockCodegen("generated quantities")
+            gq_gen.generate(self.v2s_code_handler, self.vensim_model_context, self.stan_model_context)
+            f.write(gq_gen.code)
 
 
 class Draws2DataCodegen(StanFileCodegen):
