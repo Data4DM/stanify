@@ -45,8 +45,8 @@ def calculate_ranks(sbc_idata: InferenceData, variable_name: str, fractional=Fal
     def _calculate_fractional_ranks(theta_xr, post_theta_xr):
         return (1 + np.sum(theta_xr > post_theta_xr)) / (1 + n_post_draws)
 
-    prior_input_core_dims = []# if not kwargs else list(kwargs.keys())
-    post_input_core_dims = ["posterior_draw"]# if not kwargs else ["posterior_draw"] + list(kwargs.keys())
+    prior_input_core_dims = []
+    post_input_core_dims = ["posterior_draw"]
 
     if fractional:
         ranks = xr.apply_ufunc(_calculate_fractional_ranks, prior_draws, post_draws,
@@ -87,7 +87,7 @@ def plot_rank_hist(sbc_idata: InferenceData, variable_name: str, bins=20, fracti
     plt.show()
 
 
-def plot_ecdf(sbc_idata: InferenceData, variable_name: str, gamma=0.8, **kwargs) -> None:
+def plot_ecdf(sbc_idata: InferenceData, variable_name: str, alpha: float = 0.01, diff: bool = False, **kwargs) -> None:
     """
     Plot the calculated ECDF of the SBC ranks against expected ECDF envelope.
 
@@ -98,8 +98,10 @@ def plot_ecdf(sbc_idata: InferenceData, variable_name: str, gamma=0.8, **kwargs)
         `stanify.builders.vensim2stan.Vensim2Stan.run_sbc`.
     variable_name : str
         The variable name to be plotted
-    gamma : float
-        The gamma parameter for calculating the expected ECDF envelope
+    alpha : float
+        The alpha parameter for calculating the expected ECDF envelope, indicating the confidence level.
+    diff : bool
+        Whether to plot the ECDF difference plot. Defaults to `False`.
     kwargs : Any
         Any additional arguments to be passed to the `InferenceData.isel` method. This is for when the variable is
         subscripted and has named dimensions. For example, if a parameter `sigma` has an additional dimension named
@@ -112,12 +114,19 @@ def plot_ecdf(sbc_idata: InferenceData, variable_name: str, gamma=0.8, **kwargs)
     def rank_ecdf(x):
         return np.sum(fractional_ranks < x) / n_prior_draw
 
-    ecdf_xaxis = np.linspace(0, 0.99, 100)
+    ecdf_xaxis = np.linspace(0, 1 - 1e-7, n_prior_draw)
 
-    ecdf_lower = binom.ppf(gamma / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
-    ecdf_upper = binom.ppf(1 - gamma / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
+    ecdf_lower = binom.ppf(alpha / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
+    ecdf_upper = binom.ppf(1 - alpha / 2, n_prior_draw, ecdf_xaxis) / n_prior_draw
 
-    plt.plot(ecdf_xaxis, np.vectorize(rank_ecdf)(ecdf_xaxis), "-", ms=2, color="black")
+    ecdf_values = np.vectorize(rank_ecdf)(ecdf_xaxis)
+
+    if diff:
+        ecdf_lower -= ecdf_xaxis
+        ecdf_upper -= ecdf_xaxis
+        ecdf_values -= ecdf_xaxis
+
+    plt.plot(ecdf_xaxis, ecdf_values, "-", ms=2, color="black")
     plt.plot(ecdf_xaxis, ecdf_lower, "-", color="green")
     plt.plot(ecdf_xaxis, ecdf_upper, "-", color="green")
     plt.title(f"ECDF for parameter {variable_name}")
