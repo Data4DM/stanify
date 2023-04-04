@@ -1,6 +1,7 @@
 # Stanify: Bridging Statistics and Dynamic Modeling with Vensim, Python and Stan
 
-<img width="882" alt="image" src="https://user-images.githubusercontent.com/30194633/229913546-6a7c1e7e-f72e-4a12-98b8-e24127ce6e6e.png">
+<img width="1026" alt="image" src="https://user-images.githubusercontent.com/30194633/229916929-67240b03-1283-42ba-b3a9-969832bbf8d2.png">
+
 
 ## Introduction
 
@@ -23,7 +24,6 @@ Most large decisions in business and public life are characterized by large unce
 
 We introduce these methods with an example, exploring variants of the classic Lotka-Volterra predator-prey model, using Bayesian hierarchy and simulation-based calibration (SBC). For detailed guidelines for the workflow, especially on step 4, refer to simulation-based calibration paper by Modrack et.al (2022). 
 
-<img width="823" alt="image" src="https://user-images.githubusercontent.com/30194633/229914065-d6e5fa21-fcde-4d79-903c-913e76fc207f.png">
 
 ## Future
 This work is a small step towards realization of an ideal decision making process, in which modelers can focus on things humans are best at: problem definition, elicitation of structure from diverse information at multiple scales, and evaluation of outcomes. The toolchain provided by Stanify and its components augments the modeler, by providing automated validation of statistical procedures, and making it straightforward to include pervasive uncertainty, in which every decision is based on sensitivity runs reflecting the complete state of knowledge.
