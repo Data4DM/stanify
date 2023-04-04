@@ -1,5 +1,6 @@
-# stanify 
-Bridge from System dynamics ecosystem to Bayesian computation ecosystem on [Stan](mc-stan.org)
+# Stanify: Bridging Statistics and Dynamic Modeling with Vensim, Python and Stan
+
+<img width="882" alt="image" src="https://user-images.githubusercontent.com/30194633/229913546-6a7c1e7e-f72e-4a12-98b8-e24127ce6e6e.png">
 
 ## Introduction
 
@@ -11,102 +12,56 @@ Stanify also focuses on applying simulation-based calibration(SBC) to the genera
 
 For a quick introduction to the library, check out the docs at https://data4dm.github.io/stanify/
 
-## Map 🗺
-reversible mapping between theta_tilde_{P, S}, Y_{Q, N}, \theta_{P, SM}
+## Workflow
+System Dynamics is historically strong in the assimilation of varied data streams to create an operational representation of the dynamics of a problem, but with limited uptake of quantitative statistical tools. The statistical community has strong quantitative tools but limited conventions for visual representation and exploratory analysis of dynamic models. Combining these toolsets is a great opportunity, particularly because SD practice already embraces a great deal of a priori information about structure and parameters that is a natural fit for Bayesian inference. Stan offers many off-the-shelf inference algorithms (MCMC (e.g. Hamiltonian Monte Carlo (HMC)), variational inference (e.g. auto-diff variational inference), point estimate optimization (e.g. BFGS)) and API for customized inference algorithm. Samples from the estimation can be reinjected to Vensim sensitivity simulations to support decision making under uncertainty.
 
+<img width="838" alt="image" src="https://user-images.githubusercontent.com/30194633/229913901-51686fc2-6424-4f63-9067-424338576905.png">
 
-|                         | command in stanify                  | definition                                                               | in vensim                                                                             | usecase in demo                                                                                                                                            |
-| ----------------------- | ----------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| stanify command         |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
-|                         | `draws2data(model, S)`              | generate: map from parameter $\theta$ region to observation $Y$ region   | run                                                                                   |                                                                                                                                                            |
-|                         | `data2draws(model, M)`              | estimate: map from observation $Y$ region to parameter $\theta$ region   | MCMC                                                                                  |                                                                                                                                                            |
-|                         | `draws2data2draws(model, S, M, N)` | composition of `draws2data` and `data2draws`                             | x                                                                                     |                                                                                                                                                            |
-|                         | `model.set_prior()`                 | `estimated_parameter`  and its prior distribution                        | `.voc` has names of `estimated_parameter` and range                                   | model.set_prior("prey_birth_frac", "normal", 0.8, 0.08, lower = 0), model.set_prior("pred_birth_frac", "normal", 0.05, 0.005, lower = 0)                   |
-|                         | `model.set_numeric()`               | assign numeric vector to `driving data`                                  |                                                                                       |                                                                                                                                                            |
-|                         | `model.update_numeric()`            |                                                                          | assign numeric scalar to `assumed_parameter`, assign numeric vector to `driving data` | express difference between generator and estimator                                                                                                         |
-| model assumption        |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
-|                         | `vensim`                            | mdl filepath                                                             | .                                                                                     | `vensim_files/prey_predator.mdl`                                                                                                                           |
-|                         | `setting`                           | names of `estimated_parameter`, `target_simulated_stock`, `driving_data` | binding parameter, target, driving                                                    | { 'estimated_parameter':('prey_birth_frac', 'pred_birth_frac',), 'driving_vector_name': 'process_noise_uniform', 'target_simulated': ('prey', 'predator')} |
-|                         | `numeric`                           | prior information for estimated parameters                               |                                                                                       | {'prey_birth_frac': (0.8, 0.08, 'normal'),'predator_birth':  (0.05, 0.005, 'normal')}                                                                      |
-| classification settings |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
-|                         | `estimated_parameter`               |                                                                          | parameters in `.voc `                                                                 | prey_birth_frac, pred_birth_frac                                                                                                                           |
-|                         | `assumed_parameter`                 |                                                                          | all parameters in `.mdl` except `estimated_parameter`                                 | prey_death_frac: .05, pred_death_frac: .8                                                                                                                  |
-| numeric settings        |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
-|                         | `S`                                 | # of draws from prior                                                    | # of synthetic datasets (sensitivity check run)                                                            | 1**                                                                                                                                                        |
-|                         | `M`                                 | # of draws from posterior (# of chains * # of draws from each chain)     | # of effective MCMC samples                                                                     | 4 * 100                                                                                                                                                    |
-|                         | `N`                                 | length of `driving_data`                                                 | (final_time - initial_time)/time_step                                                 | 200                                                                                                                                                        |
-|                         | `P`                                 | # of `estimated_parameter`                                               | # of parameters in `.voc` file                                                        | 2 (prey_birth_frac, pred_birth_frac)                                                                                                                       |
-|                         | `Q`                                 | # of `target_simulated_stock`                                            | # of time series vectors to be matched                                       | 2 (prey, predator)                                                                                                                                         |
-|                         | `R`***                              | # of subgroups for hierarchical Bayes                                     | elmcount(_subscript_)                                                                        | 2 region: R1, R2                                                                                                                                           |
-|  noise settings                       |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
-|           | `p_noise`                           | process noise                                                            |                                                                                       |                                                                                                                                                            |
-|                         | `m_noise`                           | measurement noise, additive** **                                         |                                                                                       |                                                                                                                                                            |
-|                         |                                     |                                                                          |                                                                                       |                                                                                                                                                            |
+The workflow begins after you have created a Vensim model. It shows how to check whether inference for the model is well-calibrated using SBC. This involves simulating ‘synthetic data' from the generative model, which is used to re-fit the model. Then the re-fitted parameter values' are compared against the 'true' parameter values used to generate the synthetic data.
 
+Most large decisions in business and public life are characterized by large uncertainties. The search for robust decisions involves a mixture of prediction of the inevitable, control with available resources, and hedging against remaining unknowns.
 
--  feature update by Oct.30 (** 1 to many, *** hierarchical Bayes, ** **  add auto-multiplicative)
-- if flow variable is targeted in vensim, _stocked_ strucutre should be built inside vensim (can use macro) as illustrated in inventory management demo
+We introduce these methods with an example, exploring variants of the classic Lotka-Volterra predator-prey model, using Bayesian hierarchy and simulation-based calibration (SBC). For detailed guidelines for the workflow, especially on step 4, refer to simulation-based calibration paper by Modrack et.al (2022). 
 
-## Abstracted Mechanism 🏭
-stanify is a machine that asks for `vensim`, `setting`,`numeric`, S, M, N and returns graphical and numeric diagnostics. Below is abstracted mechanism of its one-click function `draws2data2draws`.
+<img width="823" alt="image" src="https://user-images.githubusercontent.com/30194633/229914065-d6e5fa21-fcde-4d79-903c-913e76fc207f.png">
 
-```
-def draws2data2draws(vensim, setting, numeric, prior, S, M, N):
-	model = vensim2stan(vensim)
-	model.set_setting(setting, N)
-	model.set_numeric(numeric)
-	model.set_prior(prior)
-	
-	prior_sample = sample(model.prior, S) 
-	target_simulated_obs = draws2data(model, prior_sample)
-	
-	for s in range(S):
-		posterior_sample[s] = data2draws(model, target_simulated_obs[s], M)
-    
-	def draws2data(model, prior_sample)
-		return generate(model, prior_sample).target_simulated_obs
+## Future
+This work is a small step towards realization of an ideal decision making process, in which modelers can focus on things humans are best at: problem definition, elicitation of structure from diverse information at multiple scales, and evaluation of outcomes. The toolchain provided by Stanify and its components augments the modeler, by providing automated validation of statistical procedures, and making it straightforward to include pervasive uncertainty, in which every decision is based on sensitivity runs reflecting the complete state of knowledge.
 
-	
-	def data2draws(model, target_simulated_obs, M)
-		return estimate(model, target_simulated_obs, M)
+The combination of dynamics validated by classical SD robustness tests and Bayesian hierarchy may, in the near future, support such things as automated aggregation based on modeler descriptions of granular dynamics, and AI selection of functional forms conforming to the “free” data points provided by understanding of conservation laws, dimensional consistency and constraints from extreme conditions.
 
+## References
+Jair Andrade and Jim Duggan (2021) A Bayesian approach to calibrate system dynamics models using Hamiltonian Monte Carlo, SDR https://onlinelibrary.wiley.com/doi/pdf/10.1002/sdr.1693
 
-	def diagnose(prior_sample, posterior_sample, ,target_simulated_obs, test_quantity):
-	    return compare(test_quantity(prior_sample, target_simulated, target_simulated_obs, target_obs), 
-	    		   test_quantity(posterior_sample, target_simulated, target_simulated_obs, target_obs))
+Gelman, Carlin, Stern & Rubin (1995-2020) Bayesian Data Analysis, http://www.stat.columbia.edu/~gelman/book/
 
-    return diagnose(prior_sample, posterior_sample, target_simulated, target_simulated_obs, target_obs, ('loglik'))
-```
+Ghaffarzadegan, N., Rahmandad, H. (2020) "Simulation-based estimation of the early spread of COVID-19 in Iran: actual versus confirmed cases."  System Dynamics Review, 36(1):101-129
 
+Lotka, A. J. (1920). "Analytical Note on Certain Rhythmic Relations in Organic Systems". Proc. Natl. Acad. Sci. U.S.A. 6 (7): 410–415.
 
-## Line by line Mechanism ⚙️ (tbc)
-![image](https://user-images.githubusercontent.com/30194633/196929921-5c26a53d-15ab-4362-afad-593b4821c31c.png)
+Meadows, Donella H., "The Unavoidable A Priori", Proceedings of the System Dynamics Conference, Geilo, Norway 1976 https://archives.albany.edu/concern/daos/70795s19j?locale=en 
 
-## Theoretical background
-### Bayesian self-consistency and Simulation-based Calibration Checks 
+Modrák, M., Moon, A. H., Kim, S., Bürkner, P., Huurre, N., Faltejsková, K., ... & Vehtari, A. (2022). Simulation-Based Calibration Checking for Bayesian Computation: The Choice of Test Quantities Shapes Sensitivity. arXiv preprint arXiv:2211.02383.
 
-We use S = 30, M = 100, N = 20 following the schema below from Martin22 (uploaded in 15.879 github reading folder):
-<img width="643" alt="image" src="https://user-images.githubusercontent.com/30194633/196930976-c1f7f6d4-82ff-4975-8e5f-1994a187217c.png">
+Nathaniel Osgood & Juxin Liu (2015) Combining Markov Chain Monte Carlo Approaches and Dynamic Modeling, in Rahmandad & Oliva, Analytical Methods for Dynamic Modelers, MIT Press
 
-From `stanify`, S, M, N can be changed from the command above with `iter_sampling` in draws2data, data2draws.
+Nathaniel Osgood (2022) Using Particle Filtering with Dynamic Models in Health: Overview & Intuition, https://youtu.be/dHf-MM9WlIg
 
+Peterson, D.W. and Eberlein, R.L. (1994), Reality check: A bridge between systems thinking and system dynamics. Syst. Dyn. Rev., 10: 159-174. https://doi.org/10.1002/sdr.4260100205
 
-### Procedure
-## 1. Generate 30 datasets 
+Rahmandad H, Lim T, Sterman J (2021)"Behavioral dynamics of COVID‐19: estimating underreporting, multiple waves, and adherence fatigue across 92 nations."  System Dynamics Review 37(1):5-31. 
 
-Use $\tilde{\alpha} =.55, \tilde{\beta}= .028, \tilde{\delta} = .024, \tilde{\gamma} = .8$ and inject  process noise. 
+Stan software, https://mc-stan.org/
+Stan manual
+inference algorithms: https://mc-stan.org/docs/reference-manual/algorithms.html#algorithms
+example of user-defined algorithm via Stan API https://charlesm93.github.io/files/poster_ela.pdf
+Stan post processing: useful library after estimation
+Simulation-based calibration https://hyunjimoon.github.io/SBC/
+Arviz https://python.arviz.org/en/stable/
+posteriordb https://github.com/stan-dev/posteriordb
 
+Stanify library documentation, https://data4dm.github.io/stanify/stanify.html 
 
-## 2. Run MCMC for each Y dataset which returns one hundred sets of $\alpha_{1..100}, \beta_{1..100}, \gamma_{1..100}, \delta_{1..100}$ for each $\tilde{Y_s}$.
+Vensim User Guide (2012), Markov Chain Monte Carlo. Ventana Systems, Inc.
 
-
-## 3. Calculate loglikelihood for given $Y_s$ 
-
-with each posterior sample pairs 1..M. For instance, with ${SM}$ subscript notation, $\alpha_{11} =.7,  \beta_{11} = .06, \gamma_{11} = .8, \delta_{11} = .06$ is the example of SM= 11 vector. Compute loglikelihood 3,000 times which is  a function of four parameter values and $Y_s$.
-
-## 4. Compute rank of loglikelihood within each S 
-Martin22 gives theoretical background why f as loglikelihood gives high sensitivity.
-
-Formula for ranks are: $(\Sigma_{m= 1..M} f(\alpha_m, \beta_m, \gamma_m, \delta_m, Y_s) < f(\tilde{\alpha}, \tilde{\beta},  \tilde{\gamma}, \tilde{\delta},  Y_s)$ . Plot the histogram of this S number of ranks (x-axis range would be 0 to 100).
-<img width="1108" alt="image" src="https://user-images.githubusercontent.com/30194633/196245845-fbd6200d-723a-4dfc-8afb-6789c5431b6c.png">
-
+Vensim Data & Calibration workshops (ISDC 2022) https://vensim.com/conference/#using-data-in-vensim
